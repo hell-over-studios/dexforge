@@ -63,7 +63,7 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
 - **Status:** Accepted (owner directive, 2026-11-06)
 - **Context:** The prompt only said "avoid generic AI-template looks" and listed required UI behaviors (game-sprite default, toggles, smooth transitions, mobile-first, reduced motion). The owner explicitly chose a **pixel art + cozy** style. It must also harmonize with the sprites themselves, which are low-res pixel art by nature.
 - **Decision:**
-  - **Typography:** display font = *Pixelify Sans* (a genuine pixel font; selected because it covers Latin-Extended, so Spanish á é í ó ú ñ work); body = *Nunito* (warm rounded humanist sans for readability at small sizes). System fallbacks maintained.
+  - **Typography:** display font = _Pixelify Sans_ (a genuine pixel font; selected because it covers Latin-Extended, so Spanish á é í ó ú ñ work); body = _Nunito_ (warm rounded humanist sans for readability at small sizes). System fallbacks maintained.
   - **Palette:** warm "campfire dusk" theme — warm dark bark background with cream/parchment text (cozy, non-harsh), ember/amber accents. Dark by default `(cozy ≠ high-contrast sterile dark)`. Type badges keep the 18 canonical type colors as slightly desaturated variants with AA-checked text.
   - **Shapes:** no border-radius glow aesthetics: square/2px-rounded corners, 2px chunky borders and hard offset "pixel" shadows (`4px 4px 0`), no soft blur/glass. Subtle dither/checker textures allowed at very low alpha.
   - **Sprites/imagery:** every Pokémon render uses `image-rendering: pixelated` at integer scale factors to stay crisp; official artwork and HOME renders are shown as-is (they're smooth art). Avatars/decoration may use procedural dithered patterns.
