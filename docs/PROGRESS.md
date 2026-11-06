@@ -33,11 +33,15 @@ published.
 - Curated seeds (`/data/curated`) + SCHEMA doc; 22 vitest tests green; `data:check` green; CI green on PR.
 - ES-default landing page reading `games.json` at build time.
 - GitHub: labels, milestones, issue/PR templates, **collaborator issues #2–#9**.
+- **GitHub Projects v2 Kanban board** (ADR-010, `docs/BOARD.md`): six Status columns
+  (Backlog → Done), Priority/Area/Size fields, and all issues #2–#22 classified.
 
 ## Next
 
 1. Owner approves the v0.1.0 review package (docs/HANDOFF.md) → tag & release.
-2. Start v0.2.0: game selector + Pokémon picker + team UI (frontend-design/taste skills; Playwright via webapp-testing skill).
+2. Start v0.2.0 from the board's **Ready** column: T2.1 (#12) first, then the
+   game-selector/picker chain; Playwright via webapp-testing skill.
+3. Keep the board in sync when ROADMAP tasks or milestones change (`docs/BOARD.md`).
 
 ## Blockers
 

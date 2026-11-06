@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- GitHub Projects v2 Kanban board for issue triage and assignment (ADR-010), documented in `docs/BOARD.md`: six Status columns, Priority/Area/Size fields, and an initial classification of issues #2–#22.
+
 ### Planned for v0.2.0
 
 - Team builder core, per ADR-009 broken into PR-sized tasks T2.1–T2.11 (docs/ROADMAP.md).

@@ -6,9 +6,10 @@ Short guide for AI agents and humans working in this repo.
 
 1. **`docs/HANDOFF.md`** — what the last session did and where it stopped.
 2. **`docs/PROGRESS.md`** + **`docs/ROADMAP.md`** — what's next and why.
-3. **`docs/PROMPT.md`** — the product contract (never edit it; changes go in `docs/PROMPT_CHANGES.md`).
-4. **`docs/AI_WORKFLOW.md`** — full agent rules: session lifecycle, autonomy boundaries, hard rules, lessons learned.
-5. **`docs/DECISIONS.md`** — decided things (don't relitigate without an ADR).
+3. **`docs/BOARD.md`** — Kanban board, columns/fields and current issue classification.
+4. **`docs/PROMPT.md`** — the product contract (never edit it; changes go in `docs/PROMPT_CHANGES.md`).
+5. **`docs/AI_WORKFLOW.md`** — full agent rules: session lifecycle, autonomy boundaries, hard rules, lessons learned.
+6. **`docs/DECISIONS.md`** — decided things (don't relitigate without an ADR).
 
 ## Commands
 

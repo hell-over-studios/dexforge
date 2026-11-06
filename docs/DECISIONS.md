@@ -79,3 +79,11 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
 - **Decision:** ROADMAP milestones are expanded into **PR-sized task units** (each = one branch + PR): ≤ ~400 changed code lines excluding generated data, or one cohesive screen/feature slice. GitHub issues track these units (labels + milestone + acceptance criteria) rather than whole milestones. If work grows past the budget, split it before starting.
 - **Alternatives:** one big PR per milestone (v0.1.0 pattern); trunk-based development.
 - **Consequences:** More PRs (and a bit more CI overhead) but each is individually revertable and reviewable; recent history is easier to audit. The v0.1.0 mega-PR (#1) remains a one-time bootstrap exception.
+
+## ADR-010 — GitHub Projects v2 as the Kanban board
+
+- **Status:** Accepted (owner directive, 2026-11-06)
+- **Context:** ADR-009 turned the roadmap into ~20 PR-sized issues. Labels and milestones alone do not show what is ready, in progress, blocked or in review, and the owner asked for a Kanban board to assign and visualize the issues.
+- **Decision:** Maintain one GitHub Projects v2 board (org-owned, linked to the repo) as a **view** over issues — issues stay the source of truth. Columns are the built-in `Status` field (`Backlog`, `Ready`, `In progress`, `In review`, `Blocked`, `Done`); custom fields are `Priority` (`P0`–`P3`), `Area` and `Size` (`S`/`M`/`L`). `docs/BOARD.md` documents the columns, rubric, initial classification and `gh` maintenance commands.
+- **Alternatives:** An in-app `/board` page reading the GitHub API (extra runtime code, still cannot assign issues); Trello/Notion (external account, duplicates the issue tracker); labels/milestones only (no workflow state).
+- **Consequences:** Automating the board needs the `project` scope on `gh` (one-time `gh auth refresh -s project`). Board fields must be kept in sync when ROADMAP tasks or issue scope change; the board never holds data that exists only there.
