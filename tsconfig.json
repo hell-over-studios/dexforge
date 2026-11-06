@@ -1,0 +1,13 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "src/**/*", "scripts/**/*", "tests/**/*", "data/**/*.d.ts"],
+  "exclude": ["dist", "node_modules", "scripts/.cache", "public/data"],
+  "compilerOptions": {
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}

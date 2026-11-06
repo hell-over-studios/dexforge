@@ -1,0 +1,32 @@
+{
+  "game": "emerald",
+  "entries": [
+    {
+      "species": "treecko",
+      "kind": "gift",
+      "location": { "en": "Route 101, from Professor Birch", "es": "Ruta 101, del Prof. Abril" },
+      "method": "Starter",
+      "versions": ["emerald"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "torchic",
+      "kind": "gift",
+      "location": { "en": "Route 101, from Professor Birch", "es": "Ruta 101, del Prof. Abril" },
+      "method": "Starter",
+      "versions": ["emerald"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "mudkip",
+      "kind": "gift",
+      "location": { "en": "Route 101, from Professor Birch", "es": "Ruta 101, del Prof. Abril" },
+      "method": "Starter",
+      "versions": ["emerald"],
+      "minLevel": 5,
+      "maxLevel": 5
+    }
+  ]
+}

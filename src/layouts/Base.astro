@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import { dict } from '../lib/i18n';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Dexforge — construye tu equipo Pokémon para cualquier juego',
+  description = 'Team builder de Pokémon por juego: estadísticas, tabla de tipos exacta por generación, cobertura, localizaciones de captura y enfrentamientos contra líderes de gimnasio. Proyecto de fans, de código abierto.',
+} = Astro.props;
+
+/* ES default; ?lang=en or localStorage('lang') switches */
+const payload = JSON.stringify(dict).replace(/</g, '\\u003c');
+const script = `
+(() => {
+  const dict = JSON.parse(document.getElementById('i18n-data').textContent);
+  const url = new URL(location.href);
+  const param = url.searchParams.get('lang');
+  const lang = param === 'en' || param === 'es' ? param : localStorage.getItem('lang') || 'es';
+  localStorage.setItem('lang', lang);
+  document.documentElement.lang = lang;
+  const apply = (lang) => {
+    document.documentElement.lang = lang;
+    for (const el of document.querySelectorAll('[data-i18n]')) {
+      const v = dict[el.getAttribute('data-i18n')]?.[lang];
+      if (v) el.textContent = v;
+    }
+    const t = document.getElementById('lang-toggle');
+    if (t && !t.getAttribute('data-i18n')) t.textContent = lang === 'es' ? 'English' : 'Español';
+  };
+  apply(lang);
+  document.getElementById('lang-toggle')?.addEventListener('click', () => {
+    const next = document.documentElement.lang === 'es' ? 'en' : 'es';
+    localStorage.setItem('lang', next);
+    apply(next);
+    if (next === 'en') { url.searchParams.set('lang', 'en'); } else { url.searchParams.delete('lang'); }
+    history.replaceState(null, '', url.pathname + url.search);
+  });
+})();
+`;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="color-scheme" content="dark" />
+  </head>
+  <body class="min-h-dvh bg-ink-950 text-ink-200 antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-dex-red focus:px-3 focus:py-2 focus:text-white"
+      >Saltar al contenido</a
+    >
+    <main id="main">
+      <slot />
+    </main>
+    <script type="application/json" id="i18n-data" set:html={payload} />
+    <script set:html={script} />
+  </body>
+</html>

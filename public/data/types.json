@@ -1,0 +1,167 @@
+{
+  "generatedAt": "2026-11-06T00:37:24.383Z",
+  "types": [
+    {
+      "id": 1,
+      "slug": "normal",
+      "name": {
+        "en": "Normal",
+        "es": "Normal"
+      },
+      "color": "#9299a1"
+    },
+    {
+      "id": 2,
+      "slug": "fighting",
+      "name": {
+        "en": "Fighting",
+        "es": "Lucha"
+      },
+      "color": "#ef6239"
+    },
+    {
+      "id": 3,
+      "slug": "flying",
+      "name": {
+        "en": "Flying",
+        "es": "Volador"
+      },
+      "color": "#8fa8de"
+    },
+    {
+      "id": 4,
+      "slug": "poison",
+      "name": {
+        "en": "Poison",
+        "es": "Veneno"
+      },
+      "color": "#b054cf"
+    },
+    {
+      "id": 5,
+      "slug": "ground",
+      "name": {
+        "en": "Ground",
+        "es": "Tierra"
+      },
+      "color": "#d97845"
+    },
+    {
+      "id": 6,
+      "slug": "rock",
+      "name": {
+        "en": "Rock",
+        "es": "Roca"
+      },
+      "color": "#c5b48c"
+    },
+    {
+      "id": 7,
+      "slug": "bug",
+      "name": {
+        "en": "Bug",
+        "es": "Bicho"
+      },
+      "color": "#92bc2c"
+    },
+    {
+      "id": 8,
+      "slug": "ghost",
+      "name": {
+        "en": "Ghost",
+        "es": "Fantasma"
+      },
+      "color": "#8971b6"
+    },
+    {
+      "id": 9,
+      "slug": "steel",
+      "name": {
+        "en": "Steel",
+        "es": "Acero"
+      },
+      "color": "#5a8ea1"
+    },
+    {
+      "id": 10,
+      "slug": "fire",
+      "name": {
+        "en": "Fire",
+        "es": "Fuego"
+      },
+      "color": "#ff7043"
+    },
+    {
+      "id": 11,
+      "slug": "water",
+      "name": {
+        "en": "Water",
+        "es": "Agua"
+      },
+      "color": "#42a1f1"
+    },
+    {
+      "id": 12,
+      "slug": "grass",
+      "name": {
+        "en": "Grass",
+        "es": "Planta"
+      },
+      "color": "#67c155"
+    },
+    {
+      "id": 13,
+      "slug": "electric",
+      "name": {
+        "en": "Electric",
+        "es": "Eléctrico"
+      },
+      "color": "#f7c531"
+    },
+    {
+      "id": 14,
+      "slug": "psychic",
+      "name": {
+        "en": "Psychic",
+        "es": "Psíquico"
+      },
+      "color": "#f96e9e"
+    },
+    {
+      "id": 15,
+      "slug": "ice",
+      "name": {
+        "en": "Ice",
+        "es": "Hielo"
+      },
+      "color": "#7ecdf7"
+    },
+    {
+      "id": 16,
+      "slug": "dragon",
+      "name": {
+        "en": "Dragon",
+        "es": "Dragón"
+      },
+      "color": "#53a4cf"
+    },
+    {
+      "id": 17,
+      "slug": "dark",
+      "name": {
+        "en": "Dark",
+        "es": "Siniestro"
+      },
+      "color": "#5f636d"
+    },
+    {
+      "id": 18,
+      "slug": "fairy",
+      "name": {
+        "en": "Fairy",
+        "es": "Hada"
+      },
+      "color": "#ef8fea"
+    }
+  ]
+}

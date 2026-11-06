@@ -1,0 +1,136 @@
+{
+  "game": "red-blue",
+  "entries": [
+    {
+      "species": "bulbasaur",
+      "kind": "gift",
+      "location": { "en": "Pallet Town, from Professor Oak", "es": "Pueblo Paleta, del Prof. Oak" },
+      "method": "Starter",
+      "versions": ["red", "blue"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "charmander",
+      "kind": "gift",
+      "location": { "en": "Pallet Town, from Professor Oak", "es": "Pueblo Paleta, del Prof. Oak" },
+      "method": "Starter",
+      "versions": ["red", "blue"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "squirtle",
+      "kind": "gift",
+      "location": { "en": "Pallet Town, from Professor Oak", "es": "Pueblo Paleta, del Prof. Oak" },
+      "method": "Starter",
+      "versions": ["red", "blue"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "hitmonlee",
+      "kind": "gift",
+      "location": {
+        "en": "Saffron City (choose between Hitmonlee/Hitmonchan)",
+        "es": "Ciudad Celeste (elige entre Hitmonlee/Hitmonchan)"
+      },
+      "method": "After fighting",
+      "versions": ["red", "blue"],
+      "minLevel": 30,
+      "maxLevel": 30
+    },
+    {
+      "species": "hitmonchan",
+      "kind": "gift",
+      "location": {
+        "en": "Saffron City (choose between Hitmonlee/Hitmonchan)",
+        "es": "Ciudad Celeste (elige entre Hitmonlee/Hitmonchan)"
+      },
+      "method": "After fighting",
+      "versions": ["red", "blue"],
+      "minLevel": 30,
+      "maxLevel": 30
+    },
+    {
+      "species": "eevee",
+      "kind": "gift",
+      "location": { "en": "Celadon City (from Bill)", "es": "Ciudad Azulona (de Bill)" },
+      "method": "Gift",
+      "versions": ["red", "blue"],
+      "minLevel": 25,
+      "maxLevel": 25
+    },
+    {
+      "species": "omanyte",
+      "kind": "gift",
+      "location": { "en": "Cinnabar Island (choose fossil)", "es": "Isla Canela (elige fósil)" },
+      "method": "Revive fossil",
+      "versions": ["red", "blue"],
+      "minLevel": 30,
+      "maxLevel": 30
+    },
+    {
+      "species": "kabuto",
+      "kind": "gift",
+      "location": { "en": "Cinnabar Island (choose fossil)", "es": "Isla Canela (elige fósil)" },
+      "method": "Revive fossil",
+      "versions": ["red", "blue"],
+      "minLevel": 30,
+      "maxLevel": 30
+    },
+    {
+      "species": "lapras",
+      "kind": "gift",
+      "location": { "en": "Silph Co. 7F, from the employee", "es": "Sylph S.A. 7P, del empleado" },
+      "method": "Gift",
+      "versions": ["red", "blue"],
+      "minLevel": 15,
+      "maxLevel": 15
+    },
+    {
+      "species": "articuno",
+      "kind": "static",
+      "location": { "en": "Seafoam Islands B4F", "es": "Islas Espuma B4" },
+      "method": "Static",
+      "versions": ["red", "blue"],
+      "minLevel": 50,
+      "maxLevel": 50
+    },
+    {
+      "species": "zapdos",
+      "kind": "static",
+      "location": { "en": "Power Plant", "es": "Central Energía" },
+      "method": "Static",
+      "versions": ["red", "blue"],
+      "minLevel": 50,
+      "maxLevel": 50
+    },
+    {
+      "species": "moltres",
+      "kind": "static",
+      "location": { "en": "Victory Road 2F", "es": "Camino Victoria 2P" },
+      "method": "Static",
+      "versions": ["red", "blue"],
+      "minLevel": 50,
+      "maxLevel": 50
+    },
+    {
+      "species": "mewtwo",
+      "kind": "static",
+      "location": { "en": "Cerulean Cave B2F", "es": "Cerulean Cave B2" },
+      "method": "Static (requires HM03 and finishing Elite 4)",
+      "versions": ["red", "blue"],
+      "minLevel": 70,
+      "maxLevel": 70
+    },
+    {
+      "species": "mew",
+      "kind": "event",
+      "location": { "en": "Distribution", "es": "Distribución" },
+      "method": "Event",
+      "versions": ["red", "blue"],
+      "notes": null
+    }
+  ]
+}

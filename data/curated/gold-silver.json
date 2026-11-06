@@ -1,0 +1,157 @@
+{
+  "game": "gold-silver",
+  "entries": [
+    {
+      "species": "chikorita",
+      "kind": "gift",
+      "location": { "en": "Elm's Lab (starter)", "es": "Laboratorio del Prof. Elm (inicial)" },
+      "method": "Starter",
+      "versions": ["gold", "silver"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "cyndaquil",
+      "kind": "gift",
+      "location": { "en": "Elm's Lab (starter)", "es": "Laboratorio del Prof. Elm (inicial)" },
+      "method": "Starter",
+      "versions": ["gold", "silver"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "totodile",
+      "kind": "gift",
+      "location": { "en": "Elm's Lab (starter)", "es": "Laboratorio del Prof. Elm (inicial)" },
+      "method": "Starter",
+      "versions": ["gold", "silver"],
+      "minLevel": 5,
+      "maxLevel": 5
+    },
+    {
+      "species": "eevee",
+      "kind": "gift",
+      "location": { "en": "Goldenrod City, from Bill", "es": "Ciudad Trigal, de Bill" },
+      "method": "Gift",
+      "versions": ["gold", "silver"],
+      "minLevel": 20,
+      "maxLevel": 20
+    },
+    {
+      "species": "tyrogue",
+      "kind": "gift",
+      "location": {
+        "en": "Mt. Mortar (from the Karate King)",
+        "es": "Monte Mortero (del Karateka)"
+      },
+      "method": "Gift",
+      "versions": ["gold", "silver"],
+      "minLevel": 10,
+      "maxLevel": 10
+    },
+    {
+      "species": "dratini",
+      "kind": "gift",
+      "location": { "en": "Dragon's Den (quiz)", "es": "Cueva del Dragón (pregunta)" },
+      "method": "Gift",
+      "versions": ["gold", "silver"],
+      "minLevel": 10,
+      "maxLevel": 10
+    },
+    {
+      "species": "articuno",
+      "kind": "static",
+      "location": { "en": "Seafoam Islands B4F", "es": "Islas Espuma B4" },
+      "method": "Static",
+      "versions": ["gold", "silver"],
+      "minLevel": 50,
+      "maxLevel": 50
+    },
+    {
+      "species": "zapdos",
+      "kind": "static",
+      "location": { "en": "Power Plant (Kanto)", "es": "Central Energía (Kanto)" },
+      "method": "Static",
+      "versions": ["gold", "silver"],
+      "minLevel": 50,
+      "maxLevel": 50
+    },
+    {
+      "species": "mewtwo",
+      "kind": "static",
+      "location": { "en": "Cerulean Cave (Kanto)", "es": "Cueva Celeste (Kanto)" },
+      "method": "Static",
+      "versions": ["gold", "silver"],
+      "minLevel": 70,
+      "maxLevel": 70
+    },
+    {
+      "species": "raikou",
+      "kind": "static",
+      "location": { "en": "Johto (roaming)", "es": "Johto (errante)" },
+      "method": "Roaming",
+      "versions": ["gold", "silver"],
+      "minLevel": 40,
+      "maxLevel": 40
+    },
+    {
+      "species": "entei",
+      "kind": "static",
+      "location": { "en": "Johto (roaming)", "es": "Johto (errante)" },
+      "method": "Roaming",
+      "versions": ["gold", "silver"],
+      "minLevel": 40,
+      "maxLevel": 40
+    },
+    {
+      "species": "ho-oh",
+      "kind": "static",
+      "location": { "en": "Tin Tower (with Rainbow Wing)", "es": "Torre Hojalata (con Ala Iris)" },
+      "method": "Static",
+      "versions": ["gold"],
+      "minLevel": 40,
+      "maxLevel": 40
+    },
+    {
+      "species": "ho-oh",
+      "kind": "static",
+      "location": { "en": "Tin Tower (with Rainbow Wing)", "es": "Torre Hojalata (con Ala Iris)" },
+      "method": "Static",
+      "versions": ["silver"],
+      "minLevel": 70,
+      "maxLevel": 70
+    },
+    {
+      "species": "lugia",
+      "kind": "static",
+      "location": {
+        "en": "Whirl Islands (with Silver Wing)",
+        "es": "Islas Remolino (con Ala Plateada)"
+      },
+      "method": "Static",
+      "versions": ["gold"],
+      "minLevel": 70,
+      "maxLevel": 70
+    },
+    {
+      "species": "lugia",
+      "kind": "static",
+      "location": {
+        "en": "Whirl Islands (with Silver Wing)",
+        "es": "Islas Remolino (con Ala Plateada)"
+      },
+      "method": "Static",
+      "versions": ["silver"],
+      "minLevel": 40,
+      "maxLevel": 40
+    },
+    {
+      "species": "celebi",
+      "kind": "event",
+      "location": { "en": "Distribution", "es": "Distribución" },
+      "method": "Event",
+      "versions": ["gold", "silver"],
+      "notes": null
+    }
+  ]
+}

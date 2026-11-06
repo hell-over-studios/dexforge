@@ -1,0 +1,32 @@
+name: 📒 Data correction (curated)
+description: Fix or extend the hand-curated encounter data (gifts, trades, statics…).
+labels: [curated-data, data]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Curated data lives in `data/curated/<game-id>.json`.
+        Read the schema in `data/SCHEMA.md` before editing.
+  - type: input
+    id: game
+    attributes:
+      label: Game id
+      description: red-blue, gold-silver, emerald, …
+    validations:
+      required: true
+  - type: textarea
+    id: entries
+    attributes:
+      label: Correction(s)
+      description: List each species, the kind (gift/trade/static/evolve/event), location, versions, level and any notes.
+      placeholder: |
+        eevee — gift — Celadon City (from Bill) — red & blue — lv 25
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: In-game check, Bulbapedia, Serebii… (we will verify; in-game checks are gold)
+    validations:
+      required: true
