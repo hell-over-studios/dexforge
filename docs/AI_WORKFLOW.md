@@ -36,6 +36,8 @@ This file governs any AI agent (Codex, Claude, Copilot, humans acting like agent
 - No ripped 3D game models. No paid services.
 - TypeScript `strict` stays on; no `any` without a written excuse; no `eslint-disable` without a comment explaining why.
 - UI: Spanish default, English present; mobile-first; respect `prefers-reduced-motion`.
+- **Visual direction (ADR-008):** pixel art + cozy — warm palette, pixel display font (*Pixelify Sans*), `image-rendering: pixelated` on game sprites, 2px chunky borders, hard offset shadows. No glassy/soft glow aesthetics.
+- **PR scope (ADR-009):** one PR = one cohesive change (≤ ~400 changed lines excluding generated data, or one screen/feature slice). ROADMAP tasks are pre-sized as PRs; if a task grows past the budget, split it first. GitHub issues track PR-sized units.
 - Stuck 3 attempts on the same problem → document in `KNOWN_ISSUES.md`, open a GitHub issue, move on. Never loop forever.
 - If the task list changes: update `ROADMAP.md` and keep GitHub issues in sync.
 
