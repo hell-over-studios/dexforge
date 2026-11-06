@@ -1,0 +1,49 @@
+name: 🐞 Bug report
+description: Something is wrong in the app or the data.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a bug! Please fill the fields below.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us what you expected to happen.
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL / page
+      description: Where does it happen? (URL or page, and the selected game if relevant)
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - UI / layout
+        - Data (types, stats, encounters…)
+        - Team analysis
+        - Encounters / curated data
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Optional but helpful.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser + OS, device (mobile?).

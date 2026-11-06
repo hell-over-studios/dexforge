@@ -1,0 +1,5 @@
+# pnpm workspace/build settings (single-package repo, settings live here in pnpm >=11)
+# approve lifecycle scripts for native deps actually needed for builds
+allowBuilds:
+  esbuild: true
+  sharp: true

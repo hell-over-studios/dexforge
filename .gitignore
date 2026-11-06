@@ -1,0 +1,20 @@
+# dependencies / artifacts
+node_modules/
+dist/
+.astro/
+
+# generated data cache (raw PokeAPI mirror)
+scripts/.cache/
+
+# env
+.env
+.env.*
+!.env.example
+
+# os / editor
+.DS_Store
+Thumbs.db
+
+# test artifacts (Playwright, from v0.2)
+test-results/
+playwright-report/
