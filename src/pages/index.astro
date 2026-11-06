@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import fs from 'node:fs';
+import type { GamesRegistry } from '../lib/data-schema';
+
+const registry = JSON.parse(
+  fs.readFileSync(new URL('../../public/data/games.json', import.meta.url), 'utf-8'),
+) as GamesRegistry;
+---
+
+<Base>
+  <div
+    class="pointer-events-none fixed inset-x-0 top-0 h-40 bg-gradient-to-b from-dex-red/15 to-transparent"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative mx-auto max-w-5xl px-5 sm:px-8 lg:px-12">
+    <!-- Header / hero -->
+    <header class="animate-fade-in pt-10 pb-4">
+      <div class="flex items-center justify-between gap-4">
+        <a href="/" class="flex items-center gap-3 font-semibold tracking-tight">
+          <span
+            class="grid size-9 place-items-center rounded-xl bg-dex-red text-lg leading-none text-white shadow-glow"
+            aria-hidden="true"
+          >
+            ◍
+          </span>
+          <span class="text-xl text-ink-200">Dexforge</span>
+        </a>
+        <button
+          id="lang-toggle"
+          type="button"
+          class="h-9 cursor-pointer rounded-full border border-transparent px-3 text-sm text-ink-400 transition-colors hover:border-ink-700 hover:text-ink-200"
+        >
+          English
+        </button>
+      </div>
+    </header>
+
+    <section class="animate-fade-rise pt-16 pb-14 sm:pt-24 sm:pb-20">
+      <p class="mb-4 text-sm font-semibold tracking-widest text-dex-red uppercase">
+        v0.1 · datos listos
+      </p>
+      <h1
+        class="max-w-3xl text-4xl leading-[1.08] font-bold tracking-tight text-balance text-ink-200 sm:text-6xl"
+      >
+        Tu equipo, del juego que tú elijas.
+      </h1>
+      <p
+        class="mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-ink-400"
+        data-i18n="app.tagline"
+      >
+        Construye tu equipo Pokémon para cualquier juego principal: debilidades, cobertura, capturas
+        y rivales. De fans, de todos.
+      </p>
+      <p class="m-6 text-sm text-ink-700" data-i18n="app.soon">
+        El selector de juego llega en v0.2 — los datos ya se generan.
+      </p>
+    </section>
+
+    <!-- Games (from generated data) -->
+    <section class="pb-20" aria-labelledby="games-h">
+      <h2
+        id="games-h"
+        class="mb-6 text-sm font-semibold tracking-widest text-ink-400 uppercase"
+        data-i18n="app.supported"
+      >
+        Juegos disponibles (v0.1)
+      </h2>
+      <ul class="grid gap-4 sm:grid-cols-3">
+        {
+          registry.games.map((game) => (
+            <li class="group animate-fade-rise rounded-2xl border border-ink-800 bg-ink-900/60 p-5 transition-colors hover:border-ink-700">
+              <div class="text-xs font-semibold tracking-widest text-dex-red uppercase">
+                Gen {game.generation} · {game.generationSlug.replace('generation-', '')}
+              </div>
+              <div class="mt-2 text-lg font-semibold text-ink-200">{game.label.es}</div>
+              <div class="mt-1 text-sm text-ink-400">
+                {game.pokemonCount} Pokémon · {game.region}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Features -->
+    <section class="pb-24" aria-labelledby="features-h">
+      <h2
+        id="features-h"
+        class="mb-6 text-sm font-semibold tracking-widest text-ink-400 uppercase"
+        data-i18n="app.features"
+      >
+        Qué traerá la app
+      </h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {
+          [
+            [
+              'f.analysis',
+              '◫',
+              'Tabla defensiva y cobertura ofensiva, con el chart exacto de cada generación.',
+            ],
+            [
+              'f.locations',
+              '⯈',
+              'Dónde encontrar a cada uno: ruta, método, nivel, probabilidad y exclusivos.',
+            ],
+            ['f.gym', '⛨', 'Cómo aguanta tu equipo contra líderes de gimnasio y el Alto Mando.'],
+            [
+              'f.share',
+              '⇱',
+              'Comparte tu equipo por URL, expórtalo al formato Showdown y guárdalo sin cuentas.',
+            ],
+          ].map(([key, glyph, text]) => (
+            <div class="rounded-2xl border border-ink-800 bg-ink-900/60 p-6 transition-colors hover:border-ink-700">
+              <div class="mb-3 text-2xl text-dex-red" aria-hidden="true">
+                {glyph}
+              </div>
+              <p class="text-sm leading-relaxed text-ink-400" data-i18n={key}>
+                {text}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="animate-fade-in border-t border-ink-800 py-10">
+      <p class="max-w-2xl text-xs leading-relaxed text-ink-700" data-i18n="footer.disclaimer">
+        Proyecto de fans, sin afiliación con Nintendo, Game Freak ni The Pokémon Company. Pokémon y
+        todos los nombres/efigies relacionados son propiedad de sus dueños.
+      </p>
+      <p class="mt-3 text-xs text-ink-700" data-i18n="footer.license">Código bajo licencia MIT.</p>
+      <div class="mt-3 text-xs text-ink-700">
+        <a
+          class="underline underline-offset-2 hover:text-ink-400"
+          href="https://github.com/hell-over-studios/dexforge">GitHub</a
+        >
+        <span aria-hidden="true"> · </span>
+        <a
+          class="underline underline-offset-2 hover:text-ink-400"
+          href="https://raw.githubusercontent.com/PokeAPI/sprites">Sprites: PokeAPI</a
+        >
+      </div>
+    </footer>
+  </div>
+</Base>
