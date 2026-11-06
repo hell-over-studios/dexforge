@@ -49,6 +49,8 @@ export interface PokeType {
   id: number;
   name: string;
   names: NameEntry[];
+  /** generation the type was introduced in (2026 schema) */
+  generation?: { name: string; url: string } | null;
   damage_relations: DamageRelations;
   past_damage_relations?: PastDamage[];
 }
@@ -61,19 +63,19 @@ export interface PokePokedex {
 interface NameEntry {
   name: string;
   language: { name: string };
-}interface PastTypeEntry {
-  generation: { name: string; url: string };
-  types: NamedRef[];
 }
 export interface PokeSpecies {
   id: number;
   name: string;
   names: NameEntry[];
   generation: { name: string };
-  past_types: PastTypeEntry[];
   capture_rate: number;
   evolution_chain: { url: string } | null;
   varieties: { is_default: boolean; pokemon: NamedRef }[];
+}
+export interface PastType {
+  generation: NamedRef;
+  types: { slot: number; type: NamedRef }[];
 }
 export interface PokeForm {
   id: number;
@@ -82,12 +84,13 @@ export interface PokeForm {
   weight: number;
   abilities: { ability: NamedRef; slot: number; is_hidden: boolean }[];
   stats: { stat: NamedRef; base_stat: number }[];
-  types: NamedRef[];
+  /** 2026 schema: items are { slot, type } wrappers */
+  types: { slot: number; type: NamedRef }[];
+  /** 2026 schema: typing history lives on the FORM (moved from species) */
+  past_types?: PastType[];
   sprites: {
-    versions?: Record<
-      string,
-      Record<string, { default?: string; shiny?: string } | undefined> | undefined
-    >;
+    /** e.g. `generation-ii` -> { gold: { front_default: url, front_shiny: url, … } } */
+    versions?: Record<string, Record<string, string | null | undefined> | undefined>;
     other: {
       'official-artwork'?: { front_default?: string | null };
       home?: { front_default?: string | null };
@@ -168,52 +171,108 @@ export function slugFromUrl(url: string): string {
 }
 
 /**
- * Game-accurate chart from full type details (`type/{id}` payloads):
- * uses past_damage_relations of the game's generation if present.
- * Gen 1 -> 15 types, Gen 2-5 -> 16-17, Gen 6+ -> 18.
+ * Game-accurate chart from full type details (`type/{id}` payloads), 2026 schema:
+ * - a type is introduced in `t.generation` (e.g. steel/dark in gen-ii, fairy in gen-vi);
+ * - `past_damage_relations` entries hold relations valid "up to and including"
+ *   the entry's generation -> pick the entry with the smallest generation
+ *   number >= the game's generation; without any, `damage_relations` applies.
+ * - chart cells are restricted to types introduced <= gameGeneration.
+ * - Gen-I quirks that PokeAPI (2026 schema) no longer exposes are patched in
+ *   GEN1_PATCHES below (Bulbapedia "Type chart in Generation I" differences).
  */
 export interface TypeDetailInput {
   name: string;
+  generation?: { name: string } | null;
   damage_relations: DamageRelations;
   past_damage_relations: PastDamage[];
 }
 
+/** attacker -> defender -> multiplier, Gen-I specific corrections */
+export const GEN1_PATCHES: Readonly<Record<string, number>> = Object.freeze({
+  'bug/poison': 2, // Bug was 2x against Poison in Gen I (0.5 from Gen II)
+  'poison/bug': 2, // Poison was 2x against Bug in Gen I (0.5 from Gen II)
+  'bug/psychic': 2, // Bug was 2x against Psychic in Gen I (0.5 from Gen II)
+  'ghost/psychic': 0, // Gen I bug: Ghost had no effect on Psychic (0.5 from Gen II)
+  'ghost/ghost': 0, // Ghost could not hit Ghost in Gen I (2 from Gen II)
+  'ice/fire': 1, // Ice was neutral against Fire in Gen I (0.5 from Gen II)
+  'fighting/ghost': 0.5, // Fighting only half-hit Ghost in Gen I (0 from Gen II)
+});
+
 export function buildTypeChart(typeDetails: TypeDetailInput[], gameGeneration: number): TypeChart {
+  const introduced = (t: TypeDetailInput) =>
+    t.generation ? genNumberFromSlug(t.generation.name) : 1;
+  const inGame = typeDetails.filter((t) => introduced(t) <= gameGeneration && t.name !== 'unknown');
+  const inSet = new Set(inGame.map((t) => t.name));
+
   const chart: TypeChart = {};
-  for (const t of typeDetails) {
-    const past = t.past_damage_relations ?? [];
-    const applicable = past
-      .map((p) => ({ p, gen: genNumberFromSlug(p.generation.name) }))
-      .filter((x) => x.gen <= gameGeneration)
+  for (const t of inGame) {
+    const entries = (t.past_damage_relations ?? [])
+      .map((p) => ({ rel: p.damage_relations, gen: genNumberFromSlug(p.generation.name) }))
+      .filter((x) => x.gen >= gameGeneration)
       .sort((a, b) => a.gen - b.gen);
-    const rel: DamageRelations = applicable.length
-      ? applicable[applicable.length - 1].p.damage_relations
-      : t.damage_relations;
+    const rel = entries.length ? entries[0].rel : t.damage_relations;
     const def: Record<string, number> = {};
-    for (const x of rel.double_damage_to) def[slugFromUrl(x.url)] = 2;
-    for (const x of rel.half_damage_to) def[slugFromUrl(x.url)] = 0.5;
-    for (const x of rel.no_damage_to) def[slugFromUrl(x.url)] = 0;
+    for (const defender of inGame) def[defender.name] = 1;
+    for (const x of rel.double_damage_to) if (inSet.has(x.name)) def[x.name] = 2;
+    for (const x of rel.half_damage_to) if (inSet.has(x.name)) def[x.name] = 0.5;
+    for (const x of rel.no_damage_to) if (inSet.has(x.name)) def[x.name] = 0;
     chart[t.name] = def;
+  }
+  if (gameGeneration === 1) {
+    for (const [key, mult] of Object.entries(GEN1_PATCHES)) {
+      const [attacker, defender] = key.split('/');
+      if (chart[attacker] && defender in chart[attacker]) chart[attacker][defender] = mult;
+    }
   }
   return chart;
 }
 
 /**
- * Game-accurate typing via `past_types`.
- * By PokeAPI convention a past entry lists the types the species had during the
- * *entry's* generation when they differ from current. So an entry applies only
- * to its exact generation; all other generations use the form's current types.
+ * Game sprite lookup from the form's `sprites.versions` (2026 schema):
+ * - groups live under `generation-x`, with per-version keys (`red-blue`, `gold`,
+ *   `silver`, `emerald`…). There is no combined `gold-silver` group, hence the
+ *   ordered fallback list.
+ * - a group is a flat map of `front_default` / `front_shiny` / … to URLs.
+ *   Gen-I groups ship no shiny sprites.
  */
-export function gameAccurateTypes(
-  species: PokeSpecies,
+export function pickGameSprites(
   form: PokeForm,
   generation: number,
-): string[] {
-  const here = (species.past_types ?? []).find(
-    (p) => genNumberFromSlug(p.generation.name) === generation,
-  );
-  if (here) return here.types.map((t) => t.name);
-  return form.types.map((t) => t.name);
+  groups: string[],
+): { game: string | null; shinyGame: string | null } {
+  const genGroup = form.sprites?.versions?.[`generation-${toRoman(generation)}`] as
+    Record<string, unknown> | undefined;
+  if (!genGroup) return { game: null, shinyGame: null };
+  for (const group of groups) {
+    const map = genGroup[group] as Record<string, unknown> | undefined;
+    if (!map) continue;
+    const game = typeof map.front_default === 'string' ? map.front_default : null;
+    const shinyGame = typeof map.front_shiny === 'string' ? map.front_shiny : null;
+    if (game || shinyGame) return { game, shinyGame };
+  }
+  return { game: null, shinyGame: null };
+}
+
+function toRoman(n: number): string {
+  return ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix'][n - 1] ?? 'x';
+}
+
+/**
+ * Game-accurate typing using the form's `past_types` (2026 schema: entry.generation
+ * is the LAST generation in which that typing was in effect). Rule: pick the
+ * entry with the smallest generation number >= the game's generation; if none,
+ * the form's current types apply.
+ */
+export function gameAccurateTypes(form: PokeForm, generation: number): string[] {
+  const entries = (form.past_types ?? [])
+    .map((p) => ({
+      types: p.types.map((t) => t.type.name),
+      gen: genNumberFromSlug(p.generation.name),
+    }))
+    .filter((x) => x.gen >= generation)
+    .sort((a, b) => a.gen - b.gen);
+  if (entries.length) return entries[0].types;
+  return form.types.map((t) => t.type.name);
 }
 
 export function extractStats(form: PokeForm): Stats {

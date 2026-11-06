@@ -30,14 +30,12 @@ import {
   extractStats,
   flattenWild,
   gameAccurateTypes,
-  genNumberFromSlug,
   idFromUrl,
   localName,
-  slugFromUrl,
+  pickGameSprites,
   type EvoLink,
   type PokeEncounterArea,
   type PokeForm,
-  type PokeGeneration,
   type PokePokedex,
   type PokeSpecies,
   type PokeType,
@@ -74,46 +72,43 @@ async function main(): Promise<void> {
 
   /* 1. shared resources */
   const allPokedexSlugs = [...new Set(games.flatMap((g) => g.pokedexes))];
-  console.log('· shared resources (generations, types, pokedexes)…');
-  const [generations, typeRaw, dexes] = await Promise.all([
-    ensureGenerations(),
-    ensureTypeDetails(),
-    ensurePokedex(allPokedexSlugs),
-  ]);
+  console.log('· shared resources (types, pokedexes)…');
+  const [typeRaw, dexes] = await Promise.all([ensureTypeDetails(), ensurePokedex(allPokedexSlugs)]);
   const knownTypes = new Set(typeRaw.map((t) => t.name));
-  const typeDetailByName = new Map(typeRaw.map((t) => [t.name, t]));
 
   /* 2. unique species across the dexes of the selected games */
-  const speciesByName = new Map<string, { dex: string; entryNumber: number; name: string }>();
+  const speciesByName = new Map<string, string>(); // union for fetching
+  /** per game: species -> its entry number in that game's dex */
+  const dexMembership = new Map<string, Map<string, number>>();
   for (const g of games) {
+    const membership = new Map<string, number>();
     for (const dexSlug of g.pokedexes) {
       const dex = dexes.get(dexSlug);
       if (!dex) throw new Error(`Pokedex not found: ${dexSlug}`);
       for (const e of dex.pokemon_entries) {
-        if (!speciesByName.has(e.pokemon_species.name)) {
-          speciesByName.set(e.pokemon_species.name, {
-            dex: dexSlug,
-            entryNumber: e.entry_number,
-            name: e.pokemon_species.name,
-          });
+        speciesByName.set(e.pokemon_species.name, e.pokemon_species.name);
+        // duplicate within one game's dexes: keep the smallest entry number
+        if (
+          !membership.has(e.pokemon_species.name) ||
+          membership.get(e.pokemon_species.name)! > e.entry_number
+        ) {
+          membership.set(e.pokemon_species.name, e.entry_number);
         }
       }
     }
+    dexMembership.set(g.id, membership);
   }
-  const speciesList = [...speciesByName.values()];
+  const speciesList = [...speciesByName.keys()].sort();
   console.log(`· unique species to fetch: ${speciesList.length}`);
 
   /* 3. species + default form */
   const species = await mapPolite(
     speciesList,
-    (s) => fetchPokeApi<PokeSpecies>(`pokemon-species/${s.name}`),
+    (s) => fetchPokeApi<PokeSpecies>(`pokemon-species/${s}`),
     'species',
   );
-  const speciesByKey = new Map<string, { sp: PokeSpecies; dex: string; entryNumber: number }>();
-  species.forEach((sp) => {
-    const key = speciesByName.get(sp.name);
-    if (key) speciesByKey.set(sp.name, { sp, dex: key.dex, entryNumber: key.entryNumber });
-  });
+  const speciesByKey = new Map<string, PokeSpecies>();
+  species.forEach((sp) => speciesByKey.set(sp.name, sp));
   const forms = await mapPolite(
     species,
     (sp) => {
@@ -205,10 +200,8 @@ async function main(): Promise<void> {
 
   for (const game of games) {
     console.log(`\n● building ${game.id}`);
-    const gen = generations.get(game.generation);
-    if (!gen) throw new Error(`Generation data missing: ${game.generation}`);
     const typeChart = buildTypeChart(
-      gen.types.map((gt) => typeDetailByName.get(gt.name)).filter((t) => t !== undefined),
+      typeRaw.map((t) => ({ ...t, past_damage_relations: t.past_damage_relations ?? [] })),
       game.generation,
     );
 
@@ -229,18 +222,27 @@ async function main(): Promise<void> {
     const dataGaps: string[] = [];
     const pokemon: GamePokemon[] = [];
 
-    const gameSpecies = [...speciesByKey.values()]
-      .filter((x) => game.pokedexes.includes(x.dex))
-      .sort((a, b) => a.entryNumber - b.entryNumber);
+    const membership = dexMembership.get(game.id)!;
+    const gameSpecies = [...membership.entries()].sort((a, b) => a[1] - b[1]);
+    let missingSpecies = 0;
 
-    for (const { sp, entryNumber } of gameSpecies) {
+    for (const [slug, entryNumber] of gameSpecies) {
+      const sp = speciesByKey.get(slug);
+      if (!sp) {
+        dataGaps.push(`${slug}: species fetch missing`);
+        missingSpecies++;
+        continue;
+      }
       const form = formBySpeciesName.get(sp.name)!;
-      const types = gameAccurateTypes(sp, form, game.generation);
+      const types = gameAccurateTypes(form, game.generation);
       const invalidTypes = types.filter((t) => !knownTypes.has(t));
       if (invalidTypes.length) dataGaps.push(`${sp.name}: unknown types ${invalidTypes.join(',')}`);
 
-      const versionSprites =
-        form.sprites.versions?.[`generation-${roman(game.generation)}`]?.[game.spriteVersionGroup];
+      const { game: gameSprite, shinyGame: shinySprite } = pickGameSprites(
+        form,
+        game.generation,
+        game.spriteGroups,
+      );
       const enc: Encounter[] = flattenWild(
         encounterBySpeciesName.get(sp.name) ?? [],
         game.versions,
@@ -275,8 +277,8 @@ async function main(): Promise<void> {
         weight: form.weight,
         captureRate: sp.capture_rate ?? null,
         sprites: {
-          game: versionSprites?.default ?? null,
-          shinyGame: versionSprites?.shiny ?? null,
+          game: gameSprite,
+          shinyGame: shinySprite,
           official: form.sprites.other['official-artwork']?.front_default ?? null,
           showdown: form.sprites.other.showdown?.front_default ?? null,
           home: form.sprites.other.home?.front_default ?? null,
@@ -290,9 +292,6 @@ async function main(): Promise<void> {
         encounters: enc,
       });
     }
-
-    /* translation accuracy: PokeAPI ES names can be provisional; log counts only */
-    const noEsName = pokemon.filter((p) => p.name.es === capitalize(p.slug)).length;
 
     const dexMeta: PokedexMeta[] = game.pokedexes.map((slug) => {
       const d = dexes.get(slug)!;
@@ -324,12 +323,11 @@ async function main(): Promise<void> {
       `  ✔ ${game.id}.json — ${pokemon.length} species, ` +
         `${Object.keys(typeChart).length}x${Object.keys(typeChart).length} chart, ` +
         `${kb} kB` +
-        (dataGaps.length ? `, ${dataGaps.length} data gaps` : ''),
+        (dataGaps.length ? `, ${dataGaps.length} data gaps` : '') +
+        (missingSpecies ? `, ${missingSpecies} species unfetched` : ''),
     );
     if (args.verbose && dataGaps.length)
       for (const gap of dataGaps) console.log(`    · gap: ${gap}`);
-    if (noEsName)
-      console.log(`  ⚠ ${noEsName} species have no PokeAPI ES name (English fallback)}`);
 
     registry.games.push({
       id: game.id,
@@ -353,12 +351,6 @@ async function main(): Promise<void> {
 
 /* ------------------------------------------------------------------ */
 
-const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix'] as const;
-
-function roman(n: number): string {
-  return ROMAN[n - 1] ?? 'x';
-}
-
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
 function loadCurated(gameId: string): CuratedGameData | null {
@@ -371,14 +363,7 @@ function loadCurated(gameId: string): CuratedGameData | null {
   }
 }
 
-/* generation & pokedex bootstrapping kept in build (they are pure fetch members) */
-
-async function ensureGenerations(): Promise<Map<number, PokeGeneration>> {
-  const gens = await mapPolite([1, 2, 3, 4, 5, 6, 7, 8, 9], (n) =>
-    fetchPokeApi<PokeGeneration>(`generation/${n}`),
-  );
-  return new Map(gens.map((g) => [g.id, g]));
-}
+/* type & pokedex bootstrapping kept in build (they are pure fetch members) */
 
 async function ensureTypeDetails(): Promise<PokeType[]> {
   return mapPolite(
@@ -392,9 +377,6 @@ async function ensurePokedex(slugs: string[]): Promise<Map<string, PokePokedex>>
   const dexes = await mapPolite(slugs, (s) => fetchPokeApi<PokePokedex>(`pokedex/${s}`));
   return new Map(dexes.map((d) => [d.name, d]));
 }
-
-/* note: genNumberFromSlug re-exported for validate.ts */
-export { genNumberFromSlug, slugFromUrl };
 
 main().catch((err) => {
   console.error(err);

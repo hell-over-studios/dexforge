@@ -8,7 +8,6 @@ import {
   gameAccurateTypes,
   localName,
   type PokeForm,
-  type PokeSpecies,
   type EvoLink,
   type TypeDetailInput,
 } from '../scripts/lib/process';
@@ -19,6 +18,7 @@ function typeEntry(
   name: string,
   dr: { double: string[]; half: string[]; none: string[] },
   pastDamage: { gen: string; dr: { double: string[]; half: string[]; none: string[] } }[] = [],
+  introduced = 'generation-i',
 ) {
   const url = (name: string) => `https://pokeapi.co/api/v2/type/${name}/`;
   const toRel = (d: { double: string[]; half: string[]; none: string[] }) => ({
@@ -29,6 +29,7 @@ function typeEntry(
   return {
     name,
     url: url(name),
+    generation: { name: introduced, url: `https://pokeapi.co/api/v2/generation/${introduced}/` },
     damage_relations: toRel(dr),
     past_damage_relations: pastDamage.map((p) => ({
       generation: { name: p.gen, url: `https://pokeapi.co/api/v2/generation/${p.gen}/` },
@@ -41,6 +42,7 @@ const makeTypes = (types: ReturnType<typeof typeEntry>[]): TypeDetailInput[] => 
 
 const toDetail = (t: ReturnType<typeof typeEntry>): TypeDetailInput => ({
   name: t.name,
+  generation: t.generation,
   damage_relations: t.damage_relations,
   past_damage_relations: t.past_damage_relations,
 });
@@ -53,85 +55,101 @@ describe('buildTypeChart', () => {
       typeEntry('normal', { double: [], half: ['rock'], none: ['ghost'] }),
       typeEntry('ghost', { double: ['ghost'], half: [], none: ['normal'] }),
       typeEntry('rock', { double: ['fire', 'flying'], half: [], none: [] }),
-      typeEntry('steel', { double: [], half: [], none: [] }), // exists in modern API, must vanish for gen-1 games
-      typeEntry('fairy', { double: [], half: [], none: [] }),
+      typeEntry('steel', { double: [], half: [], none: [] }, [], 'generation-ii'), // introduced in gen 2
+      typeEntry('fairy', { double: [], half: [], none: [] }, [], 'generation-vi'), // introduced in gen 6
     ];
     const chart = buildTypeChart(makeTypes(types), 1);
-    expect(Object.keys(chart)).toEqual(['normal', 'ghost', 'rock', 'steel', 'fairy']); // attacker rows = generation's types
-    // NOTE: the real generation-i endpoint does NOT list steel/fairy rows at all;
-    // this synthetic fixture only checks the "last applicable past entry" logic.
+    expect(Object.keys(chart)).toEqual(['normal', 'ghost', 'rock']); // attacker rows = introduced <= gen 1
     expect(chart['normal']['ghost']).toBe(0);
     expect(chart['normal']['rock']).toBe(0.5);
     expect(chart['ghost']['normal']).toBe(0);
   });
 
+  it('applies the Gen-I correction patch table', () => {
+    const types = [
+      typeEntry('bug', { double: ['poison', 'psychic'], half: [], none: [] }),
+      typeEntry('poison', { double: [], half: ['bug'], none: [] }),
+      typeEntry('psychic', { double: [], half: [], none: [] }),
+      typeEntry('ghost', { double: [], half: ['psychic'], none: [] }),
+      typeEntry('fighting', { double: [], half: [], none: ['ghost'] }),
+      typeEntry('fire', { double: [], half: ['ice'], none: [] }),
+      typeEntry('ice', { double: [], half: [], none: [] }),
+    ];
+    const chart = buildTypeChart(makeTypes(types), 1);
+    expect(chart['ghost']['psychic']).toBe(0); // Gen I bug in PokeAPI data
+    expect(chart['ghost']['ghost']).toBe(0);
+    expect(chart['bug']['poison']).toBe(2);
+    expect(chart['poison']['bug']).toBe(2);
+    expect(chart['bug']['psychic']).toBe(2);
+    expect(chart['ice']['fire']).toBe(1);
+    expect(chart['fighting']['ghost']).toBe(0.5);
+  });
+
   it('Gen 2-5: Steel resists Ghost and Dark (pre-Fairy behaviour)', () => {
-    const types = typeEntry(
+    // 2026 schema: the entry's generation is the LAST generation with those relations
+    const steel = typeEntry(
       'steel',
-      // modern: Steel does NOT resist ghost/dark
       { double: [], half: ['fairy', 'ice'], none: [] },
-      [
-        { gen: 'generation-ii', dr: { double: [], half: ['ghost', 'dark'], none: [] } },
-        { gen: 'generation-v', dr: { double: [], half: ['dark', 'ghost'], none: [] } },
-      ],
+      [{ gen: 'generation-v', dr: { double: [], half: ['ghost', 'dark'], none: [] } }],
+      'generation-ii',
     );
-    const chart = buildTypeChart(makeTypes([types]), 2);
+    const chart = buildTypeChart(
+      makeTypes([steel, typeEntry('ghost', { double: [], half: [], none: [] })]),
+      2,
+    );
     expect(chart['steel']['ghost']).toBe(0.5);
-    expect(chart['steel']['dark']).toBe(0.5);
+    expect(chart['steel']['dark']).toBeUndefined(); // dark isn't in the defender set of this fixture
+    // a gen-3 game uses the same chunk
+    const ghost = typeEntry('ghost', { double: [], half: [], none: [] });
+    const chart3 = buildTypeChart(makeTypes([steel, ghost]), 3);
+    expect(chart3['steel']['ghost']).toBe(0.5);
   });
 
-  it('Gen 6+: uses the modern chart (no past entries needed)', () => {
-    const types = typeEntry('steel', { double: [], half: ['ghost', 'fairy'], none: [] });
-    const chart = buildTypeChart(makeTypes([types]), 6);
-    expect(chart['steel']['ghost']).toBe(0.5);
-  });
-
-  it('Chooses the newest past entry that is still older than the game generation', () => {
-    const types = typeEntry('steel', { double: [], half: [], none: [] }, [
-      { gen: 'generation-ii', dr: { double: [], half: ['ghost'], none: [] } },
-      { gen: 'generation-vi', dr: { double: [], half: ['ghost', 'dark'], none: [] } },
-    ]);
-    // gen-4 game: must NOT use the gen-6 past entry
-    const chart = buildTypeChart(makeTypes([types]), 4);
-    expect(chart['steel']['ghost']).toBe(0.5);
+  it('Gen 6+: falls back to damage_relations when no entry covers the generation', () => {
+    const steel = typeEntry(
+      'steel',
+      { double: [], half: ['fairy', 'ice'], none: [] },
+      [{ gen: 'generation-v', dr: { double: [], half: ['ghost', 'dark'], none: [] } }],
+      'generation-ii',
+    );
+    const fairy = typeEntry('fairy', { double: [], half: [], none: [] }, [], 'generation-vi');
+    const chart = buildTypeChart(makeTypes([steel, fairy]), 6);
+    expect(chart['steel']['fairy']).toBe(0.5);
+    expect(chart['steel']['dark']).toBeUndefined(); // dark introduced gen-ii, not in this fixture
   });
 });
 
 /* ------------ game-accurate typing via past_types ------------ */
 
 describe('gameAccurateTypes', () => {
-  const species = (pastTypes: { gen: string; types: string[] }[]): PokeSpecies =>
+  const formOf = (current: string[], pastTypes: { gen: string; types: string[] }[]): PokeForm =>
     ({
+      types: current.map((t, i) => ({ slot: i + 1, type: { name: t, url: `x/${t}/` } })),
       past_types: pastTypes.map((p) => ({
-        generation: { name: p.gen },
-        types: p.types.map((t) => ({ name: t, url: `x/${t}/` })),
+        generation: { name: p.gen, url: `x/${p.gen}/` },
+        types: p.types.map((t) => ({ slot: 1, type: { name: t, url: `x/${t}/` } })),
       })),
-    }) as unknown as PokeSpecies;
-  const form = {
-    types: [
-      { name: 'electric', url: 'x/electric/' },
-      { name: 'steel', url: 'x/steel/' },
-    ],
-  } as unknown as PokeForm;
+    }) as unknown as PokeForm;
 
   it('Gen 1 Magnemite is electric-only', () => {
-    const sp = species([{ gen: 'generation-i', types: ['electric'] }]);
-    expect(gameAccurateTypes(sp, form, 1)).toEqual(['electric']);
+    const form = formOf(['electric', 'steel'], [{ gen: 'generation-i', types: ['electric'] }]);
+    expect(gameAccurateTypes(form, 1)).toEqual(['electric']);
   });
 
-  it('Gen 2+ Magnemite includes Steel again', () => {
-    const sp = species([{ gen: 'generation-i', types: ['electric'] }]);
-    const formModern = {
-      types: [
-        { name: 'electric', url: 'x/' },
-        { name: 'steel', url: 'x/' },
-      ],
-    } as unknown as PokeForm;
-    expect(gameAccurateTypes(sp, { ...formModern } as PokeForm, 2)).toEqual(['electric', 'steel']);
+  it('Gen 2+ Magnemite includes Steel again (entry applies only up to its generation)', () => {
+    const form = formOf(['electric', 'steel'], [{ gen: 'generation-i', types: ['electric'] }]);
+    expect(gameAccurateTypes(form, 2)).toEqual(['electric', 'steel']);
+  });
+
+  it('Clefable is Normal through Gen V (entry gen-v), Fairy in Gen VI', () => {
+    const form = formOf(['fairy'], [{ gen: 'generation-v', types: ['normal'] }]);
+    expect(gameAccurateTypes(form, 1)).toEqual(['normal']);
+    expect(gameAccurateTypes(form, 5)).toEqual(['normal']);
+    expect(gameAccurateTypes(form, 6)).toEqual(['fairy']);
   });
 
   it('Falls back to current types when there is no past entry', () => {
-    expect(gameAccurateTypes(species([]), form, 3)).toEqual(['electric', 'steel']);
+    expect(gameAccurateTypes(formOf(['electric', 'steel'], []), 3)).toEqual(['electric', 'steel']);
   });
 });
 

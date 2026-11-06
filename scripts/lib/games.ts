@@ -7,6 +7,12 @@ import type { GameRegistryEntry } from '../../src/lib/data-schema';
 interface GameDef extends GameRegistryEntry {
   /** local curated file name (without extension) */
   curatedFile: string;
+  /**
+   * Sprite groups inside `sprites.versions.<generation-x>` of the form payload,
+   * first match wins. 2026 schema: gen-ii has no `gold-silver` group, only
+   * separate `gold` / `silver` / `crystal` keys.
+   */
+  spriteGroups: string[];
 }
 
 export const GAMES: GameDef[] = [
@@ -19,6 +25,7 @@ export const GAMES: GameDef[] = [
     versionGroup: 'red-blue',
     versions: ['red', 'blue'],
     spriteVersionGroup: 'red-blue',
+    spriteGroups: ['red-blue', 'yellow'],
     pokedexes: ['kanto'],
     pokemonCount: 0, // derived
     curatedFile: 'red-blue',
@@ -32,6 +39,7 @@ export const GAMES: GameDef[] = [
     versionGroup: 'gold-silver',
     versions: ['gold', 'silver'],
     spriteVersionGroup: 'gold-silver',
+    spriteGroups: ['gold-silver', 'gold', 'silver'],
     pokedexes: ['original-johto'],
     pokemonCount: 0, // derived
     curatedFile: 'gold-silver',
@@ -45,6 +53,7 @@ export const GAMES: GameDef[] = [
     versionGroup: 'emerald',
     versions: ['emerald'],
     spriteVersionGroup: 'emerald',
+    spriteGroups: ['emerald', 'ruby-sapphire'],
     pokedexes: ['hoenn'],
     pokemonCount: 0, // derived
     curatedFile: 'emerald',

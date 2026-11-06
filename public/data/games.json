@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-11-06T00:37:24.383Z",
+  "games": [
+    {
+      "id": "red-blue",
+      "label": {
+        "en": "Red / Blue",
+        "es": "Rojo / Azul"
+      },
+      "region": "kanto",
+      "generation": 1,
+      "generationSlug": "generation-i",
+      "versionGroup": "red-blue",
+      "versions": [
+        "red",
+        "blue"
+      ],
+      "spriteVersionGroup": "red-blue",
+      "pokedexes": [
+        "kanto"
+      ],
+      "pokemonCount": 151
+    },
+    {
+      "id": "gold-silver",
+      "label": {
+        "en": "Gold / Silver",
+        "es": "Oro / Plata"
+      },
+      "region": "johto",
+      "generation": 2,
+      "generationSlug": "generation-ii",
+      "versionGroup": "gold-silver",
+      "versions": [
+        "gold",
+        "silver"
+      ],
+      "spriteVersionGroup": "gold-silver",
+      "pokedexes": [
+        "original-johto"
+      ],
+      "pokemonCount": 251
+    },
+    {
+      "id": "emerald",
+      "label": {
+        "en": "Emerald",
+        "es": "Esmeralda"
+      },
+      "region": "hoenn",
+      "generation": 3,
+      "generationSlug": "generation-iii",
+      "versionGroup": "emerald",
+      "versions": [
+        "emerald"
+      ],
+      "spriteVersionGroup": "emerald",
+      "pokedexes": [
+        "hoenn"
+      ],
+      "pokemonCount": 202
+    }
+  ]
+}

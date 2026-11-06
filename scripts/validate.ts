@@ -37,7 +37,7 @@ check(types.types.length === 18, `types.json: expected 18 types, got ${types.typ
 /* per game */
 const EXPECTED_TYPE_COUNT: Record<string, number> = {
   'red-blue': 15, // no Dark, Steel, Fairy
-  'gold-silver': 16, // + Dark & Steel, no Fairy
+  'gold-silver': 17, // + Dark & Steel (incl. the "unknown" type excluded), no Fairy
   emerald: 17, // + still no Fairy
 };
 
