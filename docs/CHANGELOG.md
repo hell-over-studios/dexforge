@@ -21,15 +21,17 @@ data pipeline that turns PokeAPI into static, game-accurate JSON.
 - Project scaffold: Astro 5 + React islands, TypeScript strict, Tailwind CSS v4, pnpm.
 - Minimal landing page (Spanish default) as a placeholder for the future app.
 - Data pipeline `/scripts/build.ts`: cache-first, polite PokeAPI fetcher with rate limiting and retries; emits static JSON (`games.json`, `types.json`, per-game dataset) to `/public/data`.
-- Game-accurate type charts (Gen 1–3) derived from `past_damage_relations`, with unit tests locking historical rules (no Steel/Dark in Gen 1, no Fairy pre-Gen 6, Steel resists Ghost/Dark in Gen 2–5).
-- Game-accurate typing via `past_types` (e.g. Magnemite is Electric-only in Red/Blue).
-- Wild encounter processing per game with version filtering and localized area names.
-- Curated data system: `/data/curated` schema + merge at build time + validation.
+- Datasets for the three launch games: Red/Blue (151 species, 15×15 chart), Gold/Silver (251 species via `original-johto`, 17×17 chart), Emerald (202 species, 17×17 chart).
+- Game-accurate charts adapted to the **2026 PokeAPI schema**: `past_damage_relations` entries apply *up to and including* their generation; chart cells restricted to types introduced ≤ game generation; Gen-I correction patch table (Bug↔Poison 2×, Ghost/Psychic 0×, Gen-I Ghost↔Ghost 0×, Ice→Fire neutral, Fighting→Ghost ½).
+- Game-accurate typing via form-level `past_types` (2026 schema moved it off the species endpoint): Magnemite Electric-only in Gen 1, Electric/Steel from Gen 2; Clefable Normal through Gen 5, Fairy from Gen 6.
+- Wild encounter processing per game with version filtering and localized (ES/EN) area names.
+- Curated data system: `/data/curated` schema + merge at build time + validation; seeds for starters, classic gifts, statics and events per game.
+- Sprite extraction per version group with fallbacks (gen-ii has no `gold-silver` group — separate `gold`/`silver` keys); Gen-I groups ship no shiny sprites.
 - `/public/data/games.json` registry (Red/Blue, Gold/Silver, Emerald).
 - Documentation system under `/docs` (see AGENTS.md), AGENTS.md, README (ES/EN), CONTRIBUTING, CODE_OF_CONDUCT, MIT LICENSE, disclaimer.
 - CI workflow: lint + typecheck + test + build on every push/PR.
 - ESLint (flat) + Prettier configs, editorconfig.
-- GitHub community files: labels, milestones, issue templates (bug / feature / data correction), PR template, initial collaborator issues.
+- GitHub community files: labels, milestones, issue templates (bug / feature / data correction), PR template, collaborator issues (#2–#9).
 
 [Unreleased]: https://github.com/hell-over-studios/dexforge/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/hell-over-studios/dexforge/releases/tag/v0.1.0
