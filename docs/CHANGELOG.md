@@ -22,7 +22,7 @@ data pipeline that turns PokeAPI into static, game-accurate JSON.
 - Minimal landing page (Spanish default) as a placeholder for the future app.
 - Data pipeline `/scripts/build.ts`: cache-first, polite PokeAPI fetcher with rate limiting and retries; emits static JSON (`games.json`, `types.json`, per-game dataset) to `/public/data`.
 - Datasets for the three launch games: Red/Blue (151 species, 15×15 chart), Gold/Silver (251 species via `original-johto`, 17×17 chart), Emerald (202 species, 17×17 chart).
-- Game-accurate charts adapted to the **2026 PokeAPI schema**: `past_damage_relations` entries apply *up to and including* their generation; chart cells restricted to types introduced ≤ game generation; Gen-I correction patch table (Bug↔Poison 2×, Ghost/Psychic 0×, Gen-I Ghost↔Ghost 0×, Ice→Fire neutral, Fighting→Ghost ½).
+- Game-accurate charts adapted to the **2026 PokeAPI schema**: `past_damage_relations` entries apply _up to and including_ their generation; chart cells restricted to types introduced ≤ game generation; Gen-I correction patch table (Bug↔Poison 2×, Ghost/Psychic 0×, Gen-I Ghost↔Ghost 0×, Ice→Fire neutral, Fighting→Ghost ½).
 - Game-accurate typing via form-level `past_types` (2026 schema moved it off the species endpoint): Magnemite Electric-only in Gen 1, Electric/Steel from Gen 2; Clefable Normal through Gen 5, Fairy from Gen 6.
 - Wild encounter processing per game with version filtering and localized (ES/EN) area names.
 - Curated data system: `/data/curated` schema + merge at build time + validation; seeds for starters, classic gifts, statics and events per game.

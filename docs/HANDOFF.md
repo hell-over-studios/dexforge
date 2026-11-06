@@ -13,6 +13,7 @@ Last updated: 2026-11-05 (session 1: v0.1.0 build, merged)
 ## Review package for owner (v0.1.0) — actionable
 
 **What to review:**
+
 - Summary: scaffold + docs system + CI + data pipeline for Red/Blue (151), Gold/Silver (251), Emerald (202).
 - GitHub PR: https://github.com/hell-over-studios/dexforge/pull/1 (merge commit `6f373fb`).
 - Data: `public/data/` (games.json, types.json, red-blue 382 kB, gold-silver 801 kB, emerald 431 kB).
@@ -63,7 +64,7 @@ pnpm dev              # landing page
   - `past_types` lives on the FORM endpoint (`pokemon/{id}`), items are `{slot, type}`; an entry's
     generation is the last generation **up to and including** which those types applied → pick the
     entry with the smallest gen ≥ game gen, else current types.
-  - `generation/{n}.types` lists ONLY types *added* in that generation; `type/{id}.generation` marks
+  - `generation/{n}.types` lists ONLY types _added_ in that generation; `type/{id}.generation` marks
     introduction. There are 18 types (19/20 404; `unknown` exists and is excluded from charts).
   - `past_damage_relations` on `type/{id}`: same "up to and including" semantics; empty entries exist
     (e.g. electric has none) → fall back to `damage_relations` when no entry covers the game gen.

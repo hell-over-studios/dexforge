@@ -5,7 +5,7 @@
   "singleQuote": true,
   "trailingComma": "all",
   "arrowParens": "always",
-  "endOfLine": "lf",
+  "endOfLine": "auto",
   "plugins": ["prettier-plugin-astro", "prettier-plugin-tailwindcss"],
   "tailwindStylesheet": "./src/styles/global.css",
   "overrides": [
