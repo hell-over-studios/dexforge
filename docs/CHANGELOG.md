@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned for v0.2.0
 
-- Game selector, Pokémon picker with game sprites, team of 6, Playwright smoke tests, deploy config.
+- Team builder core, per ADR-009 broken into PR-sized tasks T2.1–T2.11 (docs/ROADMAP.md).
+- **T2.1** Pixel-art + cozy design foundation (ADR-008): tokens, fonts, landing refresh.
 
 ## [0.1.0] - 2026-11-05
 

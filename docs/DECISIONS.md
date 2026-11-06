@@ -57,3 +57,25 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
 - **Decision:** All work lands via `feat/<version>` branches → PR → CI green → self-merge for PATCH-level work; v0.1.0 (first MINOR) stops before tagging for owner review. Docs (`PROGRESS`, `HANDOFF`, `CHANGELOG`) updated before every session end.
 - **Alternatives:** Direct-to-main pushes (rejected: loses CI gate and review trail).
 - **Consequences:** `main` should always be releasable-quality; tags only after owner approval for x.Y.0 / X.0.0.
+
+## ADR-008 — Visual direction: pixel art + cozy
+
+- **Status:** Accepted (owner directive, 2026-11-06)
+- **Context:** The prompt only said "avoid generic AI-template looks" and listed required UI behaviors (game-sprite default, toggles, smooth transitions, mobile-first, reduced motion). The owner explicitly chose a **pixel art + cozy** style. It must also harmonize with the sprites themselves, which are low-res pixel art by nature.
+- **Decision:**
+  - **Typography:** display font = *Pixelify Sans* (a genuine pixel font; selected because it covers Latin-Extended, so Spanish á é í ó ú ñ work); body = *Nunito* (warm rounded humanist sans for readability at small sizes). System fallbacks maintained.
+  - **Palette:** warm "campfire dusk" theme — warm dark bark background with cream/parchment text (cozy, non-harsh), ember/amber accents. Dark by default `(cozy ≠ high-contrast sterile dark)`. Type badges keep the 18 canonical type colors as slightly desaturated variants with AA-checked text.
+  - **Shapes:** no border-radius glow aesthetics: square/2px-rounded corners, 2px chunky borders and hard offset "pixel" shadows (`4px 4px 0`), no soft blur/glass. Subtle dither/checker textures allowed at very low alpha.
+  - **Sprites/imagery:** every Pokémon render uses `image-rendering: pixelated` at integer scale factors to stay crisp; official artwork and HOME renders are shown as-is (they're smooth art). Avatars/decoration may use procedural dithered patterns.
+  - **Motion:** small, springy, reduced-motion aware (global 0.01ms clamp already in place); pixel "pop" transitions (blink/step-fade) preferred over slide/parallax.
+  - **Imagery rules unchanged:** no ripped 3D models, no official assets beyond the sprites PokeAPI serves.
+- **Alternatives:** neon instrumented dark (v0.1 placeholder), light parchment-only theme, glassmorphism.
+- **Consequences:** All UI components must adopt the tokens in `src/styles/global.css`; any future component PR reviews for pixel/cozy consistency (chunky border? font used? contrast? reduced motion?).
+
+## ADR-009 — Task granularity: PR-sized tickets and small pull requests
+
+- **Status:** Accepted (owner directive, 2026-11-06)
+- **Context:** The owner asked for smaller PRs and finer-grained task breakdown to keep reviews tractable and reduce risk for AI-driven merges.
+- **Decision:** ROADMAP milestones are expanded into **PR-sized task units** (each = one branch + PR): ≤ ~400 changed code lines excluding generated data, or one cohesive screen/feature slice. GitHub issues track these units (labels + milestone + acceptance criteria) rather than whole milestones. If work grows past the budget, split it before starting.
+- **Alternatives:** one big PR per milestone (v0.1.0 pattern); trunk-based development.
+- **Consequences:** More PRs (and a bit more CI overhead) but each is individually revertable and reviewable; recent history is easier to audit. The v0.1.0 mega-PR (#1) remains a one-time bootstrap exception.

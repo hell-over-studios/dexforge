@@ -6,7 +6,7 @@ Short guide for AI agents and humans working in this repo.
 
 1. **`docs/HANDOFF.md`** — what the last session did and where it stopped.
 2. **`docs/PROGRESS.md`** + **`docs/ROADMAP.md`** — what's next and why.
-3. **`docs/PROMPT.md`** — the product contract (never edit it).
+3. **`docs/PROMPT.md`** — the product contract (never edit it; changes go in `docs/PROMPT_CHANGES.md`).
 4. **`docs/AI_WORKFLOW.md`** — full agent rules: session lifecycle, autonomy boundaries, hard rules, lessons learned.
 5. **`docs/DECISIONS.md`** — decided things (don't relitigate without an ADR).
 
@@ -32,7 +32,8 @@ pnpm pre-commit          # lint + format:check + typecheck + test (run before PR
 - TypeScript strict; no `any`; no `eslint-disable` without a reason comment.
 - Branches: `feat/…`, `fix/…` → PR → green CI → merge. Never push to `main` directly.
 - **The deployed site must never call PokeAPI.** Data arrives via `/scripts` → static JSON in `/public/data`.Curated data lives in `/data/curated` (schema: `data/SCHEMA.md`).
-- UI: Spanish default + English, mobile-first, respect `prefers-reduced-motion`, no ripped 3D models, no paid services.
+- UI: Spanish default + English, mobile-first, respect `prefers-reduced-motion`, **pixel art + cozy visual direction (ADR-008)**, no ripped 3D models, no paid services.
+- **PR scope (ADR-009):** one PR = one small cohesive change (≤ ~400 code lines or one screen slice).
 - Update `docs/PROGRESS.md`, `docs/HANDOFF.md` and `docs/CHANGELOG.md` before ending any session.
 
 ## Autonomy (see docs/PROMPT.md §6)
