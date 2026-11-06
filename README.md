@@ -45,7 +45,8 @@ pnpm test       # unit tests
 pnpm pre-commit # lint + format + typecheck + tests
 ```
 
-Docs index: [AGENTS.md](AGENTS.md) · [docs/](docs/) · game accuracy rules in
+Docs index: [AGENTS.md](AGENTS.md) · [docs/](docs/) · task board in
+[docs/BOARD.md](docs/BOARD.md) · game accuracy rules in
 [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) · decisions in
 [docs/DECISIONS.md](docs/DECISIONS.md).
 
