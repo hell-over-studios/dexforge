@@ -10,11 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - GitHub Projects v2 Kanban board for issue triage and assignment (ADR-010), documented in `docs/BOARD.md`: six Status columns, Priority/Area/Size fields, and an initial classification of issues #2–#22.
+- Pixel art + cozy design foundation (ADR-008): token set in `src/styles/global.css` (warm bark/parchment/ember palette, Pixelify Sans display + Nunito body fonts, hard offset shadow utilities, `pixelated` sprite utility, subtle `dither` texture, chunky focus ring), font loading in the base layout, an 8×8 pixel pokéball favicon, and a fully tokenized landing page.
+
+### Changed
+
+- Owner directive log: `docs/PROMPT_CHANGES.md` (visual direction + smaller PRs → ADR-008/ADR-009); ROADMAP v0.2.0 expanded into PR-sized tasks with GitHub issues #12–#22.
 
 ### Planned for v0.2.0
 
-- Team builder core, per ADR-009 broken into PR-sized tasks T2.1–T2.11 (docs/ROADMAP.md).
-- **T2.1** Pixel-art + cozy design foundation (ADR-008): tokens, fonts, landing refresh.
+- Team builder core remaining: T2.3–T2.11 (game selector, picker, detail drawer, sprite viewer, team of 6, URL state, Playwright, deploy).
 
 ## [0.1.0] - 2026-11-05
 

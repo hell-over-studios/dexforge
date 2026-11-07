@@ -1,16 +1,23 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-05 (session 1: v0.1.0 build, merged)
+Last updated: 2026-11-06 (session 2: pixel-cozy foundation + task breakdown)
 
 ## Exactly where we stopped
 
-- Milestone v0.1.0 is **complete and merged to `main`** via PR #1 (`feat/v0.1.0-scaffold`, CI green).
-- **v0.1.0 is NOT tagged / released.** Per docs/PROMPT.md §6, MINOR releases stop at the release
-  boundary: owner (Martin) must review the package below and give explicit approval.
-- Collaborator issues #2–#9 opened (curated data per game, leader-data model, translations,
-  a11y audit, design pass, docs).
+- v0.1.0 is merged to `main` (PR #1) and **still NOT tagged** — awaiting explicit owner approval
+  (review package below).
+- Owner directive landed (2026-11-06): **pixel art + cozy visual direction (ADR-008)** and
+  **smaller PRs / finer task breakdown (ADR-009)** — recorded in `docs/PROMPT_CHANGES.md` (PR #10).
+- v0.2.0 expanded into PR-sized tasks **T2.1–T2.11 = GitHub issues #12–#22** (v0.2.0 milestone).
+- **PR #24 merged (session end, CI green pre/post-merge):** T2.1 + T2.2 — ADR-008 design tokens
+  (bark/parchment/ember palette, Pixelify Sans + Nunito, 2px borders, hard offset shadows,
+  `pixelated` + `dither` utilities), font links in `Base.astro`, fully tokenized landing,
+  pixel favicon. Issues #12/#13 → done on the board.
+- Board workflow note: GitHub CLI needed a one-time `project` scope (`gh auth refresh -s project -h github.com`)
+  before `gh project …` commands worked; agent tokens must not lose this scope on rotation.
+- `main` is green (CI pass on merge commit `3c2aede`).
 
-## Review package for owner (v0.1.0) — actionable
+## Review package for owner (v0.1.0) — still actionable
 
 **What to review:**
 
@@ -18,9 +25,12 @@ Last updated: 2026-11-05 (session 1: v0.1.0 build, merged)
 - GitHub PR: https://github.com/hell-over-studios/dexforge/pull/1 (merge commit `6f373fb`).
 - Data: `public/data/` (games.json, types.json, red-blue 382 kB, gold-silver 801 kB, emerald 431 kB).
 - Quality: 22 vitest tests green; `pnpm data:check` green; `pnpm pre-commit` green; CI workflow green.
-- Screenshots: pending — no app UI yet beyond the ES-default landing page (`pnpm dev`).
+- Screenshots: pending — landing page now pixel-cozy themed (`pnpm dev`).
 
-**Proposed changelog** (ready): docs/CHANGELOG.md §[0.1.0].
+**Owner decisions requested (multiple):**
+
+1. Approve tagging `v0.1.0` (bash block below).
+2. Deploy platform for T2.11: **Cloudflare Pages vs Vercel** (docs/PROMPT.md says account is prepared).
 
 **After approval, the owner (or next agent with approval relayed) does:**
 
@@ -31,16 +41,15 @@ git push origin v0.1.0
 gh release create v0.1.0 --title "v0.1.0" --notes-file <(sed -n '/## \[0.1.0\]/,$p' docs/CHANGELOG.md)
 ```
 
-## What to do next (first work session after release)
+## What to do next (first work of next session)
 
-Start **v0.2.0** (docs/ROADMAP.md): game selector + Pokémon picker + team of 6.
+Continue v0.2.0 in small PRs (issues #12–#22, board Ready/Backlog):
 
-1. Read docs/AI_WORKFLOW.md and docs/ROADMAP.md.
-2. Use the `frontend-design` / `taste-skill` / `apple-design` / `impeccable` skills for the real UI;
-   `webapp-testing` skill for Playwright setup + smoke tests.
-3. Build: game selector (3 games), picker with sprites, 6-slot team state (Zustand), URL state stub.
-4. Deploy config (Cloudflare Pages or Vercel — ask owner which; docs/PROMPT.md says account is prepared).
-5. Keep issues #7 (design) and #9 (docs/schema findings for next games) in sync.
+1. **T2.3 game selector (#14)** — next PR. Static Astro section from `games.json`, pixel-cozy cards.
+2. T2.4 picker data layer (#15) → T2.5 picker UI (#16): keep `src/lib/dex.ts` separate from the React island.
+3. T2.6/T2.7 detail drawer + sprite viewer; T2.8 Zustand team of 6; T2.9 URL stub; T2.10 Playwright; T2.11 deploy (blocked on owner platform choice).
+4. Before each PR: `pnpm pre-commit` locally; merge only after `gh pr checks --watch` is green; after merge, watch the `main` run once.
+5. Keep the board in sync: branch → In progress; PR → In review (+link PR); merge → Done.
 
 ## Commands to resume
 
@@ -50,7 +59,7 @@ pnpm data             # regenerate data (cache in scripts/.cache persists locall
 pnpm data:check       # validate
 pnpm pre-commit       # lint+format+typecheck+test
 pnpm build && pnpm preview
-pnpm dev              # landing page
+pnpm dev              # pixel-cozy landing page
 ```
 
 ## State facts (so a fresh agent doesn't re-discover)
@@ -76,3 +85,8 @@ pnpm dev              # landing page
   - Old cached species payloads (pre-schema) LACKED `past_types`; forms fetched afterwards have it —
     if regenerating with a partially stale cache, purge `scripts/.cache/pokeapi/{pokemon,pokemon-species}`.
 - The landing page reads `public/data/games.json` at build time via fs in `src/pages/index.astro`.
+- Design tokens live in `src/styles/global.css` (`@theme`): raw oklch values, one ramp per surface
+  (bark = backgrounds, parchment = text, ember = accents, moss = secondary). New components must
+  use tokens — never hard-code colors.
+- `gh project ...` commands require the `project` OAuth scope: `gh auth refresh -s project -h github.com`
+  (one-time device flow). Board sync scripts: see docs/BOARD.md §Maintenance.
