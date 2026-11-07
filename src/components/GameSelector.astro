@@ -1,0 +1,44 @@
+---
+import type { GameRegistryEntry } from '../lib/data-schema';
+
+interface Props {
+  games: GameRegistryEntry[];
+}
+
+const { games } = Astro.props;
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+---
+
+<ul class="grid gap-5 sm:grid-cols-3">
+  {
+    games.map((game) => (
+      <li>
+        <a
+          href={`/juego/${game.id}`}
+          class="group flex h-full flex-col rounded-sm border-2 border-bark-700 bg-bark-900 dither p-5 shadow-pixel transition-all ease-in-out hover:-translate-y-0.5 hover:border-ember-600 hover:shadow-pixel-ember focus-visible:-translate-y-0.5 focus-visible:border-ember-500"
+        >
+          <div class="font-display text-xs tracking-widest text-ember-400 uppercase">
+            Gen {game.generation} · {capitalize(game.region)}
+          </div>
+          <div
+            class="mt-2 font-display text-lg text-parchment-100"
+            data-i18n-pair={JSON.stringify(game.label)}
+          >
+            {game.label.es}
+          </div>
+          <div class="mt-1 text-sm text-parchment-400">{game.pokemonCount} Pokémon</div>
+          <span class="mt-4 inline-flex items-center gap-2 font-display text-sm text-ember-300">
+            <span data-i18n="selector.cta">Elegir este juego</span>
+            <span
+              aria-hidden="true"
+              class="transition-transform ease-in-out group-hover:translate-x-0.5"
+            >
+              ▸
+            </span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

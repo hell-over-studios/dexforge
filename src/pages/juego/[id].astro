@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import fs from 'node:fs';
+import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
+
+/* Build-time static pages, one per game in the registry (no client JS). */
+export function getStaticPaths() {
+  const registry = JSON.parse(
+    fs.readFileSync(new URL('../../../public/data/games.json', import.meta.url), 'utf-8'),
+  ) as GamesRegistry;
+  return registry.games.map((game) => ({ params: { id: game.id }, props: { game } }));
+}
+
+interface Props {
+  game: GameRegistryEntry;
+}
+
+const { game } = Astro.props;
+const title = `Dexforge — ${game.label.es}`;
+const description =
+  'Team builder de Pokémon por juego: estadísticas, tabla de tipos exacta por generación, cobertura, localizaciones de captura y enfrentamientos contra líderes de gimnasio. Proyecto de fans, de código abierto.';
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+---
+
+<Base title={title} description={description}>
+  <div class="mx-auto max-w-3xl px-5 pt-10 pb-20 sm:px-8">
+    <a href="/" class="font-display text-sm text-ember-300 underline-offset-4 hover:underline">
+      <span aria-hidden="true">←</span>
+      <span data-i18n="game.back">Volver al inicio</span>
+    </a>
+
+    <header class="mt-10 animate-pop-in">
+      <p class="font-display text-sm tracking-widest text-ember-400 uppercase">
+        Gen {game.generation} · {capitalize(game.region)}
+      </p>
+      <h1
+        class="mt-2 font-display text-4xl font-bold text-parchment-100 sm:text-5xl"
+        data-i18n-pair={JSON.stringify(game.label)}
+      >
+        {game.label.es}
+      </h1>
+      <p class="mt-3 text-parchment-400">
+        {game.pokemonCount} Pokémon · {capitalize(game.region)}
+      </p>
+    </header>
+
+    <!-- Placeholder until the picker island lands (T2.5). Pure static card. -->
+    <section
+      aria-labelledby="soon-h"
+      class="mt-10 rounded-sm border-2 border-bark-700 bg-bark-900 dither p-6 shadow-pixel"
+    >
+      <h2 id="soon-h" class="font-display text-lg text-parchment-100" data-i18n="game.soon-title">
+        El creador de equipos llega pronto
+      </h2>
+      <p class="mt-2 text-sm leading-relaxed text-parchment-400" data-i18n="game.soon">
+        La selección de Pokémon para este juego llega en las próximas versiones — los datos ya están
+        listos.
+      </p>
+    </section>
+  </div>
+</Base>
