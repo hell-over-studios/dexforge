@@ -9,29 +9,23 @@ const registry = JSON.parse(
 ---
 
 <Base>
-  <div
-    class="pointer-events-none fixed inset-x-0 top-0 h-40 bg-gradient-to-b from-dex-red/15 to-transparent"
-    aria-hidden="true"
-  >
-  </div>
-
   <div class="relative mx-auto max-w-5xl px-5 sm:px-8 lg:px-12">
     <!-- Header / hero -->
     <header class="animate-fade-in pt-10 pb-4">
       <div class="flex items-center justify-between gap-4">
-        <a href="/" class="flex items-center gap-3 font-semibold tracking-tight">
+        <a href="/" class="group flex items-center gap-3 focus-visible:outline-offset-4">
           <span
-            class="grid size-9 place-items-center rounded-xl bg-dex-red text-lg leading-none text-white shadow-glow"
+            class="grid size-9 place-items-center rounded-sm border-2 border-bark-950 bg-ember-500 font-display text-lg leading-none text-bark-950 shadow-pixel-sm transition-colors group-hover:bg-ember-400"
             aria-hidden="true"
           >
             ◍
           </span>
-          <span class="text-xl text-ink-200">Dexforge</span>
+          <span class="font-display text-xl text-parchment-200">Dexforge</span>
         </a>
         <button
           id="lang-toggle"
           type="button"
-          class="h-9 cursor-pointer rounded-full border border-transparent px-3 text-sm text-ink-400 transition-colors hover:border-ink-700 hover:text-ink-200"
+          class="block h-9 cursor-pointer rounded-sm border-2 border-bark-950 bg-bark-800 px-3 font-display text-sm text-parchment-200 shadow-pixel-sm transition-colors hover:border-ember-600 hover:text-parchment-100"
         >
           English
         </button>
@@ -39,22 +33,22 @@ const registry = JSON.parse(
     </header>
 
     <section class="animate-fade-rise pt-16 pb-14 sm:pt-24 sm:pb-20">
-      <p class="mb-4 text-sm font-semibold tracking-widest text-dex-red uppercase">
+      <p class="mb-4 font-display text-sm tracking-widest text-ember-400 uppercase">
         v0.1 · datos listos
       </p>
       <h1
-        class="max-w-3xl text-4xl leading-[1.08] font-bold tracking-tight text-balance text-ink-200 sm:text-6xl"
+        class="max-w-3xl text-4xl leading-[1.08] font-bold tracking-tight text-balance text-parchment-100 sm:text-6xl"
       >
         Tu equipo, del juego que tú elijas.
       </h1>
       <p
-        class="mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-ink-400"
+        class="mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-parchment-400"
         data-i18n="app.tagline"
       >
         Construye tu equipo Pokémon para cualquier juego principal: debilidades, cobertura, capturas
         y rivales. De fans, de todos.
       </p>
-      <p class="m-6 text-sm text-ink-700" data-i18n="app.soon">
+      <p class="m-6 text-sm text-parchment-600" data-i18n="app.soon">
         El selector de juego llega en v0.2 — los datos ya se generan.
       </p>
     </section>
@@ -63,20 +57,20 @@ const registry = JSON.parse(
     <section class="pb-20" aria-labelledby="games-h">
       <h2
         id="games-h"
-        class="mb-6 text-sm font-semibold tracking-widest text-ink-400 uppercase"
+        class="mb-6 font-display text-sm tracking-widest text-parchment-400 uppercase"
         data-i18n="app.supported"
       >
         Juegos disponibles (v0.1)
       </h2>
-      <ul class="grid gap-4 sm:grid-cols-3">
+      <ul class="grid gap-5 sm:grid-cols-3">
         {
           registry.games.map((game) => (
-            <li class="group animate-fade-rise rounded-2xl border border-ink-800 bg-ink-900/60 p-5 transition-colors hover:border-ink-700">
-              <div class="text-xs font-semibold tracking-widest text-dex-red uppercase">
+            <li class="rounded-sm border-2 border-bark-700 bg-bark-900 dither p-5 shadow-pixel transition-all ease-in-out hover:-translate-y-0.5 hover:border-ember-600 hover:shadow-pixel-ember">
+              <div class="font-display text-xs tracking-widest text-ember-400 uppercase">
                 Gen {game.generation} · {game.generationSlug.replace('generation-', '')}
               </div>
-              <div class="mt-2 text-lg font-semibold text-ink-200">{game.label.es}</div>
-              <div class="mt-1 text-sm text-ink-400">
+              <div class="mt-2 font-display text-lg text-parchment-100">{game.label.es}</div>
+              <div class="mt-1 text-sm text-parchment-400">
                 {game.pokemonCount} Pokémon · {game.region}
               </div>
             </li>
@@ -89,12 +83,12 @@ const registry = JSON.parse(
     <section class="pb-24" aria-labelledby="features-h">
       <h2
         id="features-h"
-        class="mb-6 text-sm font-semibold tracking-widest text-ink-400 uppercase"
+        class="mb-6 font-display text-sm tracking-widest text-parchment-400 uppercase"
         data-i18n="app.features"
       >
         Qué traerá la app
       </h2>
-      <div class="grid gap-4 sm:grid-cols-2">
+      <div class="grid gap-5 sm:grid-cols-2">
         {
           [
             [
@@ -114,11 +108,14 @@ const registry = JSON.parse(
               'Comparte tu equipo por URL, expórtalo al formato Showdown y guárdalo sin cuentas.',
             ],
           ].map(([key, glyph, text]) => (
-            <div class="rounded-2xl border border-ink-800 bg-ink-900/60 p-6 transition-colors hover:border-ink-700">
-              <div class="mb-3 text-2xl text-dex-red" aria-hidden="true">
+            <div class="rounded-sm border-2 border-bark-700 bg-bark-900 p-6 shadow-pixel transition-all ease-in-out hover:-translate-y-0.5 hover:border-ember-600 hover:shadow-pixel-ember">
+              <div
+                class="mb-3 grid size-8 w-8 place-items-center rounded-sm border-2 border-bark-950 bg-ember-500 text-base text-bark-950"
+                aria-hidden="true"
+              >
                 {glyph}
               </div>
-              <p class="text-sm leading-relaxed text-ink-400" data-i18n={key}>
+              <p class="text-sm leading-relaxed text-parchment-400" data-i18n={key}>
                 {text}
               </p>
             </div>
@@ -128,20 +125,22 @@ const registry = JSON.parse(
     </section>
 
     <!-- Footer -->
-    <footer class="animate-fade-in border-t border-ink-800 py-10">
-      <p class="max-w-2xl text-xs leading-relaxed text-ink-700" data-i18n="footer.disclaimer">
+    <footer class="animate-fade-in border-t-2 border-bark-800 py-10">
+      <p class="max-w-2xl text-xs leading-relaxed text-parchment-600" data-i18n="footer.disclaimer">
         Proyecto de fans, sin afiliación con Nintendo, Game Freak ni The Pokémon Company. Pokémon y
         todos los nombres/efigies relacionados son propiedad de sus dueños.
       </p>
-      <p class="mt-3 text-xs text-ink-700" data-i18n="footer.license">Código bajo licencia MIT.</p>
-      <div class="mt-3 text-xs text-ink-700">
+      <p class="mt-3 text-xs text-parchment-600" data-i18n="footer.license">
+        Código bajo licencia MIT.
+      </p>
+      <div class="mt-3 text-xs text-parchment-600">
         <a
-          class="underline underline-offset-2 hover:text-ink-400"
+          class="underline underline-offset-2 hover:text-ember-300"
           href="https://github.com/hell-over-studios/dexforge">GitHub</a
         >
         <span aria-hidden="true"> · </span>
         <a
-          class="underline underline-offset-2 hover:text-ink-400"
+          class="underline underline-offset-2 hover:text-ember-300"
           href="https://raw.githubusercontent.com/PokeAPI/sprites">Sprites: PokeAPI</a
         >
       </div>
