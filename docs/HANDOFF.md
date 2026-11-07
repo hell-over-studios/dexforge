@@ -1,6 +1,6 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-06 (session 2: pixel-cozy foundation + task breakdown)
+Last updated: 2026-11-06 (session 3: T2.1–T2.5 — pixel-cozy foundation through picker island)
 
 ## Exactly where we stopped
 
@@ -9,13 +9,13 @@ Last updated: 2026-11-06 (session 2: pixel-cozy foundation + task breakdown)
 - Owner directive landed (2026-11-06): **pixel art + cozy visual direction (ADR-008)** and
   **smaller PRs / finer task breakdown (ADR-009)** — recorded in `docs/PROMPT_CHANGES.md` (PR #10).
 - v0.2.0 expanded into PR-sized tasks **T2.1–T2.11 = GitHub issues #12–#22** (v0.2.0 milestone).
-- **PR #24 merged (session end, CI green pre/post-merge):** T2.1 + T2.2 — ADR-008 design tokens
-  (bark/parchment/ember palette, Pixelify Sans + Nunito, 2px borders, hard offset shadows,
-  `pixelated` + `dither` utilities), font links in `Base.astro`, fully tokenized landing,
-  pixel favicon. Issues #12/#13 → done on the board.
-- Board workflow note: GitHub CLI needed a one-time `project` scope (`gh auth refresh -s project -h github.com`)
-  before `gh project …` commands worked; agent tokens must not lose this scope on rotation.
-- `main` is green (CI pass on merge commit `3c2aede`).
+- **5 of 11 v0.2.0 tasks landed today** (PRs #24, #27, #28, #29; issues #12–#16 closed and Done on the board):
+  - T2.1/T2.2 pixel-cozy tokens + tokenized landing (bark/parchment/ember, Pixelify Sans + Nunito, `pixelated`/`dither` utils)
+  - T2.3 game selector (static cards) + `/juego/<id>` pages; ES/EN labels via `data-i18n-pair` (small inline script extension in `Base.astro`)
+  - T2.4 `src/lib/dex.ts` — dex index + accent-insensitive ES/EN/slug/id search; 35 tests total
+  - T2.5 `<Picker />` React island on `/juego/[id]` — ARIA combobox/listbox, ArrowUp/Down/Enter/Escape with 60-row pages auto-extending, `pixelated` sprites, ES/EN copy inside the island, minimal selection summary panel
+- Kanban board is fully agent-maintainable: `gh project` works after the one-time `project` scope device flow (granted today).
+- `main` is green (CI pass on merge commit `49dc2e8`).
 
 ## Review package for owner (v0.1.0) — still actionable
 
@@ -43,13 +43,19 @@ gh release create v0.1.0 --title "v0.1.0" --notes-file <(sed -n '/## \[0.1.0\]/,
 
 ## What to do next (first work of next session)
 
-Continue v0.2.0 in small PRs (issues #12–#22, board Ready/Backlog):
+Continue v0.2.0 in small PRs (issues #17–#22):
 
-1. **T2.3 game selector (#14)** — next PR. Static Astro section from `games.json`, pixel-cozy cards.
-2. T2.4 picker data layer (#15) → T2.5 picker UI (#16): keep `src/lib/dex.ts` separate from the React island.
-3. T2.6/T2.7 detail drawer + sprite viewer; T2.8 Zustand team of 6; T2.9 URL stub; T2.10 Playwright; T2.11 deploy (blocked on owner platform choice).
+1. **T2.6 detail drawer (#17)** — replace the Picker's minimal selection summary with the full drawer (stats bars, types, abilities, dex info); needs `/data/types.json` for type-badge colors.
+2. T2.7 sprite viewer (#18) — game/shiny/showdown/official/HOME toggle with the documented fallback chain.
+3. T2.8 team of 6 (#19, Zustand); T2.9 URL stub (#20); T2.10 Playwright in CI (#21); T2.11 deploy (#22, blocked on owner platform choice).
 4. Before each PR: `pnpm pre-commit` locally; merge only after `gh pr checks --watch` is green; after merge, watch the `main` run once.
 5. Keep the board in sync: branch → In progress; PR → In review (+link PR); merge → Done.
+
+### Environment notes for browser verification
+
+- `python` + Playwright (pip + chromium) work on this machine; use the `webapp-testing` skill's `with_server.py`.
+- Verify React islands against **`pnpm preview`** — `pnpm dev` showed a one-off `before-hydration.js`
+  dynamic-import race in headless Chromium (twice reproducible there, zero issues on preview).
 
 ## Commands to resume
 

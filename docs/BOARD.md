@@ -69,9 +69,9 @@ when the item is linked to the repository issue.
 | 9   | DATA_SOURCES.md — 2026 schema findings | Ready   | P2       | Docs     | S    |
 | 12  | T2.1 design tokens & pixel-cozy base   | Done    | P1       | Design   | M    |
 | 13  | T2.2 app shell & layout                | Done    | P1       | Frontend | M    |
-| 14  | T2.3 game selector screen              | Backlog | P1       | Frontend | S    |
-| 15  | T2.4 picker data layer                 | Backlog | P1       | Data     | M    |
-| 16  | T2.5 picker UI                         | Backlog | P1       | Frontend | M    |
+| 14  | T2.3 game selector screen              | Done    | P1       | Frontend | S    |
+| 15  | T2.4 picker data layer                 | Done    | P1       | Data     | M    |
+| 16  | T2.5 picker UI                         | Done    | P1       | Frontend | M    |
 | 17  | T2.6 Pokémon detail drawer             | Backlog | P2       | Frontend | S    |
 | 18  | T2.7 sprite viewer                     | Backlog | P2       | Frontend | M    |
 | 19  | T2.8 team of 6                         | Backlog | P1       | Frontend | M    |

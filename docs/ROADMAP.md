@@ -30,7 +30,7 @@ for what must exist in each version; GitHub issues reference it.
 - [ ] **T2.2** App shell & layout — Astro layout with pixel header/footer, game-scoped nav slots, skip-link, tokenized landing page refresh
 - [x] **T2.3** Game selector — ES-default, three game cards from `games.json` (count, region, version-group), desktop/mobile layouts
 - [x] **T2.4** Pokémon picker (data layer) — client-side index over `<game>.json` filtered to species (slug, name ES/EN, dexNumber, types, sprite url) + search box behavior spec
-- [ ] **T2.5** Pokémon picker UI — React island: searchable list with pixel avatars, keyboard nav, empty/loading states
+- [x] **T2.5** Pokémon picker UI — React island: searchable list with pixel avatars, keyboard nav, empty/loading states
 - [ ] **T2.6** Pokémon detail drawer — stats bar, types, abilities, dex info; pixel-cozy panel
 - [ ] **T2.7** Sprite viewer — toggles game sprite / shiny / animated (showdown) / official / HOME with documented fallback chain; `pixelated` only for game sprite & showdown
 - [ ] **T2.8** Team of 6 — Zustand store, add/remove/replace, pixel slot frames
