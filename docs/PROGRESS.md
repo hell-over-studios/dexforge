@@ -9,15 +9,15 @@ MINOR releases stop at the release boundary per docs/PROMPT.md §6: owner (Marti
 must approve the review package in docs/HANDOFF.md before `v0.1.0` is tagged and
 published.
 
-| Milestone                        | %    | Notes                                                                                                                           |
-| -------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------- |
-| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                            |
-| v0.2.0 team builder core         | ~45% | T2.1–T2.5 done (PRs #24, #27, #28, #29): tokens, landing, game selector, dex data layer, picker island; next T2.6 detail drawer |
-| v0.3.0 team analysis             | 0%   |                                                                                                                                 |
-| v0.4.0 moves/offense             | 0%   |                                                                                                                                 |
-| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                              |
-| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                      |
-| v1.0.0 share/polish              | 0%   |                                                                                                                                 |
+| Milestone                        | %    | Notes                                                                                                                                   |
+| -------------------------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                                    |
+| v0.2.0 team builder core         | ~55% | T2.1–T2.5 + T2.11 done (PRs #24, #27–#29, #31): **site LIVE at https://hell-over-studios.github.io/dexforge/**; next T2.6 detail drawer |
+| v0.3.0 team analysis             | 0%   |                                                                                                                                         |
+| v0.4.0 moves/offense             | 0%   |                                                                                                                                         |
+| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                      |
+| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                              |
+| v1.0.0 share/polish              | 0%   |                                                                                                                                         |
 
 ## Done this session
 
@@ -49,6 +49,9 @@ published.
 - **PR #28:** T2.4 picker data layer — `src/lib/dex.ts` (index normalization + accent-insensitive ES/EN/slug/id search), 13 new unit tests (35 total).
 - **PR #29:** T2.5 picker React island — ARIA combobox/listbox, full keyboard nav with auto-pagination (60/page), pixel-crisp sprite avatars, ES/EN in-island copy, selected-summary panel (pre-T2.6). Verified in headless Chromium against `pnpm preview`.
 - Board workflow: #12/#13/#14/#15/#16 → Done (issues closed; `gh project` needs the `project` scope — granted today via device flow).
+- **T2.11 deploy landed (PR #31, ADR-011): owner picked GitHub Pages. Site is LIVE at
+  https://hell-over-studios.github.io/dexforge/ and verified in a real browser (picker + search work live).**
+  Issues #22/#17→Next; board #22 → Done.
 - Lessons learned appended (never merge before CI green; gh CLI quoting/scope pitfalls).
 
 ## Next
@@ -60,4 +63,4 @@ published.
 
 ## Blockers
 
-- None technical. Owner decisions pending: v0.1.0 tagging, T2.11 deploy platform.
+- Only the pending owner approvals: **v0.1.0 tagging** (deploy platform question is resolved: GitHub Pages, ADR-011).
