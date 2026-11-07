@@ -56,11 +56,18 @@ const script = `
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta name="color-scheme" content="dark" />
+    <!-- ADR-008 fonts: Pixelify Sans (display, Latin-Extended) + Nunito (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&display=swap"
+    />
   </head>
-  <body class="min-h-dvh bg-ink-950 text-ink-200 antialiased">
+  <body class="min-h-dvh bg-bark-950 dither text-parchment-200 antialiased">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-dex-red focus:px-3 focus:py-2 focus:text-white"
+      class="sr-only border-2 border-bark-950 bg-ember-500 px-3 py-2 font-display text-sm text-bark-950 shadow-pixel-sm focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
       >Saltar al contenido</a
     >
     <main id="main">
