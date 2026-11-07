@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import GameSelector from '../components/GameSelector.astro';
 import fs from 'node:fs';
 import type { GamesRegistry } from '../lib/data-schema';
+import { withBase } from '../lib/paths';
 
 const registry = JSON.parse(
   fs.readFileSync(new URL('../../public/data/games.json', import.meta.url), 'utf-8'),
@@ -14,7 +15,7 @@ const registry = JSON.parse(
     <!-- Header / hero -->
     <header class="animate-fade-in pt-10 pb-4">
       <div class="flex items-center justify-between gap-4">
-        <a href="/" class="group flex items-center gap-3 focus-visible:outline-offset-4">
+        <a href={withBase('')} class="group flex items-center gap-3 focus-visible:outline-offset-4">
           <span
             class="grid size-9 place-items-center rounded-sm border-2 border-bark-950 bg-ember-500 font-display text-lg leading-none text-bark-950 shadow-pixel-sm transition-colors group-hover:bg-ember-400"
             aria-hidden="true"

@@ -36,7 +36,7 @@ for what must exist in each version; GitHub issues reference it.
 - [ ] **T2.8** Team of 6 — Zustand store, add/remove/replace, pixel slot frames
 - [ ] **T2.9** URL state stub — encode game + team into `?t=…` (round-trip test)
 - [ ] **T2.10** Playwright setup + smoke tests — config, first e2e (select game, add 6 Pokémon), CI job
-- [ ] **T2.11** Deploy config — Cloudflare Pages or Vercel (⛔ ask owner for platform + account before starting)
+- [x] **T2.11** Deploy config — GitHub Pages via Actions (ADR-011, owner-approved 2026-11-07)
 
 ## v0.3.0 — Team analysis
 
