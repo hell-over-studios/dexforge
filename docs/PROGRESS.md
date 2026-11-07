@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 ## Current version: v0.1.0 (merged — pending owner review for release)
 
@@ -12,7 +12,7 @@ published.
 | Milestone                        | %    | Notes                                                                                                |
 | -------------------------------- | ---- | ---------------------------------------------------------------------------------------------------- |
 | v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval |
-| v0.2.0 team builder core         | 0%   | game selector, picker, sprites, 6-slot team, Playwright, deploy config                               |
+| v0.2.0 team builder core         | ~18% | T2.1 + T2.2 done (PR #24, ADR-008 tokens + tokenized landing); next T2.3 game selector               |
 | v0.3.0 team analysis             | 0%   |                                                                                                      |
 | v0.4.0 moves/offense             | 0%   |                                                                                                      |
 | v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                   |
@@ -35,14 +35,24 @@ published.
 - GitHub: labels, milestones, issue/PR templates, **collaborator issues #2–#9**.
 - **GitHub Projects v2 Kanban board** (ADR-010, `docs/BOARD.md`): six Status columns
   (Backlog → Done), Priority/Area/Size fields, and all issues #2–#22 classified.
+- **Owner directive (2026-11-06) — pixel art + cozy + smaller PRs** (recorded in `docs/PROMPT_CHANGES.md`
+  as ADR-008/ADR-009, PR #10): v0.2.0 expanded into PR-sized tasks T2.1–T2.11 (issues #12–#22).
+
+## Done this session (2026-11-06)
+
+- PR #10: docs — design direction (ADR-008) + task granularity (ADR-009); PR #11: prettier fix (kept `main` green).
+- **PR #24 (merged, CI green pre- and post-merge):** pixel art + cozy foundation —
+  design tokens in `src/styles/global.css` (bark/parchment/ember palette, Pixelify Sans + Nunito,
+  2px borders, hard offset shadows, `pixelated` + `dither` utilities, focus ring), font links in
+  `Base.astro`, landing page fully tokenized, pixel pokéball favicon. 4 files, +142/−58.
 
 ## Next
 
-1. Owner approves the v0.1.0 review package (docs/HANDOFF.md) → tag & release.
-2. Start v0.2.0 from the board's **Ready** column: T2.1 (#12) first, then the
-   game-selector/picker chain; Playwright via webapp-testing skill.
+1. Owner approvals still pending: **v0.1.0 tag** (review package in docs/HANDOFF.md) and
+   **deploy platform** for T2.11 (Cloudflare Pages vs Vercel — asked, no answer yet).
+2. Continue v0.2.0 from the board: **T2.3 game selector (#14)** next, then the picker chain (T2.4 → T2.5).
 3. Keep the board in sync when ROADMAP tasks or milestones change (`docs/BOARD.md`).
 
 ## Blockers
 
-- None technical. Awaiting owner approval for v0.1.0 tagging only.
+- None technical. Owner decisions pending: v0.1.0 tagging, T2.11 deploy platform.

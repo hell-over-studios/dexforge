@@ -47,6 +47,8 @@ _(Append as they happen. Mistakes documented here are mistakes not to repeat.)_
 
 - (2026-11-05) Don't generate docs with accidental non-English fragments; proofread generated markdown files with a multilingual-symbol grep before committing.
 - (2026-11-05) Write per-file first pass to disk rather than long in-memory chains; keeping files small keeps diffs reviewable.
+- (2026-11-06) **Never merge before CI is actually green.** On PR #10 the merge slipped through while checks were still running (no branch protection on this repo) and `main` went red for one commit. Rule: run `pnpm pre-commit` locally before `gh pr create`, and for `gh pr merge` use `--watch`/`gh pr checks --fail-fast` confirmation, or `gh run watch` on the post-merge `main` run afterward.
+- (2026-11-06) PowerShell quoting pitfalls with the GitHub CLI: `gh pr create --body` inline strings choke on parentheses/braces/UTF-8; always pass `--body-file` (temp file), and remember `gh api` ignores `-R` (use the `GH_REPO` env var). Interactive-ish flows (`gh auth refresh`) need `-h github.com` or they fail non-interactively.
 
 ## Useful prompts / techniques
 
