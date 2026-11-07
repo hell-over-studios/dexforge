@@ -152,7 +152,12 @@ export default function Picker({ gameId }: Props) {
             if (!mon) return null;
             return (
               <div className="mt-3">
-                <PokemonDetail mon={mon} colors={colors} onClose={() => setSelected(null)} />
+                <PokemonDetail
+                  key={mon.id}
+                  mon={mon}
+                  colors={colors}
+                  onClose={() => setSelected(null)}
+                />
               </div>
             );
           })()
