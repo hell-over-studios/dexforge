@@ -10,10 +10,20 @@ export const dict = {
     es: 'Construye tu equipo Pokémon para cualquier juego principal: debilidades, cobertura, capturas y rivales. De fans, de todos.',
     en: 'Build your Pokémon team for any main-series game: weaknesses, coverage, encounters and rivals. Fan-made, for everyone.',
   },
-  'app.supported': { es: 'Juegos disponibles (v0.1)', en: 'Available games (v0.1)' },
+  'app.supported': { es: 'Elige tu juego', en: 'Choose your game' },
   'app.soon': {
-    es: 'El selector de juego llega en v0.2 — los datos ya se generan.',
-    en: 'The game selector arrives in v0.2 — the data is already generated.',
+    es: 'El creador de equipos llega en las próximas versiones — elige tu juego para empezar.',
+    en: 'The team builder arrives in upcoming releases — pick your game to get started.',
+  },
+  'selector.cta': { es: 'Elegir este juego', en: 'Pick this game' },
+  'game.back': { es: 'Volver al inicio', en: 'Back to home' },
+  'game.soon-title': {
+    es: 'El creador de equipos llega pronto',
+    en: 'The team builder is coming soon',
+  },
+  'game.soon': {
+    es: 'La selección de Pokémon para este juego llega en las próximas versiones — los datos ya están listos.',
+    en: 'Pokémon selection for this game arrives in upcoming releases — the data is already ready.',
   },
   'app.features': { es: 'Qué traerá la app', en: "What's coming" },
   'f.analysis': {

@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import GameSelector from '../components/GameSelector.astro';
 import fs from 'node:fs';
 import type { GamesRegistry } from '../lib/data-schema';
 
@@ -53,30 +54,16 @@ const registry = JSON.parse(
       </p>
     </section>
 
-    <!-- Games (from generated data) -->
+    <!-- Game selector (from generated data) -->
     <section class="pb-20" aria-labelledby="games-h">
       <h2
         id="games-h"
         class="mb-6 font-display text-sm tracking-widest text-parchment-400 uppercase"
         data-i18n="app.supported"
       >
-        Juegos disponibles (v0.1)
+        Elige tu juego
       </h2>
-      <ul class="grid gap-5 sm:grid-cols-3">
-        {
-          registry.games.map((game) => (
-            <li class="rounded-sm border-2 border-bark-700 bg-bark-900 dither p-5 shadow-pixel transition-all ease-in-out hover:-translate-y-0.5 hover:border-ember-600 hover:shadow-pixel-ember">
-              <div class="font-display text-xs tracking-widest text-ember-400 uppercase">
-                Gen {game.generation} · {game.generationSlug.replace('generation-', '')}
-              </div>
-              <div class="mt-2 font-display text-lg text-parchment-100">{game.label.es}</div>
-              <div class="mt-1 text-sm text-parchment-400">
-                {game.pokemonCount} Pokémon · {game.region}
-              </div>
-            </li>
-          ))
-        }
-      </ul>
+      <GameSelector games={registry.games} />
     </section>
 
     <!-- Features -->

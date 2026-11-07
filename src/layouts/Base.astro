@@ -28,6 +28,15 @@ const script = `
       const v = dict[el.getAttribute('data-i18n')]?.[lang];
       if (v) el.textContent = v;
     }
+    /* game labels come from generated data (games.json), carried inline as JSON pairs */
+    for (const el of document.querySelectorAll('[data-i18n-pair]')) {
+      try {
+        const pair = JSON.parse(el.getAttribute('data-i18n-pair'));
+        if (pair[lang]) el.textContent = pair[lang];
+      } catch {
+        /* malformed pair attribute: leave the ES default in place */
+      }
+    }
     const t = document.getElementById('lang-toggle');
     if (t && !t.getAttribute('data-i18n')) t.textContent = lang === 'es' ? 'English' : 'Español';
   };
