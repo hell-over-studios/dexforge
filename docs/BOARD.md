@@ -67,8 +67,8 @@ when the item is linked to the repository issue.
 | 7   | Accessibility audit of landing         | Ready   | P2       | Design   | S    |
 | 8   | Landing/game-selector visual pass      | Backlog | P3       | Design   | L    |
 | 9   | DATA_SOURCES.md — 2026 schema findings | Ready   | P2       | Docs     | S    |
-| 12  | T2.1 design tokens & pixel-cozy base   | Ready   | P1       | Design   | M    |
-| 13  | T2.2 app shell & layout                | Backlog | P1       | Frontend | M    |
+| 12  | T2.1 design tokens & pixel-cozy base   | Done    | P1       | Design   | M    |
+| 13  | T2.2 app shell & layout                | Done    | P1       | Frontend | M    |
 | 14  | T2.3 game selector screen              | Backlog | P1       | Frontend | S    |
 | 15  | T2.4 picker data layer                 | Backlog | P1       | Data     | M    |
 | 16  | T2.5 picker UI                         | Backlog | P1       | Frontend | M    |
@@ -96,4 +96,9 @@ gh project item-edit --project-id <project-id> --id <item-id> \
 ```
 
 When `docs/ROADMAP.md` changes, update the board in the same PR: new PR-sized tasks
-become issues, issues become board items, and the table above is refreshed.
+become issues, issues become board items, and the table above is refreshed (status
+changes from normal workflow are also committed here, in small doc-only PRs).
+
+> **Note for agents:** `gh project …` requires the `project` OAuth scope on the CLI
+> token (`gh auth refresh -s project -h github.com`, one-time device flow). Without it
+> status/field writes fail with "missing required scopes [read:project]".
