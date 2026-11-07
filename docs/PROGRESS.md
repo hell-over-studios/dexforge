@@ -9,15 +9,15 @@ MINOR releases stop at the release boundary per docs/PROMPT.md §6: owner (Marti
 must approve the review package in docs/HANDOFF.md before `v0.1.0` is tagged and
 published.
 
-| Milestone                        | %    | Notes                                                                                                |
-| -------------------------------- | ---- | ---------------------------------------------------------------------------------------------------- |
-| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval |
-| v0.2.0 team builder core         | ~18% | T2.1 + T2.2 done (PR #24, ADR-008 tokens + tokenized landing); next T2.3 game selector               |
-| v0.3.0 team analysis             | 0%   |                                                                                                      |
-| v0.4.0 moves/offense             | 0%   |                                                                                                      |
-| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                   |
-| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                           |
-| v1.0.0 share/polish              | 0%   |                                                                                                      |
+| Milestone                        | %    | Notes                                                                                                                           |
+| -------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------- |
+| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                            |
+| v0.2.0 team builder core         | ~45% | T2.1–T2.5 done (PRs #24, #27, #28, #29): tokens, landing, game selector, dex data layer, picker island; next T2.6 detail drawer |
+| v0.3.0 team analysis             | 0%   |                                                                                                                                 |
+| v0.4.0 moves/offense             | 0%   |                                                                                                                                 |
+| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                              |
+| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                      |
+| v1.0.0 share/polish              | 0%   |                                                                                                                                 |
 
 ## Done this session
 
@@ -45,12 +45,17 @@ published.
   design tokens in `src/styles/global.css` (bark/parchment/ember palette, Pixelify Sans + Nunito,
   2px borders, hard offset shadows, `pixelated` + `dither` utilities, focus ring), font links in
   `Base.astro`, landing page fully tokenized, pixel pokéball favicon. 4 files, +142/−58.
+- **PR #27:** T2.3 game selector — static `GameSelector` cards from `games.json`, `/juego/<id>` stub pages, ES/EN labels via `data-i18n-pair`.
+- **PR #28:** T2.4 picker data layer — `src/lib/dex.ts` (index normalization + accent-insensitive ES/EN/slug/id search), 13 new unit tests (35 total).
+- **PR #29:** T2.5 picker React island — ARIA combobox/listbox, full keyboard nav with auto-pagination (60/page), pixel-crisp sprite avatars, ES/EN in-island copy, selected-summary panel (pre-T2.6). Verified in headless Chromium against `pnpm preview`.
+- Board workflow: #12/#13/#14/#15/#16 → Done (issues closed; `gh project` needs the `project` scope — granted today via device flow).
+- Lessons learned appended (never merge before CI green; gh CLI quoting/scope pitfalls).
 
 ## Next
 
 1. Owner approvals still pending: **v0.1.0 tag** (review package in docs/HANDOFF.md) and
    **deploy platform** for T2.11 (Cloudflare Pages vs Vercel — asked, no answer yet).
-2. Continue v0.2.0 from the board: **T2.3 game selector (#14)** next, then the picker chain (T2.4 → T2.5).
+2. Continue v0.2.0: **T2.6 detail drawer (#17)** next, then T2.7 sprite viewer.
 3. Keep the board in sync when ROADMAP tasks or milestones change (`docs/BOARD.md`).
 
 ## Blockers

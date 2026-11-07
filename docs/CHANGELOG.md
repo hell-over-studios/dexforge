@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pixel art + cozy design foundation (ADR-008): token set in `src/styles/global.css` (warm bark/parchment/ember palette, Pixelify Sans display + Nunito body fonts, hard offset shadow utilities, `pixelated` sprite utility, subtle `dither` texture, chunky focus ring), font loading in the base layout, an 8×8 pixel pokéball favicon, and a fully tokenized landing page.
 - Game selector screen (T2.3): static pixel-cozy `GameSelector` component feeding off `/public/data/games.json` at build time (zero client JS), ES/EN game labels via `data-i18n-pair`, and static `/juego/<id>` placeholder pages so the cards are real, keyboard-conditional links.
 - Picker data layer (T2.4): `src/lib/dex.ts` — slim per-game dex index (`DexEntry`: slug, ES/EN names, both dex numbers, game-accurate types, game sprite with official-artwork fallback) built from the static `<game>.json`, accent- and case-insensitive ES/EN/slug/id substring search, and a client `loadDexIndex` fetcher; 13 new unit tests (35 total).
+- Pokémon picker (T2.5): React island on `/juego/<id>` with ARIA combobox/listbox keyboard navigation (arrows/Enter/Escape, auto-extending 60-row pages), pixel-crisp sprite avatars, ES/EN copy in-island, pixel-cozy loading/empty states, and a minimal selection summary panel pending the detail drawer.
 
 ### Changed
 
@@ -20,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned for v0.2.0
 
-- Team builder core remaining: T2.4–T2.11 (picker data layer, picker UI, detail drawer, sprite viewer, team of 6, URL state, Playwright, deploy).
+- Team builder core remaining: T2.6–T2.11 (detail drawer, sprite viewer, team of 6, URL state, Playwright, deploy).
 
 ## [0.1.0] - 2026-11-05
 
