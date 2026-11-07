@@ -6,7 +6,9 @@
  * the deployed site never calls PokeAPI.
  */
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
-import { loadDexIndex, searchDex, type DexEntry } from '../lib/dex';
+import PokemonDetail from './PokemonDetail';
+import { loadGame, loadTypeColors, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
+import type { GameData } from '../lib/data-schema';
 
 interface Props {
   gameId: string;
@@ -16,6 +18,8 @@ const PAGE = 60;
 
 export default function Picker({ gameId }: Props) {
   const [entries, setEntries] = useState<DexEntry[] | null>(null);
+  const [game, setGame] = useState<GameData | null>(null);
+  const [colors, setColors] = useState<Record<string, string>>({});
   const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
@@ -24,13 +28,20 @@ export default function Picker({ gameId }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    loadDexIndex(gameId)
-      .then((list) => {
-        if (!cancelled) setEntries(list);
+    loadGame(gameId)
+      .then((data) => {
+        if (!cancelled) {
+          setGame(data);
+          setEntries(buildDexIndex(data));
+        }
       })
       .catch(() => {
         if (!cancelled) setLoadError(true);
       });
+    /* type badge colors are cosmetic — fail open with neutral chips */
+    loadTypeColors().then((c) => {
+      if (!cancelled) setColors(c);
+    });
     return () => {
       cancelled = true;
     };
@@ -134,6 +145,19 @@ export default function Picker({ gameId }: Props) {
           : 'Flechas para moverte, Enter para añadir, Escape para limpiar.'}
       </p>
 
+      {selected && game
+        ? /* Full detail drawer (T2.6) — shows immediately under the input */
+          (() => {
+            const mon = game.pokemon.find((p) => p.id === selected.id);
+            if (!mon) return null;
+            return (
+              <div className="mt-3">
+                <PokemonDetail mon={mon} colors={colors} onClose={() => setSelected(null)} />
+              </div>
+            );
+          })()
+        : null}
+
       <ul
         id="picker-list"
         role="listbox"
@@ -221,31 +245,6 @@ export default function Picker({ gameId }: Props) {
           ? `${results.length} results, ${activeIdx + 1} highlighted`
           : `${results.length} resultados, ${oneIndexed(activeIdx)} resaltado`}
       </p>
-
-      {selected ? (
-        /* Minimal selection summary — replaces fully with the T2.6 drawer */
-        <section
-          aria-label={selected.name[lang]}
-          className="mt-3 animate-pop-in rounded-sm border-2 border-ember-600 bg-bark-900 dither p-4 shadow-pixel"
-        >
-          <div className="flex items-center gap-3">
-            {selected.spriteUrl ? (
-              <img
-                src={selected.spriteUrl}
-                alt=""
-                aria-hidden="true"
-                width={64}
-                height={64}
-                className="size-14 shrink-0 [object-fit:contain] pixelated"
-              />
-            ) : null}
-            <h2 className="font-display text-xl text-parchment-100">{selected.name[lang]}</h2>
-          </div>
-          <p className="mt-2 text-sm text-parchment-400">
-            n.º {selected.id} · dex {selected.dexNumber} · {selected.types.join(' / ')}
-          </p>
-        </section>
-      ) : null}
     </div>
   );
 }

@@ -6,7 +6,7 @@
  * The rendered site never calls PokeAPI: everything derives from the static
  * JSON under /public/data/<game>.json (fetched with the deploy base prefix).
  */
-import type { GameData, GamePokemon } from './data-schema';
+import type { GameData, GamePokemon, TypeData } from './data-schema';
 import { siteBase } from './paths';
 
 /** One picker row: exactly what the listing UI needs, nothing more. */
@@ -70,8 +70,20 @@ export function searchDex(entries: DexEntry[], query: string): DexEntry[] {
  * prefixed with the deploy base when the site is hosted under a subpath.)
  */
 export async function loadDexIndex(gameId: string): Promise<DexEntry[]> {
+  return buildDexIndex(await loadGame(gameId));
+}
+
+/** Client-side loader for the full per-game dataset (detail drawer needs it). */
+export async function loadGame(gameId: string): Promise<GameData> {
   const res = await fetch(`${siteBase}/data/${gameId}.json`);
   if (!res.ok) throw new Error(`dataset does not exist for game: ${gameId}`);
-  const data = (await res.json()) as GameData;
-  return buildDexIndex(data);
+  return (await res.json()) as GameData;
+}
+
+/** type slug -> hex color, from the static /data/types.json */
+export async function loadTypeColors(): Promise<Record<string, string>> {
+  const res = await fetch(`${siteBase}/data/types.json`);
+  if (!res.ok) return {};
+  const data = (await res.json()) as TypeData;
+  return Object.fromEntries(data.types.map((t) => [t.slug, t.color]));
 }
