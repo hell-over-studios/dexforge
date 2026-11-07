@@ -1,6 +1,9 @@
 ---
 import '../styles/global.css';
 import { dict } from '../lib/i18n';
+import { withBase } from '../lib/paths';
+
+const favicon = withBase('favicon.svg');
 
 interface Props {
   title?: string;
@@ -60,11 +63,12 @@ const script = `
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={favicon} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta name="color-scheme" content="dark" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <!-- ADR-008 fonts: Pixelify Sans (display, Latin-Extended) + Nunito (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

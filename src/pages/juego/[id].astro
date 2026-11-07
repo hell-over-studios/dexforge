@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Picker from '../../components/Picker';
 import fs from 'node:fs';
 import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
+import { withBase } from '../../lib/paths';
 
 /* Build-time static pages, one per game in the registry (no client JS). */
 export function getStaticPaths() {
@@ -25,7 +26,10 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 <Base title={title} description={description}>
   <div class="mx-auto max-w-3xl px-5 pt-10 pb-20 sm:px-8">
-    <a href="/" class="font-display text-sm text-ember-300 underline-offset-4 hover:underline">
+    <a
+      href={withBase('')}
+      class="font-display text-sm text-ember-300 underline-offset-4 hover:underline"
+    >
       <span aria-hidden="true">←</span>
       <span data-i18n="game.back">Volver al inicio</span>
     </a>

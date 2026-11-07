@@ -4,9 +4,10 @@
  * React island); this module must stay framework-free and testable.
  *
  * The rendered site never calls PokeAPI: everything derives from the static
- * JSON under /public/data/<game>.json.
+ * JSON under /public/data/<game>.json (fetched with the deploy base prefix).
  */
 import type { GameData, GamePokemon } from './data-schema';
+import { siteBase } from './paths';
 
 /** One picker row: exactly what the listing UI needs, nothing more. */
 export interface DexEntry {
@@ -65,10 +66,11 @@ export function searchDex(entries: DexEntry[], query: string): DexEntry[] {
 
 /**
  * Client-side loader: fetch the static per-game dataset and index it.
- * (The deployed site never calls PokeAPI; this only reads /public/data.)
+ * (The deployed site never calls PokeAPI; this only reads /public/data,
+ * prefixed with the deploy base when the site is hosted under a subpath.)
  */
 export async function loadDexIndex(gameId: string): Promise<DexEntry[]> {
-  const res = await fetch(`/data/${gameId}.json`);
+  const res = await fetch(`${siteBase}/data/${gameId}.json`);
   if (!res.ok) throw new Error(`dataset does not exist for game: ${gameId}`);
   const data = (await res.json()) as GameData;
   return buildDexIndex(data);

@@ -1,5 +1,6 @@
 ---
 import type { GameRegistryEntry } from '../lib/data-schema';
+import { withBase } from '../lib/paths';
 
 interface Props {
   games: GameRegistryEntry[];
@@ -15,7 +16,7 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
     games.map((game) => (
       <li>
         <a
-          href={`/juego/${game.id}`}
+          href={withBase(`juego/${game.id}`)}
           class="group flex h-full flex-col rounded-sm border-2 border-bark-700 bg-bark-900 dither p-5 shadow-pixel transition-all ease-in-out hover:-translate-y-0.5 hover:border-ember-600 hover:shadow-pixel-ember focus-visible:-translate-y-0.5 focus-visible:border-ember-500"
         >
           <div class="font-display text-xs tracking-widest text-ember-400 uppercase">

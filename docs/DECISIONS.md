@@ -72,6 +72,14 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
 - **Alternatives:** neon instrumented dark (v0.1 placeholder), light parchment-only theme, glassmorphism.
 - **Consequences:** All UI components must adopt the tokens in `src/styles/global.css`; any future component PR reviews for pixel/cozy consistency (chunky border? font used? contrast? reduced motion?).
 
+## ADR-011 — Deploy target: GitHub Pages via Actions
+
+- **Status:** Accepted (owner directive, 2026-11-07)
+- **Context:** T2.11 needed the deploy target. The owner delegated the platform choice and suggested GitHub Pages; PROMPT.md rules (static site, no runtime PokeAPI calls, no paid services) fit Pages perfectly. Actions-based deployment also fits the self-merge autonomy (no external account linking).
+- **Decision:** Deploy the static build to **GitHub Pages** from `main` via `actions/upload-pages-artifact` + `actions/deploy-pages` (workflow `.github/workflows/deploy.yml`, also `workflow_dispatch`). Site serves at `https://hell-over-studios.github.io/dexforge/` → `astro.config.mjs` sets `site` + `base: '/dexforge'`. All internal URLs are built with `src/lib/paths.ts` (`withBase`/`siteBase` from `import.meta.env.BASE_URL`); the picker dataset fetch is base-aware too. Repo-side hardening limited to what Pages allows: `<meta name="referrer" content="strict-origin-when-cross-origin">` (custom HTTP headers are not configurable on Pages).
+- **Alternatives:** Cloudflare Pages / Vercel (richer header/edge control but need account linking), raw `gh-pages` branch (obsolete pattern).
+- **Consequences:** Zero extra infra cost; deploys on every `main` push (green CI is checked in CI workflow but Pages deploys independently — docs must keep "never merge red" discipline). Internal links MUST use `withBase`, never bare `/…` hrefs (lint via review discipline; a broken base path fails only in preview). Pages ignores URL features like redirects/headers.
+
 ## ADR-009 — Task granularity: PR-sized tickets and small pull requests
 
 - **Status:** Accepted (owner directive, 2026-11-06)
