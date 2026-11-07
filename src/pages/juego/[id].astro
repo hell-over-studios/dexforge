@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Picker from '../../components/Picker';
 import fs from 'node:fs';
 import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
 
@@ -44,18 +45,16 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
       </p>
     </header>
 
-    <!-- Placeholder until the picker island lands (T2.5). Pure static card. -->
-    <section
-      aria-labelledby="soon-h"
-      class="mt-10 rounded-sm border-2 border-bark-700 bg-bark-900 dither p-6 shadow-pixel"
-    >
-      <h2 id="soon-h" class="font-display text-lg text-parchment-100" data-i18n="game.soon-title">
-        El creador de equipos llega pronto
-      </h2>
-      <p class="mt-2 text-sm leading-relaxed text-parchment-400" data-i18n="game.soon">
-        La selección de Pokémon para este juego llega en las próximas versiones — los datos ya están
-        listos.
-      </p>
+    <!-- Pokémon picker island (T2.5) — data is the static /data/<game>.json -->
+    <section aria-label="Seleccionar Pokémon" class="mt-10">
+      <noscript>
+        <p
+          class="rounded-sm border-2 border-bark-700 bg-bark-900 p-4 text-sm text-parchment-400 shadow-pixel"
+        >
+          El creador de equipos necesita JavaScript para buscar Pokémon.
+        </p>
+      </noscript>
+      <Picker client:visible gameId={game.id} />
     </section>
   </div>
 </Base>
