@@ -15,7 +15,11 @@ Last updated: 2026-11-06 (session 3: T2.1–T2.5 — pixel-cozy foundation throu
   - T2.4 `src/lib/dex.ts` — dex index + accent-insensitive ES/EN/slug/id search; 35 tests total
   - T2.5 `<Picker />` React island on `/juego/[id]` — ARIA combobox/listbox, ArrowUp/Down/Enter/Escape with 60-row pages auto-extending, `pixelated` sprites, ES/EN copy inside the island, minimal selection summary panel
 - Kanban board is fully agent-maintainable: `gh project` works after the one-time `project` scope device flow (granted today).
-- `main` is green (CI pass on merge commit `49dc2e8`).
+- **The site is LIVE on GitHub Pages** (T2.11, PR #31 + ADR-011): https://hell-over-studios.github.io/dexforge/
+  - Every `main` push auto-deploys via `.github/workflows/deploy.yml` (pages + id-token permissions).
+  - `astro.config.mjs` pins `site` + `base: '/dexforge'`; `src/lib/paths.ts` (`siteBase`/`withBase`) wraps ALL internal URLs — new components must use `withBase`, never bare `/…` hrefs (breaks only under the subpath).
+  - Deploy-side hardening can't use custom HTTP headers on Pages; a referrer meta policy is in `Base.astro`.
+- `main` is green (CI pass on merge commit `fefb7c7`, Deploy workflow pass).
 
 ## Review package for owner (v0.1.0) — still actionable
 
@@ -43,13 +47,13 @@ gh release create v0.1.0 --title "v0.1.0" --notes-file <(sed -n '/## \[0.1.0\]/,
 
 ## What to do next (first work of next session)
 
-Continue v0.2.0 in small PRs (issues #17–#22):
+Continue v0.2.0 in small PRs (issues #17–#21):
 
-1. **T2.6 detail drawer (#17)** — replace the Picker's minimal selection summary with the full drawer (stats bars, types, abilities, dex info); needs `/data/types.json` for type-badge colors.
+1. **T2.6 detail drawer (#17)** — replace the Picker's minimal selection summary with the full drawer (stats bars, types, abilities, dex info); needs `/data/types.json` for type-badge colors (fetch base-aware: use `withBase`).
 2. T2.7 sprite viewer (#18) — game/shiny/showdown/official/HOME toggle with the documented fallback chain.
-3. T2.8 team of 6 (#19, Zustand); T2.9 URL stub (#20); T2.10 Playwright in CI (#21); T2.11 deploy (#22, blocked on owner platform choice).
-4. Before each PR: `pnpm pre-commit` locally; merge only after `gh pr checks --watch` is green; after merge, watch the `main` run once.
-5. Keep the board in sync: branch → In progress; PR → In review (+link PR); merge → Done.
+3. T2.8 team of 6 (#19, Zustand); T2.9 URL stub (#20); T2.10 Playwright in CI (#21).
+4. T2.11 is DONE — the platform question is answered: GitHub Pages (ADR-011). Owner still owes the **v0.1.0 tag approval**.
+5. PR discipline stays: `pnpm pre-commit` locally; merge only after `gh pr checks --watch` is green; after merge, watch the `main` run once; keep the board in sync (branch → In progress; PR → In review; merge → Done).
 
 ### Environment notes for browser verification
 
