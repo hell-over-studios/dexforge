@@ -29,7 +29,7 @@ for what must exist in each version; GitHub issues reference it.
 - [ ] **T2.1** Design tokens & pixel-cozy foundation — Pixelify Sans + Nunito fonts, warm palette, 2px borders, hard shadows, `image-rendering: pixelated` util, dither pattern (ADR-008 tokens land in `src/styles/global.css`)
 - [ ] **T2.2** App shell & layout — Astro layout with pixel header/footer, game-scoped nav slots, skip-link, tokenized landing page refresh
 - [x] **T2.3** Game selector — ES-default, three game cards from `games.json` (count, region, version-group), desktop/mobile layouts
-- [ ] **T2.4** Pokémon picker (data layer) — client-side index over `<game>.json` filtered to species (slug, name ES/EN, dexNumber, types, sprite url) + search box behavior spec
+- [x] **T2.4** Pokémon picker (data layer) — client-side index over `<game>.json` filtered to species (slug, name ES/EN, dexNumber, types, sprite url) + search box behavior spec
 - [ ] **T2.5** Pokémon picker UI — React island: searchable list with pixel avatars, keyboard nav, empty/loading states
 - [ ] **T2.6** Pokémon detail drawer — stats bar, types, abilities, dex info; pixel-cozy panel
 - [ ] **T2.7** Sprite viewer — toggles game sprite / shiny / animated (showdown) / official / HOME with documented fallback chain; `pixelated` only for game sprite & showdown

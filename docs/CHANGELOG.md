@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Projects v2 Kanban board for issue triage and assignment (ADR-010), documented in `docs/BOARD.md`: six Status columns, Priority/Area/Size fields, and an initial classification of issues #2–#22.
 - Pixel art + cozy design foundation (ADR-008): token set in `src/styles/global.css` (warm bark/parchment/ember palette, Pixelify Sans display + Nunito body fonts, hard offset shadow utilities, `pixelated` sprite utility, subtle `dither` texture, chunky focus ring), font loading in the base layout, an 8×8 pixel pokéball favicon, and a fully tokenized landing page.
 - Game selector screen (T2.3): static pixel-cozy `GameSelector` component feeding off `/public/data/games.json` at build time (zero client JS), ES/EN game labels via `data-i18n-pair`, and static `/juego/<id>` placeholder pages so the cards are real, keyboard-conditional links.
+- Picker data layer (T2.4): `src/lib/dex.ts` — slim per-game dex index (`DexEntry`: slug, ES/EN names, both dex numbers, game-accurate types, game sprite with official-artwork fallback) built from the static `<game>.json`, accent- and case-insensitive ES/EN/slug/id substring search, and a client `loadDexIndex` fetcher; 13 new unit tests (35 total).
 
 ### Changed
 
