@@ -130,9 +130,7 @@ export default function Picker({ gameId }: Props) {
         gameId={gameId}
         resolve={(id) => {
           const p = game?.pokemon.find((x) => x.id === id);
-          return p
-            ? { name: p.name[lang], spriteUrl: p.sprites.game ?? p.sprites.official }
-            : undefined;
+          return p ? { name: p.name[lang], spriteUrl: p.sprites.official } : undefined;
         }}
       />
 
@@ -213,7 +211,7 @@ export default function Picker({ gameId }: Props) {
                 decoding="async"
                 width={64}
                 height={64}
-                className="size-12 shrink-0 [object-fit:contain] pixelated"
+                className="size-12 shrink-0 [object-fit:contain]"
               />
             ) : (
               <span

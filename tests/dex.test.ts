@@ -115,9 +115,9 @@ describe('buildDexIndex', () => {
     expect(pikachu.dexNumber).toBe(2);
   });
 
-  it('picks the game sprite and falls back to official artwork', () => {
+  it('picks the official artwork (only visual, owner directive)', () => {
     const entries = buildDexIndex(fixture);
-    expect(entries[1].spriteUrl).toBe('http://x/pikachu.png');
+    expect(entries[1].spriteUrl).toBe('http://x/pikachu-art.png');
     expect(entries[0].spriteUrl).toBe('http://x/pichu.png');
     expect(entries[2].spriteUrl).toBeNull();
     expect(entries[2].types).toEqual(['electric']);
