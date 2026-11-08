@@ -7,7 +7,9 @@
  */
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
 import PokemonDetail from './PokemonDetail';
+import TeamSlots from './TeamSlots';
 import { loadGame, loadTypeColors, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
+import { useTeamStore } from '../lib/team';
 import type { GameData } from '../lib/data-schema';
 
 interface Props {
@@ -116,9 +118,25 @@ export default function Picker({ gameId }: Props) {
 
   const activeId = visible[activeIdx] ? `picker-opt-${activeIdx}` : undefined;
 
+  const teamFirst = (useTeamStore.getState().teams[gameId] ?? [])[0];
+  const oldestName =
+    teamFirst !== undefined && game
+      ? game.pokemon.find((p) => p.id === teamFirst)?.name[lang]
+      : undefined;
+
   return (
     <div className="rounded-sm">
-      <label htmlFor="picker-input" className="font-display text-sm text-parchment-400">
+      <TeamSlots
+        gameId={gameId}
+        resolve={(id) => {
+          const p = game?.pokemon.find((x) => x.id === id);
+          return p
+            ? { name: p.name[lang], spriteUrl: p.sprites.game ?? p.sprites.official }
+            : undefined;
+        }}
+      />
+
+      <label htmlFor="picker-input" className="mt-4 block font-display text-sm text-parchment-400">
         Buscar Pokémon
       </label>
       <input
@@ -155,7 +173,9 @@ export default function Picker({ gameId }: Props) {
                 <PokemonDetail
                   key={mon.id}
                   mon={mon}
+                  gameId={gameId}
                   colors={colors}
+                  oldestName={oldestName}
                   onClose={() => setSelected(null)}
                 />
               </div>
