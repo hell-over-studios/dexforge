@@ -26,16 +26,16 @@ for what must exist in each version; GitHub issues reference it.
 > Broken into PR-sized task units per ADR-009 (each bullet = one branch + one small PR;
 > each has a matching GitHub issue with acceptance criteria).
 
-- [ ] **T2.1** Design tokens & pixel-cozy foundation — Pixelify Sans + Nunito fonts, warm palette, 2px borders, hard shadows, `image-rendering: pixelated` util, dither pattern (ADR-008 tokens land in `src/styles/global.css`)
-- [ ] **T2.2** App shell & layout — Astro layout with pixel header/footer, game-scoped nav slots, skip-link, tokenized landing page refresh
+- [x] **T2.1** Design tokens & pixel-cozy foundation — Pixelify Sans + Nunito fonts, warm palette, 2px borders, hard shadows, `image-rendering: pixelated` util, dither pattern (ADR-008 tokens land in `src/styles/global.css`)
+- [x] **T2.2** App shell & layout — Astro layout with pixel header/footer, game-scoped nav slots, skip-link, tokenized landing page refresh
 - [x] **T2.3** Game selector — ES-default, three game cards from `games.json` (count, region, version-group), desktop/mobile layouts
 - [x] **T2.4** Pokémon picker (data layer) — client-side index over `<game>.json` filtered to species (slug, name ES/EN, dexNumber, types, sprite url) + search box behavior spec
 - [x] **T2.5** Pokémon picker UI — React island: searchable list with pixel avatars, keyboard nav, empty/loading states
-- [ ] **T2.6** Pokémon detail drawer — stats bar, types, abilities, dex info; pixel-cozy panel
-- [ ] **T2.7** Sprite viewer — toggles game sprite / shiny / animated (showdown) / official / HOME with documented fallback chain; `pixelated` only for game sprite & showdown
-- [ ] **T2.8** Team of 6 — Zustand store, add/remove/replace, pixel slot frames
-- [ ] **T2.9** URL state stub — encode game + team into `?t=…` (round-trip test)
-- [ ] **T2.10** Playwright setup + smoke tests — config, first e2e (select game, add 6 Pokémon), CI job
+- [x] **T2.6** Pokémon detail drawer — stats bar, types, abilities, dex info; pixel-cozy panel
+- [x] **T2.7** Sprite viewer — toggles game sprite / shiny / animated (showdown) / official / HOME with documented fallback chain; `pixelated` only for game sprite & showdown
+- [x] **T2.8** Team of 6 — Zustand store, add/remove/replace, pixel slot frames
+- [x] **T2.9** URL state stub — encode game + team into `?t=…` (round-trip test)
+- [x] **T2.10** Playwright setup + smoke tests — config, first e2e (select game, add 6 Pokémon), CI job
 - [x] **T2.11** Deploy config — GitHub Pages via Actions (ADR-011, owner-approved 2026-11-07)
 
 ## v0.3.0 — Team analysis

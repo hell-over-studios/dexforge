@@ -1,64 +1,87 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-06 (session 3: T2.1–T2.5 — pixel-cozy foundation through picker island)
+Last updated: 2026-11-07 (session 4: T2.6–T2.10 — **v0.2.0 code-complete**)
 
 ## Exactly where we stopped
 
-- v0.1.0 is merged to `main` (PR #1) and **still NOT tagged** — awaiting explicit owner approval
-  (review package below).
-- Owner directive landed (2026-11-06): **pixel art + cozy visual direction (ADR-008)** and
-  **smaller PRs / finer task breakdown (ADR-009)** — recorded in `docs/PROMPT_CHANGES.md` (PR #10).
-- v0.2.0 expanded into PR-sized tasks **T2.1–T2.11 = GitHub issues #12–#22** (v0.2.0 milestone).
-- **5 of 11 v0.2.0 tasks landed today** (PRs #24, #27, #28, #29; issues #12–#16 closed and Done on the board):
-  - T2.1/T2.2 pixel-cozy tokens + tokenized landing (bark/parchment/ember, Pixelify Sans + Nunito, `pixelated`/`dither` utils)
-  - T2.3 game selector (static cards) + `/juego/<id>` pages; ES/EN labels via `data-i18n-pair` (small inline script extension in `Base.astro`)
-  - T2.4 `src/lib/dex.ts` — dex index + accent-insensitive ES/EN/slug/id search; 35 tests total
-  - T2.5 `<Picker />` React island on `/juego/[id]` — ARIA combobox/listbox, ArrowUp/Down/Enter/Escape with 60-row pages auto-extending, `pixelated` sprites, ES/EN copy inside the island, minimal selection summary panel
-- Kanban board is fully agent-maintainable: `gh project` works after the one-time `project` scope device flow (granted today).
-- **The site is LIVE on GitHub Pages** (T2.11, PR #31 + ADR-011): https://hell-over-studios.github.io/dexforge/
-  - Every `main` push auto-deploys via `.github/workflows/deploy.yml` (pages + id-token permissions).
-  - `astro.config.mjs` pins `site` + `base: '/dexforge'`; `src/lib/paths.ts` (`siteBase`/`withBase`) wraps ALL internal URLs — new components must use `withBase`, never bare `/…` hrefs (breaks only under the subpath).
-  - Deploy-side hardening can't use custom HTTP headers on Pages; a referrer meta policy is in `Base.astro`.
-- `main` is green (CI pass on merge commit `fefb7c7`, Deploy workflow pass).
+- **All 11 v0.2.0 tasks are merged to `main`**: T2.1–T2.5 + T2.11 (session 3) and today
+  T2.6–T2.10 via PRs **#33, #34, #35, #36, #37** (issues #17–#21 closed and Done on the board).
+  Every merge was preceded by `pnpm pre-commit` + `gh pr checks --watch` green and followed by
+  a green `main` CI + Deploy run (the no-merge-before-green rule held all day).
+- **No tags exist yet.** Both `v0.1.0` and `v0.2.0` need owner approval at the MINOR release
+  boundary (docs/PROMPT.md §6) — review packages below.
+- Site is LIVE on GitHub Pages and includes the full v0.2 loop:
+  https://hell-over-studios.github.io/dexforge/ (home → pick game → search → drawer → team → share).
+- Tests: **69 unit tests (6 files)** + **2 Playwright e2e** (Chromium desktop + Pixel 5) + e2e CI job.
+- The e2e runs the **built** site (`pnpm preview` webServer at the `/dexforge` base) — dev-server
+  hydration race avoided by design; `pnpm test:e2e` = build + playwright test.
 
-## Review package for owner (v0.1.0) — still actionable
+## Today's PRs (T2.6–T2.10)
 
-**What to review:**
+- **#33 T2.6** `src/components/PokemonDetail.tsx`: drawer with canonical type badges colored from
+  `/data/types.json` (`loadTypeColors` in `src/lib/dex.ts`), 6 quantized pixel stat bars, abilities,
+  dex/height/weight; replaced the T2.5 summary panel. Verified at 360 px.
+- **#34 T2.7** `src/lib/sprites.ts` fallback chains (game→artwork→home · shiny→game→artwork ·
+  animated→game→artwork · artwork→home→game) + pixel-kind rule; drawer sprite toggles with
+  unavailable markers, species+kind.alt text, `aria-live` fallback note; 13 tests incl. real-JSON invariants.
+- **#35 T2.8** `src/lib/team.ts` pure toggle semantics (present→remove · space→append · full→replace
+  oldest) + zustand `persist` (`dexforge-team`, per game); `TeamSlots` pixel frames (pure-CSS empty art);
+  drawer team button + `aria-live` note; 11 tests.
+- **#36 T2.9** `src/lib/share.ts` `?t=v1.<game>.<idBase36…>` (strict decode, sanitized both ways);
+  copy-link + pixel toast (reduced-motion frozen by global CSS); incoming `?t=` seeds the current
+  game's team; 10 round-trip tests.
+- **#37 T2.10** `playwright.config.ts` + `e2e/team.spec.ts` (full loop: home → Emerald → add 6 →
+  copy link → fresh-context restore → reload restore) + `E2E · Chromium` CI job (report artifact on
+  failure). ESLint gained an `e2e/**/*.ts` globals block.
 
-- Summary: scaffold + docs system + CI + data pipeline for Red/Blue (151), Gold/Silver (251), Emerald (202).
-- GitHub PR: https://github.com/hell-over-studios/dexforge/pull/1 (merge commit `6f373fb`).
-- Data: `public/data/` (games.json, types.json, red-blue 382 kB, gold-silver 801 kB, emerald 431 kB).
-- Quality: 22 vitest tests green; `pnpm data:check` green; `pnpm pre-commit` green; CI workflow green.
-- Screenshots: pending — landing page now pixel-cozy themed (`pnpm dev`).
+## Review packages for owner — TWO releases awaiting approval
 
-**Owner decisions requested (multiple):**
+1. **v0.1.0** — scaffold, docs, CI, data pipeline (details unchanged from session 3).
+2. **v0.2.0** — team builder core: pixel-cozy tokens/shell, game selector, picker (+ drawer,
+   sprites), team of 6, share-by-URL, Playwright e2e + CI, GitHub Pages deploy.
 
-1. Approve tagging `v0.1.0` (bash block below).
-2. Deploy platform for T2.11: **Cloudflare Pages vs Vercel** (docs/PROMPT.md says account is prepared).
+**What to look at:** the live site (flow above), `docs/CHANGELOG.md` [Unreleased] (= v0.2.0
+content), `docs/ROADMAP.md` (T2.1–T2.11 all `[x]`), merged PRs #24–#37, `pnpm pre-commit`,
+`pnpm test:e2e`, `pnpm data:check`.
 
-**After approval, the owner (or next agent with approval relayed) does:**
+**Owner decisions requested:**
 
-```bash
-git switch main && git pull
-git tag -a v0.1.0 -m "v0.1.0 - scaffold, docs, CI, game-accurate data pipeline"
-git push origin v0.1.0
-gh release create v0.1.0 --title "v0.1.0" --notes-file <(sed -n '/## \[0.1.0\]/,$p' docs/CHANGELOG.md)
+1. Approve tagging **v0.1.0**.
+2. Approve tagging **v0.2.0**.
+
+**After approval, the owner (or next agent with approval relayed) does (PowerShell-safe version
+instead of bash process substitution):**
+
+```powershell
+git switch main; git pull
+# v0.1.0 tags the HISTORICAL PR #1 merge commit, NOT HEAD (HEAD now contains v0.2 work)
+git tag -a v0.1.0 6f373fb -m "v0.1.0 - scaffold, docs, CI, game-accurate data pipeline"
+git tag -a v0.2.0 -m "v0.2.0 - team builder core (picker, drawer, sprites, team, share, e2e, Pages)"
+git push origin v0.1.0 v0.2.0
+# release notes: extract each CHANGELOG section to a temp file first, then:
+gh release create v0.1.0 --target v0.1.0 --title "v0.1.0" --notes-file $notes
+gh release create v0.2.0 --target v0.2.0 --title "v0.2.0" --notes-file $notes
 ```
+
+(If only one release is approved, tag only that one; do not batch silently.)
 
 ## What to do next (first work of next session)
 
-Continue v0.2.0 in small PRs (issues #17–#21):
-
-1. **T2.6 detail drawer (#17)** — replace the Picker's minimal selection summary with the full drawer (stats bars, types, abilities, dex info); needs `/data/types.json` for type-badge colors (fetch base-aware: use `withBase`).
-2. T2.7 sprite viewer (#18) — game/shiny/showdown/official/HOME toggle with the documented fallback chain.
-3. T2.8 team of 6 (#19, Zustand); T2.9 URL stub (#20); T2.10 Playwright in CI (#21).
-4. T2.11 is DONE — the platform question is answered: GitHub Pages (ADR-011). Owner still owes the **v0.1.0 tag approval**.
-5. PR discipline stays: `pnpm pre-commit` locally; merge only after `gh pr checks --watch` is green; after merge, watch the `main` run once; keep the board in sync (branch → In progress; PR → In review; merge → Done).
+1. Owner releases may land (above); update CHANGELOG link refs and the board/milestones after tagging.
+2. Kick off **v0.3.0 team analysis** per `docs/ROADMAP.md` + ADR-009 in the PR-sized-task style:
+   open `T3.x` issues (defensive 18×18 game-accurate chart first — the data layer already carries
+   per-game charts; then stat radar (lightweight SVG, no heavy lib), average stats/roles,
+   suggestion heuristics), then pick them off one PR at a time.
+3. PR discipline unchanged: `pnpm pre-commit` locally; `gh pr checks --watch --fail-fast` before
+   merge; watch `main` after merge; board: branch→In progress, PR→In review, merge→Done.
+4. Content Easter eggs/quality items from the T2.10 run (none open).
 
 ### Environment notes for browser verification
 
-- `python` + Playwright (pip + chromium) work on this machine; use the `webapp-testing` skill's `with_server.py`.
-- Verify React islands against **`pnpm preview`** — `pnpm dev` showed a one-off `before-hydration.js`
+- `python` + Playwright (pip + chromium) work on this machine; use the `webapp-testing` skill's
+  `with_server.py` against `pnpm preview`. For repo e2e, `pnpm test:e2e` handles everything
+  (build + serving + Chromium from `@playwright/test`).
+- Verify React islands against **`pnpm preview`** — `pnpm dev` has a `before-hydration.js`
   dynamic-import race in headless Chromium (twice reproducible there, zero issues on preview).
 
 ## Commands to resume
@@ -67,7 +90,8 @@ Continue v0.2.0 in small PRs (issues #17–#21):
 pnpm install          # if fresh machine
 pnpm data             # regenerate data (cache in scripts/.cache persists locally)
 pnpm data:check       # validate
-pnpm pre-commit       # lint+format+typecheck+test
+pnpm pre-commit       # lint+format+typecheck+test (69 tests)
+pnpm test:e2e         # build + Playwright (2 e2e, desktop+mobile projects)
 pnpm build && pnpm preview
 pnpm dev              # pixel-cozy landing page
 ```
@@ -100,3 +124,8 @@ pnpm dev              # pixel-cozy landing page
   use tokens — never hard-code colors.
 - `gh project ...` commands require the `project` OAuth scope: `gh auth refresh -s project -h github.com`
   (one-time device flow). Board sync scripts: see docs/BOARD.md §Maintenance.
+- `gh` in PowerShell: stderr from successful commands raises NativeCommandError noise —
+  `2>&1 | Select-Object/-Out-String` it or ignore; PR bodies always via `--body-file`.
+- Board field IDs (stable): project PVT_kwDOD5srcc4BqaR8, Status PVTSSF_lADOD5srcc4BqaR8zhoxicY,
+  In progress 7a004a76, Done 90873f97.
+- Playwright browsers install path: `%LOCALAPPDATA%\ms-playwright` (chromium headless shell currently v1254).
