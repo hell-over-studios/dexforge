@@ -8,11 +8,15 @@
 import { useState } from 'react';
 import type { GamePokemon } from '../lib/data-schema';
 import { chooseSprite, missingKinds, SPRITE_KINDS, type SpriteKind } from '../lib/sprites';
+import { useTeamStore } from '../lib/team';
 
 interface Props {
   mon: GamePokemon;
+  gameId: string;
   /** type slug -> hex color (may be partial; falls back to a neutral chip) */
   colors: Record<string, string>;
+  /** name of the team's oldest member (for the full-team replace message) */
+  oldestName?: string;
   onClose: () => void;
 }
 
@@ -63,13 +67,34 @@ const STAT_LABELS: { key: keyof GamePokemon['stats']; es: string; en: string }[]
   { key: 'speed', es: 'Velocidad', en: 'Speed' },
 ];
 
-export default function PokemonDetail({ mon, colors, onClose }: Props) {
+export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose }: Props) {
   const lang =
     typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
   const [kind, setKind] = useState<SpriteKind>('game');
+  const [note, setNote] = useState('');
+  const team = useTeamStore((s) => s.teams[gameId]) ?? [];
+  const toggle = useTeamStore((s) => s.toggle);
+  const inTeam = team.includes(mon.id);
   const choice = chooseSprite(mon.sprites, kind);
   const unavailable = missingKinds(mon.sprites);
   const fellBack = choice && choice.kind !== kind;
+
+  const onTeamButton = () => {
+    const result = toggle(gameId, mon.id);
+    setNote(
+      result === 'replaced-oldest'
+        ? lang === 'en'
+          ? `Team full — swapped out ${oldestName ?? 'the oldest'}`
+          : `Equipo lleno — salió ${oldestName ?? 'el más antiguo'}`
+        : result === 'added'
+          ? lang === 'en'
+            ? 'Added to the team.'
+            : 'Añadido al equipo.'
+          : lang === 'en'
+            ? 'Removed from the team.'
+            : 'Quitado del equipo.',
+    );
+  };
 
   return (
     <section
@@ -213,6 +238,33 @@ export default function PokemonDetail({ mon, colors, onClose }: Props) {
             .join(', ')}
         </p>
       ) : null}
+
+      {/* team button (T2.8): add / remove / full -> replace oldest */}
+      <button
+        type="button"
+        onClick={onTeamButton}
+        className={
+          'mt-3 block w-full cursor-pointer rounded-sm border-2 px-3 py-2 font-display text-sm shadow-pixel-sm transition-colors ' +
+          (inTeam
+            ? 'border-bark-950 bg-bark-700 text-parchment-200 hover:border-moss-500'
+            : 'border-bark-950 bg-ember-500 text-bark-950 hover:bg-ember-400')
+        }
+      >
+        {inTeam
+          ? lang === 'en'
+            ? 'Remove from team'
+            : 'Quitar del equipo'
+          : team.length >= 6
+            ? lang === 'en'
+              ? `Team full — replace ${oldestName ?? 'oldest'}`
+              : `Equipo lleno — sustituye a ${oldestName ?? 'el más antiguo'}`
+            : lang === 'en'
+              ? 'Add to team'
+              : 'Añadir al equipo'}
+      </button>
+      <p aria-live="polite" className="mt-1 min-h-4 text-[10px] text-parchment-600">
+        {note}
+      </p>
     </section>
   );
 }
