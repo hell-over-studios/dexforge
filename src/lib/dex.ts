@@ -19,7 +19,7 @@ export interface DexEntry {
   dexNumber: number;
   /** game-accurate type slugs */
   types: string[];
-  /** default game sprite for the version-group; falls back to official artwork */
+  /** official artwork — the only visual used (owner directive 2026-11-07) */
   spriteUrl: string | null;
 }
 
@@ -27,8 +27,8 @@ export interface DexEntry {
 export const normalizeText = (s: string): string =>
   s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 
-/** game sprite first, official artwork as fallback (shiny/animated stay T2.7's business) */
-const pickSpriteUrl = (p: GamePokemon): string | null => p.sprites.game ?? p.sprites.official;
+/** official artwork ONLY (owner directive: no game/shiny/animated/HOME sprites) */
+const pickSpriteUrl = (p: GamePokemon): string | null => p.sprites.official;
 
 /**
  * Slim per-game index, ordered by in-game dex number (ascending).

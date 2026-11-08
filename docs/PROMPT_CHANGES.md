@@ -29,3 +29,16 @@ Any owner-approved change to requirements is recorded here with date and effect.
 - Same self-merge autonomy for PATCH-level and in-milestone work applies, per PR.
 
 Recorded by the lead engineer agent; no other clauses of `docs/PROMPT.md` are affected.
+
+### Change 3 -- Species visuals: official artwork ONLY (amends T2.7 scope from the ADR-008-era spec)
+
+> "Quita el sprite de cada pokemon, unicamente la ilustracion, no uses las demas"
+> (2026-11-07, session chat)
+
+- Every species visual now uses **only the official artwork** (sprites.official): picker rows,
+  team slots, and the detail drawer.
+- The sprite-kind toggles (game / shiny / animated showdown / HOME) and their documented fallback
+  chain are withdrawn; src/lib/sprites.ts was removed along with its tests. The pixelated
+  utility stays for future pixel-art elements, but species images render smooth.
+- The full sprite data (game/shiny/showdown/home) is still emitted by the data pipeline and may
+  return behind a future owner decision; no data-format change.

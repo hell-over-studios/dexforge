@@ -1,13 +1,12 @@
 /**
- * Pokémon detail drawer (T2.6 + T2.7) — pixel-cozy panel with type badges
- * (canonical colors from /data/types.json), quantized pixel stat bars,
- * abilities, dex info and height/weight, plus a sprite viewer with
- * kind toggles and a documented fallback chain (src/lib/sprites.ts).
+ * Pokémon detail drawer (T2.6) — pixel-cozy panel with type badges (canonical
+ * colors from /data/types.json), quantized pixel stat bars, abilities, dex
+ * info and height/weight. Visuals show ONLY the official artwork (owner
+ * directive 2026-11-07: no game/shiny/animated/HOME sprites anywhere).
  * Mobile-first (verified at 360px). Charts land in v0.3 (ADR-005).
  */
 import { useState } from 'react';
 import type { GamePokemon } from '../lib/data-schema';
-import { chooseSprite, missingKinds, SPRITE_KINDS, type SpriteKind } from '../lib/sprites';
 import { useTeamStore } from '../lib/team';
 
 interface Props {
@@ -20,25 +19,9 @@ interface Props {
   onClose: () => void;
 }
 
-/**
- * Alt-text convention (a11y): each sprite gets a localized sentence naming the
- * species AND the kind actually shown ("game sprite of X", "shiny sprite of
- * X", "official artwork of X"…), because a fallback changes what the image is.
- */
-const ALT: Record<SpriteKind, { es: (n: string) => string; en: (n: string) => string }> = {
-  game: { es: (n) => `Sprite del juego de ${n}`, en: (n) => `Game sprite of ${n}` },
-  shiny: { es: (n) => `Sprite variocolor de ${n}`, en: (n) => `Shiny sprite of ${n}` },
-  animated: { es: (n) => `Sprite animado de ${n}`, en: (n) => `Animated sprite of ${n}` },
-  artwork: { es: (n) => `Ilustración oficial de ${n}`, en: (n) => `Official artwork of ${n}` },
-  home: { es: (n) => `Render de Pokémon HOME de ${n}`, en: (n) => `Pokémon HOME render of ${n}` },
-};
-
-const TOGGLE_LABEL: Record<SpriteKind, { es: string; en: string }> = {
-  game: { es: 'Juego', en: 'Game' },
-  shiny: { es: 'Variocolor', en: 'Shiny' },
-  animated: { es: 'Animado', en: 'Animated' },
-  artwork: { es: 'Ilustración', en: 'Artwork' },
-  home: { es: 'HOME', en: 'HOME' },
+const ART_ALT = {
+  es: (n: string) => `Ilustración oficial de ${n}`,
+  en: (n: string) => `Official artwork of ${n}`,
 };
 
 /** Quantize to 10% steps for the stepped-pixel look */
@@ -70,14 +53,11 @@ const STAT_LABELS: { key: keyof GamePokemon['stats']; es: string; en: string }[]
 export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose }: Props) {
   const lang =
     typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
-  const [kind, setKind] = useState<SpriteKind>('game');
   const [note, setNote] = useState('');
   const team = useTeamStore((s) => s.teams[gameId]) ?? [];
   const toggle = useTeamStore((s) => s.toggle);
   const inTeam = team.includes(mon.id);
-  const choice = chooseSprite(mon.sprites, kind);
-  const unavailable = missingKinds(mon.sprites);
-  const fellBack = choice && choice.kind !== kind;
+  const artwork = mon.sprites.official;
 
   const onTeamButton = () => {
     const result = toggle(gameId, mon.id);
@@ -102,15 +82,15 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
       className="animate-pop-in rounded-sm border-2 border-ember-600 bg-bark-900 dither p-4 shadow-pixel"
     >
       <div className="flex items-start gap-3">
-        {/* sprite viewer (T2.7): toggles + fallback note */}
-        <div className="shrink-0 text-center">
-          {choice ? (
+        {/* official artwork ONLY (owner directive 2026-11-07) — smooth render */}
+        <div className="shrink-0">
+          {artwork ? (
             <img
-              src={choice.url}
-              alt={ALT[choice.kind][lang](mon.name[lang])}
+              src={artwork}
+              alt={ART_ALT[lang](mon.name[lang])}
               width={96}
               height={96}
-              className={'size-20 [object-fit:contain]' + (choice.pixelated ? ' pixelated' : '')}
+              className="size-20 [object-fit:contain]"
             />
           ) : (
             <span
@@ -120,32 +100,6 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
               —
             </span>
           )}
-          <div
-            role="group"
-            aria-label={lang === 'en' ? 'Sprite kind' : 'Tipo de sprite'}
-            className="mt-1 flex flex-col gap-1"
-          >
-            {SPRITE_KINDS.map((k) => {
-              const unavailableHere = unavailable.includes(k);
-              return (
-                <button
-                  key={k}
-                  type="button"
-                  aria-pressed={kind === k}
-                  onClick={() => setKind(k)}
-                  className={
-                    'rounded-sm border-2 px-1.5 py-0.5 font-display text-[10px] tracking-wide uppercase transition-colors ' +
-                    (kind === k
-                      ? 'border-ember-400 bg-ember-500 text-bark-950'
-                      : 'text-parchment-300 border-bark-700 bg-bark-800 hover:border-ember-600')
-                  }
-                >
-                  {TOGGLE_LABEL[k][lang]}
-                  {unavailableHere ? '*' : ''}
-                </button>
-              );
-            })}
-          </div>
         </div>
 
         <div className="min-w-0 flex-1">
@@ -187,14 +141,6 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
           </div>
         </div>
       </div>
-
-      <p aria-live="polite" className="mt-1 h-3 text-[10px] text-parchment-600">
-        {fellBack && choice
-          ? lang === 'en'
-            ? `"${TOGGLE_LABEL[kind].en}" not available — showing ${TOGGLE_LABEL[choice.kind].en.toLowerCase()}`
-            : `"${TOGGLE_LABEL[kind].es}" no disponible — se muestra ${TOGGLE_LABEL[choice.kind].es.toLowerCase()}`
-          : ''}
-      </p>
 
       {/* pixel stat bars (quantized to 10% steps) */}
       <div

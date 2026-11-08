@@ -1,8 +1,9 @@
 /**
  * Team of 6 — pixel slot frames (T2.8). Pure CSS empty-state art (no ripped
  * assets): an ember "＋" over a faint inner border; filled slots use the
- * game sprite (pixelated) + name. Slots are accessible buttons; loaded only
- * client-side (island), so it never renders during SSR.
+ * official artwork (owner directive 2026-11-07: artwork only, smooth render)
+ * + name. Slots are accessible buttons; loaded only client-side (island), so
+ * it never renders during SSR.
  * T2.9: copy-link button (shares `?t=<encoded>`) and seeding the team from
  * an incoming `?t=` param; toast is animation-free under reduced motion.
  */
@@ -109,7 +110,7 @@ export default function TeamSlots({ gameId, resolve }: Props) {
                       aria-hidden="true"
                       width={48}
                       height={48}
-                      className="size-12 [object-fit:contain] pixelated"
+                      className="size-12 [object-fit:contain]"
                     />
                   ) : (
                     <span className="size-12 rounded-sm" aria-hidden="true" />

@@ -27,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Test counts grew to 69 unit tests (6 files) + 2 Playwright e2e (desktop and mobile viewport projects).
+- **Species visuals: official artwork ONLY (owner directive 2026-11-07).** Picker rows, team slots and the detail drawer use `sprites.official`; the sprite-kind toggles (game / shiny / animated / HOME) and their fallback-chain module (`src/lib/sprites.ts`) were withdrawn along with its 13 tests. Full sprite data stays in the datasets for a possible future decision. DexEntry.alt text now names the artwork; species images render smooth (no `pixelated`).
+- Test counts grew to 56 unit tests (5 files) + 2 Playwright e2e (desktop and mobile viewport projects).
 - `stats` bars use quantized 10% steps for the pixel look; drawer sprite rendering splits pixel (`game`/`shiny`/`animated` → `pixelated`) from smooth (`artwork`/`home`) sources.
 
 ### Planned for v0.3.0
