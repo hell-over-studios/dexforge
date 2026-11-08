@@ -8,15 +8,15 @@ Last updated: 2026-11-07
 **neither `v0.1.0` nor `v0.2.0` is tagged** — MINOR releases stop at the release boundary per
 docs/PROMPT.md §6: owner (Martin) must approve the review packages in docs/HANDOFF.md.
 
-| Milestone                        | %    | Notes                                                                                                                                   |
-| -------------------------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                                    |
+| Milestone                        | %    | Notes                                                                                                                                     |
+| -------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                                      |
 | v0.2.0 team builder core         | 100% | **code-complete** (PRs #24–#37): picker, drawer, sprites, team-of-6, share-URL, e2e, live on Pages — **tag needs owner approval (MINOR)** |
-| v0.3.0 team analysis             | 0%   |                                                                                                                                         |
-| v0.4.0 moves/offense             | 0%   |                                                                                                                                         |
-| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                      |
-| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                              |
-| v1.0.0 share/polish              | 0%   |                                                                                                                                         |
+| v0.3.0 team analysis             | 0%   |                                                                                                                                           |
+| v0.4.0 moves/offense             | 0%   |                                                                                                                                           |
+| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                        |
+| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                                |
+| v1.0.0 share/polish              | 0%   |                                                                                                                                           |
 
 ## Done this session
 
