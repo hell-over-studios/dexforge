@@ -1,23 +1,22 @@
 # Progress
 
-Last updated: 2026-11-06
+Last updated: 2026-11-07
 
-## Current version: v0.1.0 (merged — pending owner review for release)
+## Current version: v0.2.0 code-complete (both v0.1.0 and v0.2.0 tags pending owner approval)
 
-**Status:** milestone v0.1.0 is merged to `main` via PR #1 (CI green). **Not tagged** —
-MINOR releases stop at the release boundary per docs/PROMPT.md §6: owner (Martin)
-must approve the review package in docs/HANDOFF.md before `v0.1.0` is tagged and
-published.
+**Status:** all 11 v0.2.0 tasks (T2.1–T2.11) are merged to `main`, the site is live;
+**neither `v0.1.0` nor `v0.2.0` is tagged** — MINOR releases stop at the release boundary per
+docs/PROMPT.md §6: owner (Martin) must approve the review packages in docs/HANDOFF.md.
 
-| Milestone                        | %    | Notes                                                                                                                                   |
-| -------------------------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                                    |
-| v0.2.0 team builder core         | ~55% | T2.1–T2.5 + T2.11 done (PRs #24, #27–#29, #31): **site LIVE at https://hell-over-studios.github.io/dexforge/**; next T2.6 detail drawer |
-| v0.3.0 team analysis             | 0%   |                                                                                                                                         |
-| v0.4.0 moves/offense             | 0%   |                                                                                                                                         |
-| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                      |
-| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                              |
-| v1.0.0 share/polish              | 0%   |                                                                                                                                         |
+| Milestone                        | %    | Notes                                                                                                                                     |
+| -------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                                      |
+| v0.2.0 team builder core         | 100% | **code-complete** (PRs #24–#37): picker, drawer, sprites, team-of-6, share-URL, e2e, live on Pages — **tag needs owner approval (MINOR)** |
+| v0.3.0 team analysis             | 0%   |                                                                                                                                           |
+| v0.4.0 moves/offense             | 0%   |                                                                                                                                           |
+| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                        |
+| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                                |
+| v1.0.0 share/polish              | 0%   |                                                                                                                                           |
 
 ## Done this session
 
@@ -38,6 +37,26 @@ published.
 - **Owner directive (2026-11-06) — pixel art + cozy + smaller PRs** (recorded in `docs/PROMPT_CHANGES.md`
   as ADR-008/ADR-009, PR #10): v0.2.0 expanded into PR-sized tasks T2.1–T2.11 (issues #12–#22).
 
+## Done this session (2026-11-07 — session 4: T2.6–T2.10, v0.2.0 finished)
+
+- **PR #33 (T2.6, #17):** Pokémon detail drawer — canonical type badges colored from `/data/types.json`
+  (`loadTypeColors`), 6 quantized pixel stat bars, abilities (incl. hidden), dex/height/weight; replaces the
+  T2.5 summary panel. Verified in-browser at 360 px.
+- **PR #34 (T2.7, #18):** sprite viewer — `src/lib/sprites.ts` formalizes fallback chains
+  (game→artwork→home; shiny→game→artwork; animated→game→artwork; artwork→home→game), pixel-kinds render
+  `pixelated`, unavailable toggles marked, localized alt text names species + shown kind, `aria-live`
+  fallback note; 13 new tests incl. real-JSON invariants (48 tests).
+- **PR #35 (T2.8, #19):** team of 6 — pure `toggleMember` (toggle off / append / full→replace oldest) +
+  zustand `persist` store (`dexforge-team`, per game); pixel slot frames (pure-CSS empty art), accessible
+  slot-remove buttons, drawer team button with `aria-live` result note. 11 tests (59 total).
+- **PR #36 (T2.9, #20):** share-by-URL stub — `?t=v1.<game>.<idBase36…>` encode/decode in `src/lib/share.ts`
+  (strict decode, sanitized both ways), copy-link button + pixel toast (reduced-motion frozen by global
+  CSS), `?t=` seeds the team for the current game. 10 tests (69 total).
+- **PR #37 (T2.10, #21):** real Playwright in-repo (`playwright.config.ts`, chromium desktop + Pixel 5
+  projects) + `E2E · Chromium` CI job + first full-loop smoke (home → pick Emerald → add 6 → share URL →
+  fresh context restores → reload restores). 69 unit tests + 2 e2e green.
+- All of #17–#21 closed & Done on the board within their PR cycle; `main` CI + Deploy green after every merge.
+
 ## Done this session (2026-11-06)
 
 - PR #10: docs — design direction (ADR-008) + task granularity (ADR-009); PR #11: prettier fix (kept `main` green).
@@ -56,11 +75,11 @@ published.
 
 ## Next
 
-1. Owner approvals still pending: **v0.1.0 tag** (review package in docs/HANDOFF.md) and
-   **deploy platform** for T2.11 (Cloudflare Pages vs Vercel — asked, no answer yet).
-2. Continue v0.2.0: **T2.6 detail drawer (#17)** next, then T2.7 sprite viewer.
+1. Owner approvals pending: **tag `v0.1.0`** and **tag `v0.2.0`** (review packages + bash in docs/HANDOFF.md).
+2. Then v0.3.0 team analysis: defensive table (18×18 game-accurate), stat radar, average stats / roles,
+   suggestion heuristics (ADR-005: lightweight SVG, no heavy chart lib).
 3. Keep the board in sync when ROADMAP tasks or milestones change (`docs/BOARD.md`).
 
 ## Blockers
 
-- Only the pending owner approvals: **v0.1.0 tagging** (deploy platform question is resolved: GitHub Pages, ADR-011).
+- Only the pending owner approvals: both release tags (v0.1.0 and v0.2.0).

@@ -72,12 +72,12 @@ when the item is linked to the repository issue.
 | 14  | T2.3 game selector screen              | Done    | P1       | Frontend | S    |
 | 15  | T2.4 picker data layer                 | Done    | P1       | Data     | M    |
 | 16  | T2.5 picker UI                         | Done    | P1       | Frontend | M    |
-| 17  | T2.6 Pokémon detail drawer             | Backlog | P2       | Frontend | S    |
-| 18  | T2.7 sprite viewer                     | Backlog | P2       | Frontend | M    |
-| 19  | T2.8 team of 6                         | Backlog | P1       | Frontend | M    |
-| 20  | T2.9 share-by-URL stub                 | Backlog | P2       | Frontend | S    |
-| 21  | T2.10 Playwright setup + smoke e2e     | Backlog | P2       | Infra    | M    |
-| 22  | T2.11 deploy config                    | Blocked | P1       | Infra    | S    |
+| 17  | T2.6 Pokémon detail drawer             | Done    | P2       | Frontend | S    |
+| 18  | T2.7 sprite viewer                     | Done    | P2       | Frontend | M    |
+| 19  | T2.8 team of 6                         | Done    | P1       | Frontend | M    |
+| 20  | T2.9 share-by-URL stub                 | Done    | P2       | Frontend | S    |
+| 21  | T2.10 Playwright setup + smoke e2e     | Done    | P2       | Infra    | M    |
+| 22  | T2.11 deploy config                    | Done    | P1       | Infra    | S    |
 
 ## Maintenance
 
