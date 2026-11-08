@@ -52,6 +52,8 @@ interface TeamStore {
   teams: TeamsByGame;
   toggle: (gameId: string, id: number) => AddResult;
   remove: (gameId: string, index: number) => void;
+  /** seed a game's team from a share URL (T2.9); caps at TEAM_SIZE */
+  seed: (gameId: string, ids: number[]) => void;
 }
 
 export const useTeamStore = create<TeamStore>()(
@@ -70,6 +72,9 @@ export const useTeamStore = create<TeamStore>()(
       },
       remove: (gameId: string, index: number) => {
         set({ teams: removeAt(get().teams, gameId, index) });
+      },
+      seed: (gameId: string, ids: number[]) => {
+        set({ teams: { ...get().teams, [gameId]: ids.slice(0, TEAM_SIZE) } });
       },
     }),
     { name: 'dexforge-team', version: 1 },

@@ -3,8 +3,12 @@
  * assets): an ember "＋" over a faint inner border; filled slots use the
  * game sprite (pixelated) + name. Slots are accessible buttons; loaded only
  * client-side (island), so it never renders during SSR.
+ * T2.9: copy-link button (shares `?t=<encoded>`) and seeding the team from
+ * an incoming `?t=` param; toast is animation-free under reduced motion.
  */
+import { useEffect, useRef, useState } from 'react';
 import { useTeamStore } from '../lib/team';
+import { decodeTeam, encodeTeam } from '../lib/share';
 
 interface Props {
   gameId: string;
@@ -17,6 +21,31 @@ export default function TeamSlots({ gameId, resolve }: Props) {
   const remove = useTeamStore((s) => s.remove);
   const lang =
     typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
+  const [copied, setCopied] = useState(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* incoming share: `?t=<value>` wins for this game only when it names this game */
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get('t');
+    if (!raw) return;
+    const payload = decodeTeam(raw);
+    if (payload?.gameId === gameId && payload.ids.length > 0) {
+      useTeamStore.getState().seed(gameId, payload.ids);
+    }
+  }, [gameId]);
+
+  const copyLink = async () => {
+    const value = encodeTeam(gameId, team);
+    const url = `${window.location.origin}${window.location.pathname}?t=${encodeURIComponent(value)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+      hideTimer.current = setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard unavailable (e.g. insecure context): silently keep the UI calm */
+    }
+  };
 
   const slots = Array.from({ length: 6 }, (_, i) => {
     const id = team[i];
@@ -31,8 +60,33 @@ export default function TeamSlots({ gameId, resolve }: Props) {
         <h2 className="font-display text-sm tracking-widest text-parchment-400 uppercase">
           {lang === 'en' ? 'Your team' : 'Tu equipo'}
         </h2>
-        <span className="font-display text-sm text-ember-300">{team.length}/6</span>
+        <div className="flex items-center gap-2">
+          <span className="font-display text-sm text-ember-300">{team.length}/6</span>
+          <button
+            type="button"
+            onClick={copyLink}
+            disabled={team.length === 0}
+            aria-label={
+              lang === 'en'
+                ? 'Copy share link to the team'
+                : 'Copiar enlace para compartir el equipo'
+            }
+            className="cursor-pointer rounded-sm border-2 border-bark-700 bg-bark-800 px-2 py-0.5 font-display text-[11px] tracking-wide text-parchment-200 uppercase shadow-pixel-sm hover:border-ember-600 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {lang === 'en' ? 'Copy link' : 'Copiar enlace'}
+          </button>
+        </div>
       </div>
+      {/* reduced-motion aware: global CSS freezes animation under prefers-reduced-motion */}
+      <p
+        aria-live="polite"
+        className={
+          'fixed bottom-4 left-1/2 z-50 -translate-x-1/2 animate-pop-in rounded-sm border-2 border-ember-400 bg-bark-900 px-3 py-1.5 font-display text-sm text-parchment-100 shadow-pixel transition-opacity duration-200' +
+          (copied ? ' opacity-100' : ' pointer-events-none opacity-0')
+        }
+      >
+        {lang === 'en' ? 'Link copied!' : '¡Enlace copiado!'}
+      </p>
       <ul role="list" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
         {slots.map((slot) => {
           if (slot.id !== null && slot.info) {
