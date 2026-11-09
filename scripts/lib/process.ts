@@ -293,14 +293,22 @@ export function extractStats(form: PokeForm): Stats {
   };
 }
 
-export function extractAbilities(form: PokeForm, generation: number): SpeciesAbility[] {
+export function extractAbilities(
+  form: PokeForm,
+  generation: number,
+  abilityNames?: ReadonlyMap<string, LocalizedText>,
+): SpeciesAbility[] {
   if (generation < 3) return [];
-  return form.abilities.map((a) => ({
-    slug: a.ability.name,
-    name: { en: capitalize(a.ability.name), es: capitalize(a.ability.name) },
-    slot: a.slot,
-    hidden: a.is_hidden,
-  }));
+  return form.abilities.map((a) => {
+    const slug = a.ability.name;
+    const localized = abilityNames?.get(slug);
+    return {
+      slug,
+      name: localized ?? { en: capitalize(slug), es: capitalize(slug) },
+      slot: a.slot,
+      hidden: a.is_hidden,
+    };
+  });
 }
 
 export function extractEvolutionChain(link: EvoLink): EvolutionStep[] {

@@ -33,7 +33,7 @@
       "kind": "gift",
       "location": {
         "en": "Saffron City (choose between Hitmonlee/Hitmonchan)",
-        "es": "Ciudad Celeste (elige entre Hitmonlee/Hitmonchan)"
+        "es": "Ciudad Azafrán (elige entre Hitmonlee/Hitmonchan)"
       },
       "method": "After fighting",
       "versions": ["red", "blue"],
@@ -45,7 +45,7 @@
       "kind": "gift",
       "location": {
         "en": "Saffron City (choose between Hitmonlee/Hitmonchan)",
-        "es": "Ciudad Celeste (elige entre Hitmonlee/Hitmonchan)"
+        "es": "Ciudad Azafrán (elige entre Hitmonlee/Hitmonchan)"
       },
       "method": "After fighting",
       "versions": ["red", "blue"],
@@ -82,7 +82,10 @@
     {
       "species": "lapras",
       "kind": "gift",
-      "location": { "en": "Silph Co. 7F, from the employee", "es": "Sylph S.A. 7P, del empleado" },
+      "location": {
+        "en": "Silph Co. 7F, from the employee",
+        "es": "Silph S.A., planta 7 (del empleado)"
+      },
       "method": "Gift",
       "versions": ["red", "blue"],
       "minLevel": 15,
@@ -91,7 +94,7 @@
     {
       "species": "articuno",
       "kind": "static",
-      "location": { "en": "Seafoam Islands B4F", "es": "Islas Espuma B4" },
+      "location": { "en": "Seafoam Islands B4F", "es": "Islas Espuma B4F" },
       "method": "Static",
       "versions": ["red", "blue"],
       "minLevel": 50,
@@ -118,7 +121,7 @@
     {
       "species": "mewtwo",
       "kind": "static",
-      "location": { "en": "Cerulean Cave B2F", "es": "Cerulean Cave B2" },
+      "location": { "en": "Cerulean Cave B2F", "es": "Cueva Celeste B2F" },
       "method": "Static (requires HM03 and finishing Elite 4)",
       "versions": ["red", "blue"],
       "minLevel": 70,
