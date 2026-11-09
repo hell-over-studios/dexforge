@@ -73,10 +73,10 @@ describe('summarizeDefenses (v1)', () => {
   });
 
   it('an empty summary is fine for a very bulky team', () => {
-    const profile = analyzeTeam(
-      [member(1, 'Bulky', ['steel'])],
-      { ground: { steel: 0.5 }, poison: { steel: 0.5 } },
-    );
+    const profile = analyzeTeam([member(1, 'Bulky', ['steel'])], {
+      ground: { steel: 0.5 },
+      poison: { steel: 0.5 },
+    });
     const s = summarizeDefenses(profile);
     expect(s.sharedWeaknesses).toEqual([]);
     expect(s.immunities).toEqual([]);
