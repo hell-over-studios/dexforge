@@ -6,7 +6,7 @@
  * The rendered site never calls PokeAPI: everything derives from the static
  * JSON under /public/data/<game>.json (fetched with the deploy base prefix).
  */
-import type { GameData, GamePokemon, TypeData } from './data-schema';
+import type { GameData, GamePokemon, LocalizedText, TypeData } from './data-schema';
 import { siteBase } from './paths';
 
 /** One picker row: exactly what the listing UI needs, nothing more. */
@@ -82,8 +82,23 @@ export async function loadGame(gameId: string): Promise<GameData> {
 
 /** type slug -> hex color, from the static /data/types.json */
 export async function loadTypeColors(): Promise<Record<string, string>> {
+  return (await loadTypeMeta()).colors;
+}
+
+export interface TypeMeta {
+  /** type slug -> hex color */
+  colors: Record<string, string>;
+  /** type slug -> localized display name */
+  names: Record<string, LocalizedText>;
+}
+
+/** type slug -> { color, localized names }, from the static /data/types.json */
+export async function loadTypeMeta(): Promise<TypeMeta> {
   const res = await fetch(`${siteBase}/data/types.json`);
-  if (!res.ok) return {};
+  if (!res.ok) return { colors: {}, names: {} };
   const data = (await res.json()) as TypeData;
-  return Object.fromEntries(data.types.map((t) => [t.slug, t.color]));
+  return {
+    colors: Object.fromEntries(data.types.map((t) => [t.slug, t.color])),
+    names: Object.fromEntries(data.types.map((t) => [t.slug, t.name])),
+  };
 }

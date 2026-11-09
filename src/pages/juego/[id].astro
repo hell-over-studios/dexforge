@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Picker from '../../components/Picker';
+import DefenseCharts from '../../components/DefenseCharts';
 import fs from 'node:fs';
 import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
 import { withBase } from '../../lib/paths';
@@ -59,6 +60,11 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
         </p>
       </noscript>
       <Picker client:visible gameId={game.id} />
+    </section>
+
+    <!-- Defensive analysis island (T3.2) — reads the same static /data JSON -->
+    <section aria-label="Análisis defensivo del equipo" class="mt-6">
+      <DefenseCharts client:visible gameId={game.id} />
     </section>
   </div>
 </Base>
