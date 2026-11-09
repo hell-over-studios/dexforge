@@ -1,11 +1,12 @@
 /**
  * Pokémon picker island (T2.5) — searchable pixel-cozy list with full keyboard
  * navigation (combobox/listbox ARIA pattern), ES default labels, empty/loading
- * states, and a minimal selection summary (full detail drawer is T2.6).
- * Data comes from the static /public/data/<game>.json via loadDexIndex();
+ * states. The detail drawer expands IN PLACE, right under the selected row
+ * (owner request 2026-11-08) instead of pinning to the top.
+ * Data comes from the static /public/data/<game>.json via loadGame();
  * the deployed site never calls PokeAPI.
  */
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import PokemonDetail from './PokemonDetail';
 import TeamSlots from './TeamSlots';
 import { loadGame, loadTypeColors, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
@@ -27,6 +28,8 @@ export default function Picker({ gameId }: Props) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [showCount, setShowCount] = useState(PAGE);
   const [selected, setSelected] = useState<DexEntry | null>(null);
+  /** the in-place drawer <li>; scrolled into view whenever selection changes */
+  const detailRef = useRef<HTMLLIElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,8 +52,21 @@ export default function Picker({ gameId }: Props) {
     };
   }, [gameId]);
 
+  /* expand-in-place: after every selection, keep the drawer on screen with the
+     smallest possible scroll (nearest) — smooth, unless reduced motion is on */
+  useEffect(() => {
+    if (!selected) return;
+    const reduce =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    detailRef.current?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  }, [selected]);
+
   const results = useMemo(() => (entries ? searchDex(entries, query) : []), [entries, query]);
   const visible = results.slice(0, showCount);
+  /* where the drawer sits: under the selected row when it is on screen, above
+     the list otherwise (e.g. the selection outlived a narrowed query) */
+  const selIdx = selected ? visible.findIndex((e) => e.id === selected.id) : -1;
   /* current UI language at render time (ES default, ?lang=en supported) */
   const lang =
     typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
@@ -77,7 +93,15 @@ export default function Picker({ gameId }: Props) {
         ev.preventDefault();
         setSelected(pick);
         setQuery('');
-        resetWindow();
+        /* clearing the query restores the full list; extend the shown window so
+           the chosen entry keeps its row (and the drawer under it) on screen */
+        const fullIdx = entries.findIndex((e) => e.id === pick.id);
+        if (fullIdx >= PAGE) {
+          setShowCount(PAGE * (Math.floor(fullIdx / PAGE) + 1));
+          setActiveIdx(fullIdx);
+        } else {
+          resetWindow();
+        }
       }
     } else if (ev.key === 'Escape') {
       setQuery('');
@@ -161,8 +185,9 @@ export default function Picker({ gameId }: Props) {
           : 'Flechas para moverte, Enter para añadir, Escape para limpiar.'}
       </p>
 
-      {selected && game
-        ? /* Full detail drawer (T2.6) — shows immediately under the input */
+      {selected && game && selIdx === -1
+        ? /* Detail drawer (T2.6) fallback — the selected row is not in the visible
+             window, so the panel cosplays as a top banner until it reappears. */
           (() => {
             const mon = game.pokemon.find((p) => p.id === selected.id);
             if (!mon) return null;
@@ -188,54 +213,76 @@ export default function Picker({ gameId }: Props) {
         className="mt-3 grid gap-2"
       >
         {visible.map((entry, idx) => (
-          <li
-            key={entry.slug}
-            role="option"
-            id={`picker-opt-${idx}`}
-            aria-selected={idx === activeIdx}
-            onClick={() => pick(entry, idx)}
-            className={
-              'flex cursor-pointer items-center gap-3 rounded-sm border-2 bg-bark-900 p-2 shadow-pixel-sm ' +
-              (idx === activeIdx
-                ? 'border-ember-500 bg-bark-800'
-                : 'border-bark-800 hover:border-ember-600')
-            }
-          >
-            {entry.spriteUrl ? (
-              // game sprite: keep it pixel-crisp (ADR-008)
-              <img
-                src={entry.spriteUrl}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                decoding="async"
-                width={64}
-                height={64}
-                className="size-12 shrink-0 [object-fit:contain]"
-              />
-            ) : (
-              <span
-                className="size-12 shrink-0 rounded-sm border-2 border-bark-800 bg-bark-950"
-                aria-hidden="true"
-              />
-            )}
-            <span className="min-w-0 flex-1">
-              <span className="font-display text-base text-parchment-100">{entry.name[lang]}</span>
-              <span className="ml-2 text-xs text-parchment-600">
-                n.º {entry.id} · dex {entry.dexNumber}
+          <Fragment key={entry.slug}>
+            <li
+              role="option"
+              id={`picker-opt-${idx}`}
+              aria-selected={idx === activeIdx}
+              onClick={() => pick(entry, idx)}
+              className={
+                'flex cursor-pointer items-center gap-3 rounded-sm border-2 bg-bark-900 p-2 shadow-pixel-sm ' +
+                (idx === activeIdx
+                  ? 'border-ember-500 bg-bark-800'
+                  : 'border-bark-800 hover:border-ember-600')
+              }
+            >
+              {entry.spriteUrl ? (
+                // official artwork (owner directive): smooth render
+                <img
+                  src={entry.spriteUrl}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  width={64}
+                  height={64}
+                  className="size-12 shrink-0 [object-fit:contain]"
+                />
+              ) : (
+                <span
+                  className="size-12 shrink-0 rounded-sm border-2 border-bark-800 bg-bark-950"
+                  aria-hidden="true"
+                />
+              )}
+              <span className="min-w-0 flex-1">
+                <span className="font-display text-base text-parchment-100">
+                  {entry.name[lang]}
+                </span>
+                <span className="ml-2 text-xs text-parchment-600">
+                  n.º {entry.id} · dex {entry.dexNumber}
+                </span>
+                <span className="mt-1 flex gap-1">
+                  {entry.types.map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-sm border border-bark-700 px-1 text-[10px] tracking-wide text-parchment-400 uppercase"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </span>
               </span>
-              <span className="mt-1 flex gap-1">
-                {entry.types.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-sm border border-bark-700 px-1 text-[10px] tracking-wide text-parchment-400 uppercase"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </span>
-            </span>
-          </li>
+            </li>
+            {/* the drawer expands IN PLACE, right under the clicked row */}
+            {selected && game && entry.id === selected.id
+              ? (() => {
+                  const mon = game.pokemon.find((p) => p.id === selected.id);
+                  if (!mon) return null;
+                  return (
+                    <li ref={detailRef} role="presentation" className="list-none">
+                      <PokemonDetail
+                        key={mon.id}
+                        mon={mon}
+                        gameId={gameId}
+                        colors={colors}
+                        oldestName={oldestName}
+                        onClose={() => setSelected(null)}
+                      />
+                    </li>
+                  );
+                })()
+              : null}
+          </Fragment>
         ))}
       </ul>
 
