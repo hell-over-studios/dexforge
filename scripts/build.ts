@@ -159,6 +159,36 @@ async function main(): Promise<void> {
     }
   });
 
+  /* apply curated i18n overrides (location names PokeAPI leaves untranslated/wrong) */
+  const i18nFixes = loadI18nFixes();
+  for (const [slug, override] of Object.entries(i18nFixes.locations ?? {})) {
+    const existing = locationNames.get(slug);
+    const es = (override as { es?: string }).es;
+    if (!es) continue;
+    locationNames.set(slug, { en: existing?.en ?? capitalize(slug), es });
+  }
+
+  /* 5b. ability names (PokeAPI ships localized names; we previously stored the English slug) */
+  const abilitySlugs = [...new Set(forms.flatMap((f) => f.abilities.map((a) => a.ability.name)))];
+  console.log(`· unique abilities: ${abilitySlugs.length}`);
+  const abilityNames = new Map<string, LocalizedText>();
+  await mapPolite(abilitySlugs, async (slug) => {
+    try {
+      const ability = await fetchPokeApi<{ names: { name: string; language: { name: string } }[] }>(
+        `ability/${slug}`,
+      );
+      abilityNames.set(
+        slug,
+        ability.names.length
+          ? localName(ability.names as never, capitalize(slug))
+          : { en: capitalize(slug), es: capitalize(slug) },
+      );
+    } catch {
+      abilityNames.set(slug, { en: capitalize(slug), es: capitalize(slug) });
+      if (args.verbose) console.warn(`  ⚠ ability ${slug} missing`);
+    }
+  });
+
   /* 6. evolution chains */
   const chainIds = [
     ...new Set(
@@ -272,7 +302,7 @@ async function main(): Promise<void> {
         generationSlug: sp.generation.name,
         types,
         stats: extractStats(form),
-        abilities: extractAbilities(form, game.generation),
+        abilities: extractAbilities(form, game.generation, abilityNames),
         height: form.height,
         weight: form.weight,
         captureRate: sp.capture_rate ?? null,
@@ -360,6 +390,20 @@ function loadCurated(gameId: string): CuratedGameData | null {
     return JSON.parse(fs.readFileSync(file, 'utf-8')) as CuratedGameData;
   } catch (err) {
     throw new Error(`Invalid curated JSON for ${gameId}: ${String(err)}`);
+  }
+}
+
+interface I18nFixes {
+  locations?: Record<string, { es?: string }>;
+}
+
+function loadI18nFixes(): I18nFixes {
+  const file = path.join(CURATED_DIR, 'i18n-fixes.json');
+  if (!fs.existsSync(file)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf-8')) as I18nFixes;
+  } catch (err) {
+    throw new Error(`Invalid i18n fixes JSON: ${String(err)}`);
   }
 }
 

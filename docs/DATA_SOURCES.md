@@ -55,6 +55,22 @@ Rules baked into `scripts/lib/games.ts`:
 - Some dexes include entries with `past` numbers missing; build logs any mismatch (`species listed in dex but no pokemon form` etc.) — resolve per case, never invent redirects here.
 - `past_types` has gaps for some older forms (rare, mostly cosmetic regional forms not in old dexes).
 
+## Localization (ES)
+
+- Standard: **European Spanish (`es`)** is the canonical ES locale, matching the official
+  es-ES game releases. `es-419` (Latin American) strings are only used as a fallback when an
+  `es` entry is missing in PokeAPI (see `getName`/`localName` in `scripts/lib/process.ts`).
+- Species and type names come straight from PokeAPI's `es` entries (they match the official
+  es-ES names for Gen 1–3).
+- Ability names are now fetched from `ability/{slug}` and localized through the same path;
+  previously the pipeline stored the English slug for both locales.
+- Location-area names are the weak spot: PokeAPI ships no Spanish for most of them, so the
+  pipeline falls back to the English name. Obvious/wrong translations are corrected in
+  `/data/curated/i18n-fixes.json` (keyed by location-area slug) and applied at build time.
+  Further translations are welcome via PRs editing that file.
+- Game-quirk differences (e.g. old-game wording) stay in the curated encounter locations,
+  not in the global override file.
+
 ## Curated data
 
 - Location: `/data/curated/<game-id>.json` — schema & rules in `/data/SCHEMA.md`; validated by the pipeline + tests; evolves via PR (community-friendly).

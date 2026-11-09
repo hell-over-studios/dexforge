@@ -1,0 +1,15 @@
+{
+  "locations": {
+    "cerulean-cave-1f": { "es": "Cueva Celeste (1F)" },
+    "cerulean-cave-2f": { "es": "Cueva Celeste (2F)" },
+    "cerulean-cave-b1f": { "es": "Cueva Celeste (B1F)" },
+    "hoenn-route-101-area": { "es": "Ruta 101" },
+    "kanto-power-plant-area": { "es": "Central Energía" },
+    "kanto-victory-road-2-1f": { "es": "Camino Victoria (1F)" },
+    "kanto-victory-road-2-2f": { "es": "Camino Victoria (2F)" },
+    "kanto-victory-road-2-3f": { "es": "Camino Victoria (3F)" },
+    "saffron-city-fighting-dojo": { "es": "Ciudad Azafrán (Dojo Karate)" },
+    "saffron-city-silph-co-7f": { "es": "Silph S.A., planta 7" },
+    "seafoam-islands-b4f": { "es": "Islas Espuma (B4F)" }
+  }
+}
