@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Detail drawer expands in place (owner request 2026-11-08):** selecting a Pokémon now opens the detail panel right under the clicked picker row instead of pinning above the list; it scrolls minimally into view (`block: nearest`, smooth unless `prefers-reduced-motion`), keyboard Enter keeps the chosen row on screen after the query clears, and a top-anchored fallback remains only when the row is outside the visible window.
 - **Species visuals: official artwork ONLY (owner directive 2026-11-07).** Picker rows, team slots and the detail drawer use `sprites.official`; the sprite-kind toggles (game / shiny / animated / HOME) and their fallback-chain module (`src/lib/sprites.ts`) were withdrawn along with its 13 tests. Full sprite data stays in the datasets for a possible future decision. DexEntry.alt text now names the artwork; species images render smooth (no `pixelated`).
 - Test counts grew to 56 unit tests (5 files) + 2 Playwright e2e (desktop and mobile viewport projects).
 - `stats` bars use quantized 10% steps for the pixel look; drawer sprite rendering splits pixel (`game`/`shiny`/`animated` → `pixelated`) from smooth (`artwork`/`home`) sources.
