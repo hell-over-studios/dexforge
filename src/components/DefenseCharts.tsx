@@ -1,13 +1,16 @@
 /**
- * Defensive analysis charts (T3.2, v0.3.0) — pixel-cozy panel under the picker.
- * Data: ONLY the static per-game dataset + /data/types.json, through
- * src/lib/analysis.ts (never PokeAPI, never a modern static chart: rows are
- * each game's OWN attacking types, so Red/Blue keeps its 15 Gen-I rows).
- * Mobile (<md): stacked per-member cards. Desktop: attacker x member matrix.
- * Fails silent (cosmetic panel) if the data won't load.
+ * Defensive analysis charts (T3.2 + T3.4, v0.3.0) — pixel-cozy panel under the
+ * picker. Data: ONLY the static per-game dataset + /data/types.json, through
+ * src/lib/analysis.ts + src/lib/summary.ts (never PokeAPI, never a modern
+ * static chart: rows are each game's OWN attacking types, so Red/Blue keeps
+ * its 15 Gen-I rows). Mobile (<md): stacked per-member cards. Desktop:
+ * attacker x member matrix. Below: v1 suggestions (shared weaknesses,
+ * immunities, team-wide resists) as cozy text lines. Fails silent if the
+ * data won't load (cosmetic panel).
  */
 import { useEffect, useMemo, useState } from 'react';
 import { analyzeTeam, type TeamMemberInput } from '../lib/analysis';
+import { summarizeDefenses } from '../lib/summary';
 import { loadGame, loadTypeMeta, type TypeMeta } from '../lib/dex';
 import { useTeamStore } from '../lib/team';
 import type { GameData, GamePokemon } from '../lib/data-schema';
@@ -84,6 +87,8 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
     [game, members],
   );
 
+  const summary = useMemo(() => (profile ? summarizeDefenses(profile) : null), [profile]);
+
   if (loadError) return null;
 
   const t = {
@@ -100,6 +105,21 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
       lang === 'en'
         ? 'Multipliers of each attacking type against each team member'
         : 'Multiplicadores de cada tipo atacante contra cada miembro del equipo',
+    notes: lang === 'en' ? 'Notes' : 'Notas',
+    warn: (names: string, ty: string) =>
+      lang === 'en'
+        ? `Watch out for ${ty}: it hits ×2 or more on ${names}.`
+        : `Cuidado con ${ty}: golpea ×2 o más a ${names}.`,
+    immune: (name: string, ty: string) =>
+      lang === 'en' ? `${name} is immune to ${ty}.` : `${name} es inmune a ${ty}.`,
+    resists: (ty: string) =>
+      lang === 'en'
+        ? `Solid answer: the whole team resists ${ty}.`
+        : `Respuesta clara: todo el equipo resiste ${ty}.`,
+    noNotes:
+      lang === 'en'
+        ? 'No warnings with this team so far.'
+        : 'Sin avisos por ahora con este equipo.',
   };
 
   const typeName = (slug: string) => meta.names[slug]?.[lang] ?? slug;
@@ -260,6 +280,48 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
           </table>
         </>
       )}
+
+      {/* T3.4: suggestions v1 — cozy text notes from the same profile, no fake data */}
+      {summary ? (
+        <div className="mt-4 rounded-sm border-2 border-bark-800 bg-bark-950 p-3">
+          <h3 className="font-display text-sm tracking-wide text-parchment-600 uppercase">
+            {t.notes}
+          </h3>
+          <ul className="mt-2 space-y-1.5 text-sm">
+            {summary.sharedWeaknesses.map((w) => (
+              <li key={`sh-${w.attack}`} className="text-parchment-200">
+                <span aria-hidden="true" className="mr-1 text-ember-400">
+                  ⚠
+                </span>
+                {t.warn(w.indices.map((i) => members[i].name[lang]).join(', '), typeName(w.attack))}
+              </li>
+            ))}
+            {summary.immunities.map((imm) =>
+              imm.indices.map((i) => (
+                <li key={`im-${imm.attack}-${i}`} className="text-parchment-200">
+                  <span aria-hidden="true" className="mr-1 text-moss-500">
+                    ⬡
+                  </span>
+                  {t.immune(members[i].name[lang], typeName(imm.attack))}
+                </li>
+              )),
+            )}
+            {summary.teamResists.map((r) => (
+              <li key={`tr-${r}`} className="text-parchment-200">
+                <span aria-hidden="true" className="mr-1 text-moss-500">
+                  ▐
+                </span>
+                {t.resists(typeName(r))}
+              </li>
+            ))}
+            {summary.sharedWeaknesses.length === 0 &&
+              summary.immunities.length === 0 &&
+              summary.teamResists.length === 0 && (
+                <li className="text-parchment-400">{t.noNotes}</li>
+              )}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }
