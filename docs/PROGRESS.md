@@ -2,22 +2,23 @@
 
 Last updated: 2026-11-10
 
-## Current version: v0.3.0 code-complete (v0.1.0 / v0.2.0 / v0.3.0 tags all pending owner approval)
+## Current version: v0.3.0 released (v0.1.0 / v0.2.0 / v0.3.0 all tagged & published 2026-11-10)
 
-**Status:** all v0.3.0 tasks (T3.1–T3.4) are merged to `main` (PRs #47–#50), CI + Pages Deploy
-green; the site includes the full analysis stack. **No MINOR release is tagged** — `v0.1.0`,
-`v0.2.0` and now `v0.3.0` stop at the release boundary per docs/PROMPT.md §6: owner (Martin)
-must approve the review packages in docs/HANDOFF.md.
+**Status:** all v0.3.0 tasks (T3.1–T3.4) are merged to `main` (PRs #47–#50). The owner
+approved the three pending MINOR releases on 2026-11-10; all three tags + GitHub releases
+are live (`v0.1.0` @ 6f373fb · `v0.2.0` @ 45e5267 · `v0.3.0` @ 86bfd39) and the GitHub
+milestones v0.2.0 / v0.3.0 are closed. Next up: v0.4.0 "Moves & offensive coverage"
+(triaged into issues #54–#57); CHANGELOG restructured into per-release sections.
 
-| Milestone                        | %    | Notes                                                                                                                                                |
-| -------------------------------- | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| v0.1.0 scaffold/docs/CI/pipeline | 100% | data 151/251/202 species, 22 tests green, `data:check` green, PR #1 merged; tag needs owner approval                                                 |
-| v0.2.0 team builder core         | 100% | **code-complete** (PRs #24–#37): picker, drawer, sprites, team-of-6, share-URL, e2e, live on Pages — **tag needs owner approval (MINOR)**            |
-| v0.3.0 team analysis             | 100% | **code-complete** (PRs #47–#50 + #39/#46 fixes): analysis layer, defensive table, radar+roles, suggestions v1 — **tag needs owner approval (MINOR)** |
-| v0.4.0 moves/offense             | 0%   | next — triage into PR-sized issues                                                                                                                   |
-| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                                   |
-| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                                           |
-| v1.0.0 share/polish              | 0%   |                                                                                                                                                      |
+| Milestone                        | %    | Notes                                                                                                                                  |
+| -------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| v0.1.0 scaffold/docs/CI/pipeline | 100% | released 2026-11-10 · tag @ 6f373fb (historical PR #1 merge)                                                                           |
+| v0.2.0 team builder core         | 100% | released 2026-11-10 · tag @ 45e5267 (includes drawer-in-place + artwork-only fixes)                                                    |
+| v0.3.0 team analysis             | 100% | released 2026-11-10 · tag @ 86bfd39 (analysis layer, defensive table, radar+roles, suggestions v1)                                     |
+| v0.4.0 moves/offense             | 0%   | triaged: issues #54–#57 (T4.1 data pipeline · T4.2 move picker · T4.3 offense matrix · T4.4 abilities); T4.1 + T4.4 Ready on the board |
+| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                     |
+| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                             |
+| v1.0.0 share/polish              | 0%   |                                                                                                                                        |
 
 ## Done this session
 
@@ -112,12 +113,14 @@ must approve the review packages in docs/HANDOFF.md.
 
 ## Next
 
-1. Owner approvals pending: **tag `v0.1.0`, `v0.2.0` and `v0.3.0`** (review packages + the
-   PowerShell recipe in docs/HANDOFF.md).
-2. Then v0.4.0 "Moves & offensive coverage": pull the milestone from GitHub and triage into
-   PR-sized issues in the T3.x style (each = one issue + one small PR, board-linked).
-3. Keep the board in sync when ROADMAP tasks or milestones change (`docs/BOARD.md`).
+1. v0.4.0 "Moves & offensive coverage": start with **T4.1 (issue #54, Ready)** — moves data
+   pipeline per game; then T4.4 (abilities, independent, Ready), then T4.2 (move picker +
+   share v2) and T4.3 (offense matrix) per board order.
+2. Keep the board in sync when ROADMAP tasks or milestones change (`docs/BOARD.md`).
+3. Registry note for future contributors: `docs/ROADMAP.md` v0.4.0 bullets map 1:1 to the
+   T4.x issues.
 
 ## Blockers
 
-- Only the pending owner approvals: release tags v0.1.0, v0.2.0 and v0.3.0 (all MINOR).
+- None right now — all three MINOR releases are tagged & published; the re-release gate
+  only re-arms at v0.4.0 completion (owner approval needed before tagging that one too).

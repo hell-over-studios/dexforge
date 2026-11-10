@@ -1,11 +1,19 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-10 (sessions 5–6: artwork + in-place drawer owner directives, then
-**v0.3.0 complete** — T3.1–T3.4)
+Last updated: 2026-11-10 (sessions 5–7: artwork + in-place drawer directives, v0.3.0
+complete, **all three releases tagged & published**)
 
 ## Exactly where we stopped
 
-- **v0.3.0 "Team analysis" is fully merged to `main`** and deployed to Pages:
+- **v0.3.0 "Team analysis" is released.** Owner approved ALL pending MINOR releases on
+  2026-11-10 ("acepto todo"); tags + GitHub releases are live:
+  - `v0.1.0` @ `6f373fb` (PR #1 historical merge) → https://github.com/hell-over-studios/dexforge/releases/tag/v0.1.0
+  - `v0.2.0` @ `45e5267` (includes the two owner-directive fixes #40/#46) → …/releases/tag/v0.2.0
+  - `v0.3.0` @ `86bfd39` → …/releases/tag/v0.3.0
+  - Release notes were cut per milestone from the pre-split CHANGELOG; the CHANGELOG is
+    now restructured into `[0.1.0] / [0.2.0] / [0.3.0]` sections (docs PR #58).
+  - GitHub milestones v0.2.0 and v0.3.0 are CLOSED.
+- **v0.3.0 content, day-of-merging recap:**
   - PR #47 (T3.1, #41) `src/lib/analysis.ts` — pure per-game defensive analysis layer.
     NOTE: an earlier handoff claimed the typeChart pipeline needed fixes; that was WRONG
     (verified against the PokeAPI cache — steel has been immune to poison since Gen 2, RB
@@ -16,71 +24,46 @@ Last updated: 2026-11-10 (sessions 5–6: artwork + in-place drawer owner direct
     heuristic v1).
   - PR #50 (T3.4, #44) `src/lib/summary.ts` + "Notas" block inside DefenseCharts
     (shared weaknesses / immunities / team-wide resists).
-  - Each PR: `pnpm pre-commit` + e2e green before merge; `main` CI + Deploy green after.
 - Between T3.3 and T3.4 the OWNER merged **PR #51** (`fix(i18n)` ability/location ES names,
   issue #6) from another workspace — it landed `docs/KNOWN_ISSUES.md` unformatted and broke
-  `main` CI at Format check; fixed via PR #52 (`docs:` whitespace-only). If touching data
-  again, that PR also introduced `data/curated/i18n-fixes.json` + a hook in `scripts/build.ts`.
+  `main` CI at Format check; fixed via PR #52 (`docs:` whitespace-only). The PR also
+  introduced `data/curated/i18n-fixes.json` + a hook in `scripts/build.ts` (counted into
+  v0.3.0's release notes as a Fixed item).
 - Tests: **82 unit tests in 8 files** + **2 Playwright e2e** (Chromium desktop + Pixel 5).
-- Owner said "ok bien, continua" (2026-11-08) — autonomous PR-by-PR shipping is approved;
-  MINOR tag approvals remain the only owner-gated steps.
-- **No tags exist yet.** THREE releases await owner approval: v0.1.0, v0.2.0, v0.3.0
-  (review packages below). Work continues in the next milestone without blocking on them.
+- Owner autonomy grant stands ("ok bien, continua", 2026-11-08; plus release approval
+  2026-11-10). The MINOR tag gate re-arms at the end of v0.4.0.
+- **v0.4.0 is triaged into PR-sized tasks** (milestone "v0.4.0 — Moves & offensive coverage"):
+  issues **#54** (T4.1 moves data pipeline — Ready), **#57** (T4.4 abilities view — Ready),
+  **#55** (T4.2 move picker + share v2 — Backlog, depends on #54), **#56** (T4.3 offense
+  matrix — Backlog, depends on #54/#55).
 
-## Handoff — previous milestone context (kept for the release recipe)
+## v0.2.0 context (kept short)
 
-- v0.2.0 was finished in session 4 via PRs #33–#37 (drawer, sprites, team, share, e2e).
-- Site is LIVE: https://hell-over-studios.github.io/dexforge/ (home → game → picker →
-  drawer → team → analysis panels).
+v0.2.0 was finished in session 4 via PRs #24–#37 plus the two owner-directive fixes
+#40 (official-artwork visuals) and #46 (drawer expands in place); live site
+https://hell-over-studios.github.io/dexforge/ (home → game → picker → drawer → team →
+analysis panels). Full detail in docs/CHANGELOG.md [0.2.0].
 
-## Review packages for owner — THREE releases awaiting approval
+## Releases (resolved 2026-11-10 — for the record)
 
-1. **v0.1.0** — scaffold, docs, CI, data pipeline (details unchanged from session 3).
-2. **v0.2.0** — team builder core: pixel-cozy tokens/shell, game selector, picker (with
-   in-place drawer via PR #46), sprites (official-artwork default per PR #40), team of 6,
-   share-by-URL, Playwright e2e + CI, GitHub Pages deploy.
-3. **v0.3.0** — team analysis: `src/lib/analysis.ts` + `src/lib/summary.ts` data layers,
-   `DefenseCharts` (defensive table + notes), `TeamProfile` (radar + roles), game-accurate
-   Gen-I quirks preserved.
-
-**What to look at:** the live site (add a team and read the two new analysis panels),
-`docs/CHANGELOG.md` [Unreleased], `docs/ROADMAP.md` (T3.1–T3.4 all `[x]`), merged PRs
-#47–#50, board items #41–#44, `pnpm pre-commit`, `pnpm test:e2e`.
-
-**Owner decisions requested:**
-
-1. Approve tagging **v0.1.0**.
-2. Approve tagging **v0.2.0**.
-3. Approve tagging **v0.3.0**.
-
-**After approval, the owner (or next agent with approval relayed) does (PowerShell-safe version
-instead of bash process substitution):**
-
-```powershell
-git switch main; git pull
-# v0.1.0 tags the HISTORICAL PR #1 merge commit, NOT HEAD (HEAD now contains v0.2/v0.3 work)
-git tag -a v0.1.0 6f373fb -m "v0.1.0 - scaffold, docs, CI, game-accurate data pipeline"
-git tag -a v0.2.0 45e5267 -m "v0.2.0 - team builder core (picker, drawer, sprites, team, share, e2e, Pages)"
-git tag -a v0.3.0 -m "v0.3.0 - team analysis (defensive table, radar+roles, suggestions v1)"
-git push origin v0.1.0 v0.2.0 v0.3.0
-# release notes: extract each CHANGELOG section to a temp file first, then:
-gh release create v0.1.0 --target v0.1.0 --title "v0.1.0" --notes-file $notes
-gh release create v0.2.0 --target v0.2.0 --title "v0.2.0" --notes-file $notes
-gh release create v0.3.0 --target v0.3.0 --title "v0.3.0" --notes-file $notes
-```
-
-(If only a subset is approved, tag only those; do not batch silently.)
+All three MINOR releases were owner-approved ("acepto todo") and executed end-to-end:
+tagging (see exact SHAs in the top block), pushing, and `gh release create` with notes cut
+per milestone. The CHANGELOG was then restructured into `[0.1.0] / [0.2.0] / [0.3.0]`
+sections with fresh compare link refs (docs PR #58). GitHub milestones v0.2.0 and v0.3.0
+are closed. The same gate re-arms before tagging v0.4.0: STOP for owner approval again.
 
 ## What to do next (first work of next session)
 
-1. Owner releases may land (above); update CHANGELOG link refs and the board/milestones after tagging.
-2. Kick off **v0.4.0 "Moves, abilities, offensive coverage"** per `docs/ROADMAP.md` + ADR-009:
-   pull the milestone list (`gh api repos/hell-over-studios/dexforge/milestones`) and triage into
-   PR-sized issues (T4.x numbering in the T2/T3 style: each issue carries acceptance criteria).
-3. PR discipline unchanged: `pnpm pre-commit` locally; `gh pr checks --watch --fail-fast` before
+1. Start **T4.1 (issue #54, Ready)** — moves data pipeline (version-group filtered
+   learnsets). Candidate follow-ups while waiting for review: **T4.4 (issue #57)** abilities
+   view (independent). T4.2 (#55) and T4.3 (#56) follow once T4.1 lands.
+2. PR discipline unchanged: `pnpm pre-commit` locally; `gh pr checks --watch --fail-fast` before
    merge; watch `main` after merge (CI + Deploy); board: branch→In progress, merge→Done.
-4. Formatting gotcha from #51/#52: never edit repo docs with tools that don't run Prettier
+3. Formatting gotcha from #51/#52: never edit repo docs with tools that don't run Prettier
    before committing; `docs/*.md` are all covered by `pnpm format:check`.
+4. Data-pipeline caveat for T4.1: the 2026 PokeAPI schema findings in `docs/DATA_SOURCES.md`
+   - `HANDOFF.md` state facts below apply; the owner's #51 also added the i18n hook inside
+     `scripts/build.ts` — read it before extending the pipeline.
 
 ### Environment notes for browser verification
 
