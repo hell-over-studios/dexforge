@@ -7,13 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-10
+
+Team analysis: game-accurate defensive table, team stat radar with role heuristic,
+and first-pass suggestions, on top of the static per-game datasets (never calls
+PokeAPI at runtime). Tagged at `86bfd39`; owner-approved 2026-11-10.
+
 ### Added
 
-- Spanish localization improvements (issue #6): ability names are now fetched from PokeAPI and localized (European Spanish `es`, with `es-419` fallback); curated override file `data/curated/i18n-fixes.json` corrects location names PokeAPI leaves untranslated or mistranslates (e.g. Saffron City, Silph Co., Cerulean Cave, Seafoam Islands, Power Plant, Victory Road, Route 101).
 - Team-analysis data layer (T3.1, issue #41): `src/lib/analysis.ts` with pure `effectiveness` (multiplier composition capped at 4x), `analyzeTeam` (per-member + per-attacking-type profiles in canonical type order) and `analyzeFromData`, always using each game's own `typeChart` (Gen-I quirks for Red/Blue; Steel/Dark for Gold/Silver and Emerald). Unit-tested with synthetic charts and real emitted-JSON invariants; no UI yet (T3.2 next).
 - Defensive analysis panel (T3.2, issue #42): `DefenseCharts` island on the game page under the picker + `loadTypeMeta` (localized type names + colors). Mobile-first stacked per-member cards (<md) and a full attacker × member matrix on ≥md; chips are value-coded (ember = ×2/×4 weakness, moss = resistances, dusk = ×0), type dots use the canonical per-type colors, everything is aria-labelled in ES/EN, and the panel shows a cozy empty state until the team has members. 360px and e2e verified.
 - Team profile panel (T3.3, issue #43): `src/lib/roles.ts` + `TeamProfile` island: hand-rolled SVG radar of the team's average base stats (ADR-005, no chart libraries, fully static) and a role chip per member with official artwork. The role heuristic is documented v1 (sweeper / special-sweeper / wall / tank / support). Unit-tested; 360px and e2e verified.
 - Suggestions v1 (T3.4, issue #44): `src/lib/summary.ts` — defensive summary heuristics over a TeamProfile: shared weaknesses (≥2 members at ×2+), member immunities, and team-wide resists (everything ≤×½, deliberately excluding neutral-everywhere notes). Rendered as cozy localized text lines ("Notas") under the defensive table; unit-tested with Gen-I chart fixtures (Gengar/Golbat: shared psychic weakness, normal immunity, fighting NOT 0x per the GEN1_PATCHES record); 360px and e2e verified.
+
+### Fixed
+
+- Spanish localization of data (issue #6, owner PR #51, merged during this stretch): ability names fetched from PokeAPI and localized (European Spanish `es`, with `es-419` fallback); curated override file `data/curated/i18n-fixes.json` corrects location names PokeAPI leaves untranslated or mistranslates (e.g. Saffron City, Silph Co., Cerulean Cave, Seafoam Islands, Power Plant, Victory Road, Route 101).
+
+## [0.2.0] - 2026-11-10
+
+Team builder core: pixel-cozy design foundation, game selector, Pokémon picker with
+detail drawer (expands in place), sprites (official artwork only), team of 6, share
+by URL, Playwright e2e, and a live GitHub Pages deploy. Tagged at `45e5267`;
+code-complete since 2026-11-08, owner-approved 2026-11-10.
+
+### Added
 
 - GitHub Projects v2 Kanban board for issue triage and assignment (ADR-010), documented in `docs/BOARD.md`: six Status columns, Priority/Area/Size fields, and an initial classification of issues #2–#22.
 - Pixel art + cozy design foundation (ADR-008): token set in `src/styles/global.css` (warm bark/parchment/ember palette, Pixelify Sans display + Nunito body fonts, hard offset shadow utilities, `pixelated` sprite utility, subtle `dither` texture, chunky focus ring), font loading in the base layout, an 8×8 pixel pokéball favicon, and a fully tokenized landing page.
@@ -22,7 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pokémon picker (T2.5): React island on `/juego/<id>` with ARIA combobox/listbox keyboard navigation (arrows/Enter/Escape, auto-extending 60-row pages), pixel-crisp sprite avatars, ES/EN copy in-island, pixel-cozy loading/empty states, and a minimal selection summary panel pending the detail drawer.
 - GitHub Pages deploy (T2.11, ADR-011): Actions workflow deploying the static build on every `main` push; `site`/`base` config with base-aware internal URLs (`src/lib/paths.ts`); site serves at `https://hell-over-studios.github.io/dexforge/`.
 - Pokémon detail drawer (T2.6): pixel-cozy panel on row select — canonical type badges colored from `/data/types.json` (fail-open neutral chips), six quantized pixel stat bars (10% steps), abilities with hidden marker, dex/height/weight; `loadGame`/`loadTypeColors` in `src/lib/dex.ts`.
-- Sprite viewer (T2.7): game / shiny / animated (showdown) / official artwork / HOME toggles with a documented, unit-tested fallback chain (`src/lib/sprites.ts`), `pixelated` rendering for pixel kinds (game/shiny/animated; artwork/HOME are smooth), unavailable-kind markers, localized alt text naming species + shown kind, and an `aria-live` fallback note; 13 tests incl. real-emitted-JSON invariants.
 - Team of 6 (T2.8): pure toggle semantics (present→remove · space→append · full→replace oldest) with a zustand `persist` store keyed per game (`dexforge-team`); pixel slot frames with pure-CSS empty art, accessible slot-remove buttons, and a drawer team button with `aria-live` result note; 11 tests.
 - Share-by-URL stub (T2.9): `?t=v1.<gameId>.<idBase36…>` encode/decode (`src/lib/share.ts`, strict decode + sanitize), copy-link button with pixel toast and reduced-motion-safe animation, incoming `?t=` seeds the current game's team; 10 round-trip tests.
 - Playwright e2e (T2.10): in-repo `playwright.config.ts` (Chromium desktop + Pixel 5 projects, built-site `preview` webServer), `E2E · Chromium` CI job with report artifact on failure, `test:e2e` script, and a full-loop smoke: pick game → add 6 → share URL → fresh-context restore → reload restore.
@@ -31,16 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Owner directive log: `docs/PROMPT_CHANGES.md` (visual direction + smaller PRs → ADR-008/ADR-009); ROADMAP v0.2.0 expanded into PR-sized tasks with GitHub issues #12–#22.
 
-### Changed
-
 - **Detail drawer expands in place (owner request 2026-11-08):** selecting a Pokémon now opens the detail panel right under the clicked picker row instead of pinning above the list; it scrolls minimally into view (`block: nearest`, smooth unless `prefers-reduced-motion`), keyboard Enter keeps the chosen row on screen after the query clears, and a top-anchored fallback remains only when the row is outside the visible window.
 - **Species visuals: official artwork ONLY (owner directive 2026-11-07).** Picker rows, team slots and the detail drawer use `sprites.official`; the sprite-kind toggles (game / shiny / animated / HOME) and their fallback-chain module (`src/lib/sprites.ts`) were withdrawn along with its 13 tests. Full sprite data stays in the datasets for a possible future decision. DexEntry.alt text now names the artwork; species images render smooth (no `pixelated`).
-- Test counts grew to 56 unit tests (5 files) + 2 Playwright e2e (desktop and mobile viewport projects).
 - `stats` bars use quantized 10% steps for the pixel look; drawer sprite rendering splits pixel (`game`/`shiny`/`animated` → `pixelated`) from smooth (`artwork`/`home`) sources.
-
-### Planned for v0.3.0
-
-- Team analysis: defensive table, stat radar, average stats/roles, suggestion engine.
 
 ## [0.1.0] - 2026-11-05
 
@@ -64,5 +74,7 @@ data pipeline that turns PokeAPI into static, game-accurate JSON.
 - ESLint (flat) + Prettier configs, editorconfig.
 - GitHub community files: labels, milestones, issue templates (bug / feature / data correction), PR template, collaborator issues (#2–#9).
 
-[Unreleased]: https://github.com/hell-over-studios/dexforge/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/hell-over-studios/dexforge/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/hell-over-studios/dexforge/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/hell-over-studios/dexforge/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/hell-over-studios/dexforge/releases/tag/v0.1.0
