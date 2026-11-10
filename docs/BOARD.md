@@ -79,6 +79,21 @@ when the item is linked to the repository issue.
 | 21  | T2.10 Playwright setup + smoke e2e     | Done    | P2       | Infra    | M    |
 | 22  | T2.11 deploy config                    | Done    | P1       | Infra    | S    |
 
+## Classification update (2026-11-10)
+
+| #   | Item                                    | Status | Priority | Area     | Size |
+| --- | --------------------------------------- | ------ | -------- | -------- | ---- |
+| 39  | species visuals — official artwork only | Done   | P1       | Design   | M    |
+| 41  | T3.1 team-analysis data layer           | Done   | P1       | Data     | M    |
+| 42  | T3.2 defensive table UI                 | Done   | P1       | Frontend | M    |
+| 43  | T3.3 stat radar + roles                 | Done   | P1       | Frontend | M    |
+| 44  | T3.4 suggestions v1                     | Done   | P2       | Frontend | M    |
+| 45  | detail drawer expands in place          | Done   | P1       | Frontend | S    |
+
+Also this window: #6 (Verify PokeAPI ES names) advanced by the owner's PR #51 (ability +
+location ES names localized; curated `i18n-fixes.json`). v0.3.0 milestone (#41–#44) closed;
+v0.4.0 will be triaged into PR-sized issues at milestone start.
+
 ## Maintenance
 
 Add an issue to the board and set its fields (requires the `project` scope on the

@@ -40,10 +40,23 @@ for what must exist in each version; GitHub issues reference it.
 
 ## v0.3.0 — Team analysis
 
-- [ ] Defensive table (18 types × weak/resist/immune, game-accurate chart)
-- [ ] Stat radar chart (lightweight SVG, no heavy chart lib)
-- [ ] Team average stats + role detection (fast / tank / physical / special)
-- [ ] Suggestions engine (v1: coverage & weakness heuristics)
+> Shipped as PR-sized tasks per ADR-009 (issues #41–#44, PRs #47–#50); tag awaiting
+> owner approval (MINOR release boundary, docs/PROMPT.md §6).
+
+- [x] **T3.1** Defensive analysis data layer — `src/lib/analysis.ts`: pure `effectiveness`
+      (multiplier composition, capped ×4), `analyzeTeam` (per-member + per-attacking-type
+      profiles in canonical type order), `analyzeFromData`; always uses each game's OWN
+      `typeChart` (Gen-I quirks for Red/Blue). Verified the existing `buildTypeChart`
+      pipeline was already game-accurate (issue #41 comment) — no pipeline change.
+- [x] **T3.2** Defensive table — `DefenseCharts` island: mobile stacked per-member cards
+      (<md), attacker × member matrix (≥md), value-coded chips (ember ×2/×4, moss resist,
+      dusk ×0/×1), per-type colored dots, ES/EN aria labels, cozy empty state.
+- [x] **T3.3** Stat radar + roles — `src/lib/roles.ts` (team stat averages, documented v1
+      role heuristic: sweeper / special-sweeper / wall / tank / support) + `TeamProfile`
+      island with a hand-rolled static SVG radar (ADR-005: no chart libraries).
+- [x] **T3.4** Suggestions v1 — `src/lib/summary.ts` `summarizeDefenses`: shared weaknesses
+      (≥2 members at ×2+), member immunities, team-wide resists (everybody ≤×½; neutral-
+      everywhere deliberately not a note), rendered as cozy "Notas" lines under the table.
 
 ## v0.4.0 — Moves, abilities, offensive coverage
 

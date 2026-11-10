@@ -1,80 +1,86 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-07 (session 4: T2.6–T2.10 — **v0.2.0 code-complete**)
+Last updated: 2026-11-10 (sessions 5–6: artwork + in-place drawer owner directives, then
+**v0.3.0 complete** — T3.1–T3.4)
 
 ## Exactly where we stopped
 
-- **All 11 v0.2.0 tasks are merged to `main`**: T2.1–T2.5 + T2.11 (session 3) and today
-  T2.6–T2.10 via PRs **#33, #34, #35, #36, #37** (issues #17–#21 closed and Done on the board).
-  Every merge was preceded by `pnpm pre-commit` + `gh pr checks --watch` green and followed by
-  a green `main` CI + Deploy run (the no-merge-before-green rule held all day).
-- **No tags exist yet.** Both `v0.1.0` and `v0.2.0` need owner approval at the MINOR release
-  boundary (docs/PROMPT.md §6) — review packages below.
-- Site is LIVE on GitHub Pages and includes the full v0.2 loop:
-  https://hell-over-studios.github.io/dexforge/ (home → pick game → search → drawer → team → share).
-- Tests: **69 unit tests (6 files)** + **2 Playwright e2e** (Chromium desktop + Pixel 5) + e2e CI job.
-- The e2e runs the **built** site (`pnpm preview` webServer at the `/dexforge` base) — dev-server
-  hydration race avoided by design; `pnpm test:e2e` = build + playwright test.
+- **v0.3.0 "Team analysis" is fully merged to `main`** and deployed to Pages:
+  - PR #47 (T3.1, #41) `src/lib/analysis.ts` — pure per-game defensive analysis layer.
+    NOTE: an earlier handoff claimed the typeChart pipeline needed fixes; that was WRONG
+    (verified against the PokeAPI cache — steel has been immune to poison since Gen 2, RB
+    fire→ghost genuinely = 1). No pipeline change was needed; proof is on issue #41.
+  - PR #48 (T3.2, #42) `DefenseCharts` island (mobile cards / desktop matrix) +
+    `loadTypeMeta()` in `src/lib/dex.ts`.
+  - PR #49 (T3.3, #43) `src/lib/roles.ts` + `TeamProfile` island (static SVG radar + role
+    heuristic v1).
+  - PR #50 (T3.4, #44) `src/lib/summary.ts` + "Notas" block inside DefenseCharts
+    (shared weaknesses / immunities / team-wide resists).
+  - Each PR: `pnpm pre-commit` + e2e green before merge; `main` CI + Deploy green after.
+- Between T3.3 and T3.4 the OWNER merged **PR #51** (`fix(i18n)` ability/location ES names,
+  issue #6) from another workspace — it landed `docs/KNOWN_ISSUES.md` unformatted and broke
+  `main` CI at Format check; fixed via PR #52 (`docs:` whitespace-only). If touching data
+  again, that PR also introduced `data/curated/i18n-fixes.json` + a hook in `scripts/build.ts`.
+- Tests: **82 unit tests in 8 files** + **2 Playwright e2e** (Chromium desktop + Pixel 5).
+- Owner said "ok bien, continua" (2026-11-08) — autonomous PR-by-PR shipping is approved;
+  MINOR tag approvals remain the only owner-gated steps.
+- **No tags exist yet.** THREE releases await owner approval: v0.1.0, v0.2.0, v0.3.0
+  (review packages below). Work continues in the next milestone without blocking on them.
 
-## Today's PRs (T2.6–T2.10)
+## Handoff — previous milestone context (kept for the release recipe)
 
-- **#33 T2.6** `src/components/PokemonDetail.tsx`: drawer with canonical type badges colored from
-  `/data/types.json` (`loadTypeColors` in `src/lib/dex.ts`), 6 quantized pixel stat bars, abilities,
-  dex/height/weight; replaced the T2.5 summary panel. Verified at 360 px.
-- **#34 T2.7** `src/lib/sprites.ts` fallback chains (game→artwork→home · shiny→game→artwork ·
-  animated→game→artwork · artwork→home→game) + pixel-kind rule; drawer sprite toggles with
-  unavailable markers, species+kind.alt text, `aria-live` fallback note; 13 tests incl. real-JSON invariants.
-- **#35 T2.8** `src/lib/team.ts` pure toggle semantics (present→remove · space→append · full→replace
-  oldest) + zustand `persist` (`dexforge-team`, per game); `TeamSlots` pixel frames (pure-CSS empty art);
-  drawer team button + `aria-live` note; 11 tests.
-- **#36 T2.9** `src/lib/share.ts` `?t=v1.<game>.<idBase36…>` (strict decode, sanitized both ways);
-  copy-link + pixel toast (reduced-motion frozen by global CSS); incoming `?t=` seeds the current
-  game's team; 10 round-trip tests.
-- **#37 T2.10** `playwright.config.ts` + `e2e/team.spec.ts` (full loop: home → Emerald → add 6 →
-  copy link → fresh-context restore → reload restore) + `E2E · Chromium` CI job (report artifact on
-  failure). ESLint gained an `e2e/**/*.ts` globals block.
+- v0.2.0 was finished in session 4 via PRs #33–#37 (drawer, sprites, team, share, e2e).
+- Site is LIVE: https://hell-over-studios.github.io/dexforge/ (home → game → picker →
+  drawer → team → analysis panels).
 
-## Review packages for owner — TWO releases awaiting approval
+## Review packages for owner — THREE releases awaiting approval
 
 1. **v0.1.0** — scaffold, docs, CI, data pipeline (details unchanged from session 3).
-2. **v0.2.0** — team builder core: pixel-cozy tokens/shell, game selector, picker (+ drawer,
-   sprites), team of 6, share-by-URL, Playwright e2e + CI, GitHub Pages deploy.
+2. **v0.2.0** — team builder core: pixel-cozy tokens/shell, game selector, picker (with
+   in-place drawer via PR #46), sprites (official-artwork default per PR #40), team of 6,
+   share-by-URL, Playwright e2e + CI, GitHub Pages deploy.
+3. **v0.3.0** — team analysis: `src/lib/analysis.ts` + `src/lib/summary.ts` data layers,
+   `DefenseCharts` (defensive table + notes), `TeamProfile` (radar + roles), game-accurate
+   Gen-I quirks preserved.
 
-**What to look at:** the live site (flow above), `docs/CHANGELOG.md` [Unreleased] (= v0.2.0
-content), `docs/ROADMAP.md` (T2.1–T2.11 all `[x]`), merged PRs #24–#37, `pnpm pre-commit`,
-`pnpm test:e2e`, `pnpm data:check`.
+**What to look at:** the live site (add a team and read the two new analysis panels),
+`docs/CHANGELOG.md` [Unreleased], `docs/ROADMAP.md` (T3.1–T3.4 all `[x]`), merged PRs
+#47–#50, board items #41–#44, `pnpm pre-commit`, `pnpm test:e2e`.
 
 **Owner decisions requested:**
 
 1. Approve tagging **v0.1.0**.
 2. Approve tagging **v0.2.0**.
+3. Approve tagging **v0.3.0**.
 
 **After approval, the owner (or next agent with approval relayed) does (PowerShell-safe version
 instead of bash process substitution):**
 
 ```powershell
 git switch main; git pull
-# v0.1.0 tags the HISTORICAL PR #1 merge commit, NOT HEAD (HEAD now contains v0.2 work)
+# v0.1.0 tags the HISTORICAL PR #1 merge commit, NOT HEAD (HEAD now contains v0.2/v0.3 work)
 git tag -a v0.1.0 6f373fb -m "v0.1.0 - scaffold, docs, CI, game-accurate data pipeline"
-git tag -a v0.2.0 -m "v0.2.0 - team builder core (picker, drawer, sprites, team, share, e2e, Pages)"
-git push origin v0.1.0 v0.2.0
+git tag -a v0.2.0 45e5267 -m "v0.2.0 - team builder core (picker, drawer, sprites, team, share, e2e, Pages)"
+git tag -a v0.3.0 -m "v0.3.0 - team analysis (defensive table, radar+roles, suggestions v1)"
+git push origin v0.1.0 v0.2.0 v0.3.0
 # release notes: extract each CHANGELOG section to a temp file first, then:
 gh release create v0.1.0 --target v0.1.0 --title "v0.1.0" --notes-file $notes
 gh release create v0.2.0 --target v0.2.0 --title "v0.2.0" --notes-file $notes
+gh release create v0.3.0 --target v0.3.0 --title "v0.3.0" --notes-file $notes
 ```
 
-(If only one release is approved, tag only that one; do not batch silently.)
+(If only a subset is approved, tag only those; do not batch silently.)
 
 ## What to do next (first work of next session)
 
 1. Owner releases may land (above); update CHANGELOG link refs and the board/milestones after tagging.
-2. Kick off **v0.3.0 team analysis** per `docs/ROADMAP.md` + ADR-009 in the PR-sized-task style:
-   open `T3.x` issues (defensive 18×18 game-accurate chart first — the data layer already carries
-   per-game charts; then stat radar (lightweight SVG, no heavy lib), average stats/roles,
-   suggestion heuristics), then pick them off one PR at a time.
+2. Kick off **v0.4.0 "Moves, abilities, offensive coverage"** per `docs/ROADMAP.md` + ADR-009:
+   pull the milestone list (`gh api repos/hell-over-studios/dexforge/milestones`) and triage into
+   PR-sized issues (T4.x numbering in the T2/T3 style: each issue carries acceptance criteria).
 3. PR discipline unchanged: `pnpm pre-commit` locally; `gh pr checks --watch --fail-fast` before
-   merge; watch `main` after merge; board: branch→In progress, PR→In review, merge→Done.
-4. Content Easter eggs/quality items from the T2.10 run (none open).
+   merge; watch `main` after merge (CI + Deploy); board: branch→In progress, merge→Done.
+4. Formatting gotcha from #51/#52: never edit repo docs with tools that don't run Prettier
+   before committing; `docs/*.md` are all covered by `pnpm format:check`.
 
 ### Environment notes for browser verification
 
@@ -90,7 +96,7 @@ gh release create v0.2.0 --target v0.2.0 --title "v0.2.0" --notes-file $notes
 pnpm install          # if fresh machine
 pnpm data             # regenerate data (cache in scripts/.cache persists locally)
 pnpm data:check       # validate
-pnpm pre-commit       # lint+format+typecheck+test (69 tests)
+pnpm pre-commit       # lint+format+typecheck+test (82 tests in 8 files)
 pnpm test:e2e         # build + Playwright (2 e2e, desktop+mobile projects)
 pnpm build && pnpm preview
 pnpm dev              # pixel-cozy landing page
