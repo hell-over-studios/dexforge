@@ -7,11 +7,14 @@
  * attacker x member matrix. Below: v1 suggestions (shared weaknesses,
  * immunities, team-wide resists) as cozy text lines. Fails silent if the
  * data won't load (cosmetic panel).
+ * v2 «Pergamino»: a calm paper heatmap — quiet neutral cells, ember for
+ * danger, moss for resists, ink for immunities.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { analyzeTeam, type TeamMemberInput } from '../lib/analysis';
 import { summarizeDefenses } from '../lib/summary';
 import { loadGame, loadTypeMeta, type TypeMeta } from '../lib/dex';
+import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 import type { GameData, GamePokemon } from '../lib/data-schema';
@@ -26,20 +29,20 @@ const MULT_LABEL: Record<string, string> = {
   '4': '×4',
 };
 
-/** value-coded chip palette: ember = weakness, moss = resistance, dusk = immune */
+/** calm heatmap: ember = weakness, moss = resistance, ink = immune */
 const chipClass = (m: number) => {
   switch (m) {
     case 4:
-      return 'border-ember-600 bg-ember-500 text-bark-950';
+      return 'border-ink-950 bg-ember-500 text-ink-950';
     case 2:
-      return 'border-ember-700 bg-ember-700/40 text-parchment-100';
+      return 'border-ember-700 bg-ember-300/80 text-ink-950';
     case 0:
-      return 'border-bark-800 bg-bark-950 text-parchment-600';
+      return 'border-ink-950 bg-ink-900 text-paper-100';
     case 0.25:
     case 0.5:
-      return 'border-moss-700 bg-moss-500/25 text-parchment-100';
+      return 'border-moss-600 bg-moss-300/60 text-ink-900';
     default:
-      return 'border-bark-700 bg-bark-900 text-parchment-600';
+      return 'border-ink-900/20 bg-paper-50 text-ink-500';
   }
 };
 
@@ -128,11 +131,8 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
 
   if (!game) {
     return (
-      <div
-        aria-busy="true"
-        className="rounded-sm border-2 border-bark-700 bg-bark-900 dither p-6 shadow-pixel"
-      >
-        <p className="animate-blink text-sm text-parchment-400">
+      <div aria-busy="true" className="paper-panel paper-grain p-6">
+        <p className="animate-blink font-display text-lg text-ink-900">
           {lang === 'en' ? 'Loading analysis…' : 'Cargando análisis…'}
         </p>
       </div>
@@ -140,17 +140,19 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
   }
 
   return (
-    <div className="rounded-sm border-2 border-bark-700 bg-bark-900 p-4 shadow-pixel max-md:p-3">
-      <h2 className="font-display text-xl text-parchment-100">{t.heading}</h2>
-      <p className="mt-1 text-xs text-parchment-600">{t.hint}</p>
+    <div className="paper-panel p-4 sm:p-5">
+      <div className="border-b-2 border-ink-900/15 pb-3">
+        <h2 className="font-display text-2xl leading-none text-ink-950">{t.heading}</h2>
+        <p className="mt-2 text-xs leading-relaxed text-ink-600">{t.hint}</p>
+      </div>
 
       {!profile ? (
         /* empty team state */
-        <div className="mt-4 rounded-sm border-2 border-dashed border-bark-700 bg-bark-950 p-6 text-center">
+        <div className="mt-4 border-2 border-dashed border-ink-900/30 bg-paper-50 p-6 text-center">
           <span aria-hidden="true" className="text-2xl text-ember-600">
             ⬡
           </span>
-          <p className="mt-2 text-sm text-parchment-400">{t.empty}</p>
+          <p className="mt-2 text-sm text-ink-600">{t.empty}</p>
         </div>
       ) : (
         <>
@@ -159,10 +161,7 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
             {profile.members.map((_, mi) => {
               const mem = members[mi];
               return (
-                <li
-                  key={mem.id}
-                  className="rounded-sm border-2 border-bark-800 bg-bark-950 p-2 shadow-pixel-sm"
-                >
+                <li key={mem.id} className="border-2 border-ink-900/20 bg-paper-50 p-2">
                   <div className="flex items-center gap-2">
                     {mem.artwork ? (
                       <img
@@ -176,15 +175,13 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
                         className="size-8 shrink-0 [object-fit:contain]"
                       />
                     ) : null}
-                    <span className="font-display text-sm text-parchment-100">
-                      {mem.name[lang]}
-                    </span>
+                    <span className="font-display text-sm text-ink-950">{mem.name[lang]}</span>
                     <span className="ml-auto flex gap-1">
                       {mem.types.map((tp) => (
                         <span
                           key={tp}
-                          className="rounded-sm px-1 text-[10px] tracking-wide text-bark-950 uppercase"
-                          style={{ backgroundColor: typeColor(tp) }}
+                          className="border border-ink-950 px-1 font-display text-[11px] tracking-wide uppercase"
+                          style={typeChipStyle(typeColor(tp))}
                         >
                           {typeName(tp)}
                         </span>
@@ -198,14 +195,14 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
                         <li key={row.attack}>
                           <span
                             className={
-                              'inline-flex items-center gap-1 rounded-sm border-2 px-1 py-0.5 font-display text-[11px] shadow-pixel-sm ' +
+                              'inline-flex items-center gap-1 border-2 px-1 py-0.5 font-display text-[11px] ' +
                               chipClass(val)
                             }
                             aria-label={`${typeName(row.attack)} ${lang === 'en' ? 'vs' : 'contra'} ${mem.name[lang]}: ${label(val)}`}
                           >
                             <span
                               aria-hidden="true"
-                              className="size-2 rounded-sm"
+                              className="size-2 border border-ink-950/40"
                               style={{ backgroundColor: typeColor(row.attack) }}
                             />
                             {label(val)}
@@ -224,7 +221,7 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
             <caption className="sr-only">{t.caption}</caption>
             <thead>
               <tr>
-                <th scope="col" className="w-24 pb-1 font-display text-xs text-parchment-600">
+                <th scope="col" className="w-24 pb-1 font-display text-xs font-normal text-ink-600">
                   {lang === 'en' ? 'Type' : 'Tipo'}
                 </th>
                 {members.map((mem) => (
@@ -241,7 +238,7 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
                         className="mx-auto size-10 [object-fit:contain]"
                       />
                     ) : null}
-                    <span className="text-parchment-300 mt-0.5 block font-display text-[10px] leading-tight">
+                    <span className="mt-0.5 block font-display text-[11px] leading-tight text-ink-600">
                       {mem.name[lang]}
                     </span>
                   </th>
@@ -252,20 +249,20 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
               {profile.rows.map((row) => (
                 <tr key={row.attack} className="align-middle">
                   <th scope="row" className="py-0.5 font-display text-xs font-normal">
-                    <span className="inline-flex items-center gap-2 rounded-sm bg-bark-800 px-1.5 py-1">
+                    <span className="inline-flex items-center gap-2">
                       <span
                         aria-hidden="true"
-                        className="size-3 rounded-sm border border-bark-950"
+                        className="size-3 border border-ink-950"
                         style={{ backgroundColor: typeColor(row.attack) }}
                       />
-                      <span className="text-parchment-200">{typeName(row.attack)}</span>
+                      <span className="text-ink-800">{typeName(row.attack)}</span>
                     </span>
                   </th>
                   {row.perMember.map((m, i) => (
                     <td key={profile.members[i].id} className="px-1 text-center">
                       <span
                         className={
-                          'inline-block min-w-10 rounded-sm border-2 px-1 py-0.5 font-display text-xs shadow-pixel-sm ' +
+                          'inline-block min-w-10 border-2 px-1 py-0.5 font-display text-xs ' +
                           chipClass(m)
                         }
                         aria-label={`${typeName(row.attack)} ${lang === 'en' ? 'vs' : 'contra'} ${profile.members[i].name[lang]}: ${label(m)}`}
@@ -283,14 +280,14 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
 
       {/* T3.4: suggestions v1 — cozy text notes from the same profile, no fake data */}
       {summary ? (
-        <div className="mt-4 rounded-sm border-2 border-bark-800 bg-bark-950 p-3">
-          <h3 className="font-display text-sm tracking-wide text-parchment-600 uppercase">
+        <div className="mt-4 border-t-2 border-ink-900/15 pt-3">
+          <h3 className="font-display text-xs tracking-[0.14em] text-ink-600 uppercase">
             {t.notes}
           </h3>
           <ul className="mt-2 space-y-1.5 text-sm">
             {summary.sharedWeaknesses.map((w) => (
-              <li key={`sh-${w.attack}`} className="text-parchment-200">
-                <span aria-hidden="true" className="mr-1 text-ember-400">
+              <li key={`sh-${w.attack}`} className="text-ink-800">
+                <span aria-hidden="true" className="mr-1 text-ember-700">
                   ⚠
                 </span>
                 {t.warn(w.indices.map((i) => members[i].name[lang]).join(', '), typeName(w.attack))}
@@ -298,8 +295,8 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
             ))}
             {summary.immunities.map((imm) =>
               imm.indices.map((i) => (
-                <li key={`im-${imm.attack}-${i}`} className="text-parchment-200">
-                  <span aria-hidden="true" className="mr-1 text-moss-500">
+                <li key={`im-${imm.attack}-${i}`} className="text-ink-800">
+                  <span aria-hidden="true" className="mr-1 text-moss-700">
                     ⬡
                   </span>
                   {t.immune(members[i].name[lang], typeName(imm.attack))}
@@ -307,8 +304,8 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
               )),
             )}
             {summary.teamResists.map((r) => (
-              <li key={`tr-${r}`} className="text-parchment-200">
-                <span aria-hidden="true" className="mr-1 text-moss-500">
+              <li key={`tr-${r}`} className="text-ink-800">
+                <span aria-hidden="true" className="mr-1 text-moss-700">
                   ▐
                 </span>
                 {t.resists(typeName(r))}
@@ -316,9 +313,7 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
             ))}
             {summary.sharedWeaknesses.length === 0 &&
               summary.immunities.length === 0 &&
-              summary.teamResists.length === 0 && (
-                <li className="text-parchment-400">{t.noNotes}</li>
-              )}
+              summary.teamResists.length === 0 && <li className="text-ink-600">{t.noNotes}</li>}
           </ul>
         </div>
       ) : null}

@@ -60,8 +60,7 @@ export default function TeamSlots({ gameId, resolve }: Props) {
     <div className="paper-panel paper-grain p-4">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="kicker text-ink-500">02 · {lang === 'en' ? 'Party' : 'Equipo'}</p>
-          <h2 className="mt-1 font-display text-2xl leading-none text-ink-950">
+          <h2 className="font-display text-2xl leading-none text-ink-950">
             {lang === 'en' ? 'Your team' : 'Tu equipo'}
           </h2>
         </div>
@@ -120,7 +119,7 @@ export default function TeamSlots({ gameId, resolve }: Props) {
                   ) : (
                     <span className="size-14" aria-hidden="true" />
                   )}
-                  <span className="w-full truncate text-center font-display text-[10px] text-ink-800">
+                  <span className="w-full truncate text-center font-display text-[11px] text-ink-800">
                     {slot.info.name}
                   </span>
                 </button>
@@ -136,13 +135,13 @@ export default function TeamSlots({ gameId, resolve }: Props) {
                 <span className="grid size-14 place-items-center font-display text-2xl text-ember-600">
                   ＋
                 </span>
-                <span className="font-display text-[10px] text-ink-500">{slot.index + 1}/6</span>
+                <span className="font-display text-[11px] text-ink-600">{slot.index + 1}/6</span>
               </div>
             </li>
           );
         })}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-ink-500">
+      <p className="mt-2 text-xs leading-relaxed text-ink-600">
         {lang === 'en'
           ? 'Click a filled slot to remove it.'
           : 'Haz clic en una casilla llena para quitarla.'}

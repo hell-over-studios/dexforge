@@ -1,5 +1,6 @@
 ---
 import type { GameRegistryEntry } from '../lib/data-schema';
+import { typeChipStyle } from '../lib/contrast';
 import type { ShowcaseEntry } from '../lib/showcase';
 import { withBase } from '../lib/paths';
 import PixelScene from './PixelScene.astro';
@@ -64,10 +65,7 @@ const sceneMon = (id: string) => {
                   {mon.types.map((t) => {
                     const meta = typeLookup[t];
                     return (
-                      <span
-                        class="type-chip"
-                        style={`background-color:${meta?.color ?? '#9299a1'};`}
-                      >
+                      <span class="type-chip" style={typeChipStyle(meta?.color ?? '#9299a1')}>
                         <span data-i18n-pair={JSON.stringify(meta?.name ?? { es: t, en: t })}>
                           {meta?.name.es ?? t}
                         </span>

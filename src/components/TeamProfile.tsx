@@ -4,6 +4,8 @@
  * chart libraries; static drawing, nothing animates) and a v1 heuristic role
  * per member from src/lib/roles.ts. Reads only the static per-game dataset;
  * silent fail if it won't load (cosmetic panel).
+ * v2 «Pergamino»: a paper profile sheet — ink radar grid, ember polygon,
+ * role chips in the same heatmap language as the defensive table.
  */
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -28,11 +30,11 @@ const ROLE_LABEL: Record<Role, { es: string; en: string }> = {
 };
 
 const ROLE_CHIP: Record<Role, string> = {
-  sweeper: 'border-ember-600 bg-ember-500 text-bark-950',
-  'special-sweeper': 'border-ember-700 bg-ember-700/40 text-parchment-100',
-  wall: 'border-moss-500 bg-moss-500 text-bark-950',
-  tank: 'border-moss-700 bg-moss-500/25 text-parchment-100',
-  support: 'border-bark-700 bg-bark-900 text-parchment-400',
+  sweeper: 'border-ink-950 bg-ember-500 text-ink-950',
+  'special-sweeper': 'border-ember-700 bg-ember-300/80 text-ink-900',
+  wall: 'border-ink-950 bg-moss-500 text-ink-950',
+  tank: 'border-moss-700 bg-moss-300/60 text-ink-900',
+  support: 'border-ink-900/25 bg-paper-200 text-ink-700',
 };
 
 interface MemberRow {
@@ -98,11 +100,8 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
 
   if (!game) {
     return (
-      <div
-        aria-busy="true"
-        className="rounded-sm border-2 border-bark-700 bg-bark-900 dither p-6 shadow-pixel"
-      >
-        <p className="animate-blink text-sm text-parchment-400">
+      <div aria-busy="true" className="paper-panel paper-grain p-6">
+        <p className="animate-blink font-display text-lg text-ink-900">
           {lang === 'en' ? 'Loading profile…' : 'Cargando perfil…'}
         </p>
       </div>
@@ -128,86 +127,87 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
     );
 
   return (
-    <div className="rounded-sm border-2 border-bark-700 bg-bark-900 p-4 shadow-pixel max-md:p-3">
-      <h2 className="font-display text-xl text-parchment-100">{t.heading}</h2>
-      <p className="mt-1 text-xs text-parchment-600">{t.hint}</p>
+    <div className="paper-panel p-4 sm:p-5">
+      <div className="border-b-2 border-ink-900/15 pb-3">
+        <h2 className="font-display text-2xl leading-none text-ink-950">{t.heading}</h2>
+        <p className="mt-2 text-xs leading-relaxed text-ink-600">{t.hint}</p>
+      </div>
 
       {!members.length ? (
-        <div className="mt-4 rounded-sm border-2 border-dashed border-bark-700 bg-bark-950 p-6 text-center">
+        <div className="mt-4 border-2 border-dashed border-ink-900/30 bg-paper-50 p-6 text-center">
           <span aria-hidden="true" className="text-2xl text-ember-600">
             ⬡
           </span>
-          <p className="mt-2 text-sm text-parchment-400">{t.empty}</p>
+          <p className="mt-2 text-sm text-ink-600">{t.empty}</p>
         </div>
       ) : (
         <div className="mt-4 grid items-center gap-4 sm:grid-cols-[13rem_1fr]">
           {/* average stats radar (pure SVG, no libraries) */}
-          <svg
-            viewBox="0 0 240 240"
-            role="img"
-            aria-label={t.radarCaption}
-            className="mx-auto w-52 max-w-full"
-          >
-            {/* grid: rings + axes */}
-            {[1 / 3, 2 / 3, 1].map((f) => (
+          <div className="mx-auto w-52 max-w-full border-2 border-ink-900/15 bg-paper-50 paper-grain p-2">
+            <svg viewBox="0 0 240 240" role="img" aria-label={t.radarCaption} className="w-full">
+              {/* grid: rings + axes */}
+              {[1 / 3, 2 / 3, 1].map((f) => (
+                <polygon
+                  key={f}
+                  points={ring(f)
+                    .map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`)
+                    .join(' ')}
+                  fill="none"
+                  stroke="var(--color-paper-400)"
+                  strokeWidth={f === 1 ? 2 : 1}
+                />
+              ))}
+              {pts.map((p) => (
+                <line
+                  key={`ax-${p.key}`}
+                  x1={cx}
+                  y1={cx}
+                  x2={p.ax}
+                  y2={p.ay}
+                  stroke="var(--color-paper-400)"
+                  strokeWidth="1"
+                />
+              ))}
+              {/* the team polygon */}
               <polygon
-                key={f}
-                points={ring(f)
-                  .map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`)
-                  .join(' ')}
-                fill="none"
-                stroke="var(--color-bark-700)"
-                strokeWidth={f === 1 ? 2 : 1}
+                points={pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')}
+                fill="var(--color-ember-500)"
+                fillOpacity="0.22"
+                stroke="var(--color-ember-700)"
+                strokeWidth="2"
               />
-            ))}
-            {pts.map((p) => (
-              <line
-                key={`ax-${p.key}`}
-                x1={cx}
-                y1={cx}
-                x2={p.ax}
-                y2={p.ay}
-                stroke="var(--color-bark-700)"
-                strokeWidth="1"
-              />
-            ))}
-            {/* the team polygon */}
-            <polygon
-              points={pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')}
-              fill="var(--color-ember-500)"
-              fillOpacity="0.25"
-              stroke="var(--color-ember-400)"
-              strokeWidth="2"
-            />
-            {pts.map((p) => (
-              <rect
-                key={`dot-${p.key}`}
-                x={p.x - 2}
-                y={p.y - 2}
-                width={5}
-                height={5}
-                fill="var(--color-ember-400)"
-              />
-            ))}
-            {/* axis labels */}
-            {pts.map((p) => (
-              <text
-                key={`lb-${p.key}`}
-                x={cx + (p.ax - cx) * 1.18}
-                y={cx + (p.ay - cx) * 1.18 + 3}
-                textAnchor={labelAnchor((p.ax - cx) / R)}
-                className="fill-parchment-400 font-display"
-                fontSize="10"
-              >
-                {STAT_SHORT[lang][p.key]}
-              </text>
-            ))}
-          </svg>
+              {pts.map((p) => (
+                <rect
+                  key={`dot-${p.key}`}
+                  x={p.x - 2}
+                  y={p.y - 2}
+                  width={5}
+                  height={5}
+                  fill="var(--color-ink-900)"
+                />
+              ))}
+              {/* axis labels */}
+              {pts.map((p) => (
+                <text
+                  key={`lb-${p.key}`}
+                  x={cx + (p.ax - cx) * 1.18}
+                  y={cx + (p.ay - cx) * 1.18 + 3}
+                  textAnchor={labelAnchor((p.ax - cx) / R)}
+                  className="fill-ink-600 font-display"
+                  fontSize="10"
+                >
+                  {STAT_SHORT[lang][p.key]}
+                </text>
+              ))}
+            </svg>
+          </div>
 
           {/* roles per member */}
           <div>
-            <h3 className="font-display text-sm text-parchment-600">{t.roleHeading}</h3>
-            <ul className="mt-2 space-y-2">
+            <h3 className="font-display text-xs tracking-[0.14em] text-ink-600 uppercase">
+              {t.roleHeading}
+            </h3>
+            <ul className="mt-2 space-y-2 md:grid md:grid-cols-2 md:space-y-0 md:gap-x-6 md:gap-y-2">
               {members.map((m) => {
                 const role = detectRole(m.stats);
                 return (
@@ -224,12 +224,12 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
                         className="size-8 shrink-0 [object-fit:contain]"
                       />
                     ) : null}
-                    <span className="min-w-0 flex-1 truncate font-display text-sm text-parchment-100">
+                    <span className="w-24 shrink-0 truncate font-display text-sm text-ink-950">
                       {m.name[lang]}
                     </span>
                     <span
                       className={
-                        'rounded-sm border-2 px-1.5 py-0.5 font-display text-[11px] tracking-wide uppercase ' +
+                        'border-2 px-1.5 py-0.5 font-display text-[11px] tracking-wide uppercase ' +
                         ROLE_CHIP[role]
                       }
                       aria-label={`${m.name[lang]}: ${ROLE_LABEL[role][lang]}`}

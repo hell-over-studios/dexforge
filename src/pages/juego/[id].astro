@@ -37,17 +37,17 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
     </a>
 
     <header class="paper-panel relative mt-6 overflow-hidden p-5 sm:p-7">
-      <span aria-hidden="true" class="pixel-rule absolute top-0 right-0 left-0 opacity-80"></span>
+      <span aria-hidden="true" class="absolute top-0 right-0 left-0 h-1.5 bg-ember-500"></span>
       <div class="flex flex-wrap items-center justify-between gap-6">
         <div>
-          <p class="kicker text-ember-700">Gen {game.generation} · {capitalize(game.region)}</p>
           <h1
-            class="mt-2 font-display text-4xl leading-none text-ink-950 sm:text-5xl"
+            class="font-display text-4xl leading-none text-ink-950 sm:text-5xl"
             data-i18n-pair={JSON.stringify(game.label)}
           >
             {game.label.es}
           </h1>
           <p class="mt-3 text-sm text-ink-600">
+            Gen {game.generation} ·{' '}
             <span class="font-display text-base text-ink-900">{game.pokemonCount}</span> Pokémon ·{
               ' '
             }
@@ -55,10 +55,7 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
           </p>
         </div>
 
-        <div
-          class="hidden rotate-2 items-center gap-3 border-2 border-ink-950 bg-paper-200 px-4 py-3 shadow-pixel-sm sm:flex"
-          aria-hidden="true"
-        >
+        <div class="hidden rotate-2 items-center gap-3 text-ink-700 sm:flex" aria-hidden="true">
           <svg viewBox="0 0 8 8" class="size-9" shape-rendering="crispEdges">
             <rect width="8" height="8" fill="#241c12"></rect>
             <rect x="2" y="1" width="4" height="1" fill="#f7931e"></rect>

@@ -10,7 +10,6 @@ export const dict = {
   'nav.games': { es: 'Juegos', en: 'Games' },
   'nav.how': { es: 'Cómo funciona', en: 'How it works' },
 
-  'hero.kicker': { es: 'Proyecto de fans · datos abiertos', en: 'Fan project · open data' },
   'hero.title1': { es: 'Tu equipo,', en: 'Your team,' },
   'hero.title2': { es: 'forjado para', en: 'forged for' },
   'hero.title3': { es: 'tu juego.', en: 'your game.' },
@@ -26,7 +25,6 @@ export const dict = {
   'hero.caption': { es: 'Ruta 101 · Hoenn', en: 'Route 101 · Hoenn' },
   'hero.art': { es: 'Ilustraciones oficiales · PokeAPI', en: 'Official artwork · PokeAPI' },
 
-  'selector.kicker': { es: '01 · Elige tu partida', en: '01 · Pick your run' },
   'selector.heading': { es: 'Elige tu juego', en: 'Choose your game' },
   'selector.sub': {
     es: 'Tres regiones, tres tablas de tipos y cero aproximaciones. Entra y empieza a montar el equipo.',
@@ -38,7 +36,6 @@ export const dict = {
   'selector.missingLink': { es: 'Pídelo en GitHub', en: 'Request it on GitHub' },
   'selector.typesLabel': { es: 'tipos en la tabla', en: 'types in the chart' },
 
-  'how.kicker': { es: '02 · Cómo funciona', en: '02 · How it works' },
   'how.heading': { es: 'Del juego a la decisión.', en: 'From game to decision.' },
   'how.sub': {
     es: 'Tres pasos. Sin cuentas, sin anuncios y sin cambiar de pestaña.',
@@ -60,7 +57,6 @@ export const dict = {
     en: 'Shared weaknesses, immunities, roles and average stats. What you need to adjust.',
   },
 
-  'features.kicker': { es: '03 · Ya dentro', en: '03 · Already inside' },
   'features.heading': { es: 'Lo que ya está forjado.', en: "What's already forged." },
   'features.sub': {
     es: 'Funciones reales sobre datos reales. Nada de maquetas.',
