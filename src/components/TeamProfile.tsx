@@ -15,6 +15,7 @@ import {
   type Role,
 } from '../lib/roles';
 import { loadGame } from '../lib/dex';
+import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 import type { GameData, GamePokemon, Stats } from '../lib/data-schema';
 
@@ -62,8 +63,7 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
     };
   }, [gameId]);
 
-  const lang =
-    typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
+  const lang = useLang();
 
   const teamState = useTeamStore((s) => s.teams);
 

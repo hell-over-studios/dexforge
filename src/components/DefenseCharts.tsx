@@ -12,6 +12,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { analyzeTeam, type TeamMemberInput } from '../lib/analysis';
 import { summarizeDefenses } from '../lib/summary';
 import { loadGame, loadTypeMeta, type TypeMeta } from '../lib/dex';
+import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 import type { GameData, GamePokemon } from '../lib/data-schema';
 
@@ -69,8 +70,7 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
   }, [gameId]);
 
   /* current UI language at render time (ES default, ?lang=en supported) */
-  const lang =
-    typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
+  const lang = useLang();
 
   const teamState = useTeamStore((s) => s.teams);
 
