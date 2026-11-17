@@ -1,45 +1,101 @@
 ---
 import type { GameRegistryEntry } from '../lib/data-schema';
+import type { ShowcaseEntry } from '../lib/showcase';
 import { withBase } from '../lib/paths';
+import PixelScene from './PixelScene.astro';
 
 interface Props {
   games: GameRegistryEntry[];
+  featured: Record<string, ShowcaseEntry>;
+  typeLookup: Record<string, { name: { es: string; en: string }; color: string }>;
 }
 
-const { games } = Astro.props;
+const { games, featured, typeLookup } = Astro.props;
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const sceneVariant = (id: string) =>
+  id === 'red-blue' ? 'kanto' : id === 'gold-silver' ? 'johto' : 'hoenn';
+const sceneMon = (id: string) => {
+  const mon = featured[id];
+  if (!mon) return [];
+  const width = id === 'emerald' ? '42%' : '38%';
+  const left = id === 'emerald' ? '55%' : '58%';
+  return [{ artwork: mon.artwork, name: mon.name.es, left, bottom: '4%', width, z: 4 }];
+};
 ---
 
-<ul class="grid gap-5 sm:grid-cols-3">
+<ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
   {
-    games.map((game) => (
-      <li>
-        <a
-          href={withBase(`juego/${game.id}`)}
-          class="group flex h-full flex-col rounded-sm border-2 border-bark-700 bg-bark-900 dither p-5 shadow-pixel transition-all ease-in-out hover:-translate-y-0.5 hover:border-ember-600 hover:shadow-pixel-ember focus-visible:-translate-y-0.5 focus-visible:border-ember-500"
-        >
-          <div class="font-display text-xs tracking-widest text-ember-400 uppercase">
-            Gen {game.generation} · {capitalize(game.region)}
-          </div>
-          <div
-            class="mt-2 font-display text-lg text-parchment-100"
-            data-i18n-pair={JSON.stringify(game.label)}
+    games.map((game) => {
+      const mon = featured[game.id];
+      return (
+        <li>
+          <a
+            href={withBase(`juego/${game.id}`)}
+            class="group flex h-full flex-col border-[3px] border-ink-950 bg-paper-100 shadow-pixel-lg transition-transform duration-150 ease-out hover:-translate-y-1 focus-visible:-translate-y-1"
           >
-            {game.label.es}
-          </div>
-          <div class="mt-1 text-sm text-parchment-400">{game.pokemonCount} Pokémon</div>
-          <span class="mt-4 inline-flex items-center gap-2 font-display text-sm text-ember-300">
-            <span data-i18n="selector.cta">Elegir este juego</span>
-            <span
-              aria-hidden="true"
-              class="transition-transform ease-in-out group-hover:translate-x-0.5"
-            >
-              ▸
-            </span>
-          </span>
-        </a>
-      </li>
-    ))
+            <div class="relative">
+              <PixelScene
+                variant={sceneVariant(game.id)}
+                mons={sceneMon(game.id)}
+                class="h-44 w-full border-b-[3px] border-ink-950"
+              />
+              <span class="absolute top-3 left-3 z-10 border-2 border-ink-950 bg-paper-50 px-2 py-0.5 font-display text-[11px] tracking-widest text-ink-900 uppercase">
+                Gen {game.generation}
+              </span>
+            </div>
+
+            <div class="flex flex-1 flex-col paper-grain p-4">
+              <div class="flex items-start justify-between gap-2">
+                <h3
+                  class="font-display text-2xl leading-none text-ink-950"
+                  data-i18n-pair={JSON.stringify(game.label)}
+                >
+                  {game.label.es}
+                </h3>
+              </div>
+              <p class="mt-2 text-sm text-ink-600">
+                <span class="font-display text-base text-ink-900">{game.pokemonCount}</span> Pokémon
+                · {capitalize(game.region)}
+              </p>
+
+              {mon ? (
+                <div class="mt-3 flex flex-wrap gap-1.5">
+                  {mon.types.map((t) => {
+                    const meta = typeLookup[t];
+                    return (
+                      <span
+                        class="type-chip"
+                        style={`background-color:${meta?.color ?? '#9299a1'};`}
+                      >
+                        <span data-i18n-pair={JSON.stringify(meta?.name ?? { es: t, en: t })}>
+                          {meta?.name.es ?? t}
+                        </span>
+                      </span>
+                    );
+                  })}
+                </div>
+              ) : null}
+
+              <p class="mt-3 flex items-center gap-2 font-display text-[11px] tracking-wide text-ink-600">
+                <span aria-hidden="true" class="size-1.5 bg-ember-500" />
+                <span class="text-ink-900">{game.generation === 1 ? 15 : 17}</span>
+                <span data-i18n="selector.typesLabel">tipos en la tabla</span>
+              </p>
+
+              <span class="mt-auto flex items-center justify-between gap-2 border-t-2 border-ink-900/15 pt-3 font-display text-sm text-ink-800 transition-colors group-hover:text-ember-700">
+                <span data-i18n="selector.cta">Entrar al taller</span>
+                <span
+                  aria-hidden="true"
+                  class="transition-transform duration-150 group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </span>
+            </div>
+          </a>
+        </li>
+      );
+    })
   }
 </ul>

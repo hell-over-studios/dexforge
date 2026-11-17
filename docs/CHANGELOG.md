@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Visual identity v2 «Pergamino» (ADR-008 revision): parchment panels over a deep forest ground, ink text, ember primary actions, larger pixel display type, solid canonical type chips and a field-journal landing with a paper-framed pixel diorama staging official artwork. Shared `SiteHeader`/`SiteFooter` now mount from `Base.astro`; the old bark/parchment tokens survive as aliases until the game-page islands finish their v2 pass. Product truth recorded in `PRODUCT.md`, direction contract in `.impeccable/surfaces/home.md`.
+
 ## [0.3.0] - 2026-11-10
 
 Team analysis: game-accurate defensive table, team stat radar with role heuristic,

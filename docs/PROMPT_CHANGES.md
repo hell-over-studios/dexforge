@@ -42,3 +42,19 @@ Recorded by the lead engineer agent; no other clauses of `docs/PROMPT.md` are af
   utility stays for future pixel-art elements, but species images render smooth.
 - The full sprite data (game/shiny/showdown/home) is still emitted by the data pipeline and may
   return behind a future owner decision; no data-format change.
+
+## 2026-11-16 — Visual direction revision: Pixel-cozy v2 «Pergamino» — Owner directive
+
+**Owner:** Martin, via session chat.
+
+### Change 4 — Rendition of the pixel-cozy world (amends ADR-008, not §2)
+
+> "No me gusta para nada como esta visualmente, utiliza las skills que sean necesarias y cambia el diseño"
+> (2026-11-16, session chat)
+
+- Keeps the owner's pixel art + cozy mandate and the official-artwork-only rule; replaces the warm-bark/dark-panel rendition with **parchment panels over a deep forest ground**, larger pixel display type, a field-journal composition and solid legible type chips.
+- §2 functional requirements are unchanged: game-scoped data, official artwork only, mobile-first, keyboard + contrast, `prefers-reduced-motion`, no runtime PokeAPI.
+- Recorded as the ADR-008 revision in `docs/DECISIONS.md`; direction contract in `.impeccable/surfaces/home.md`; product truth in `PRODUCT.md`.
+- Rollout is sliced per ADR-009: landing + shared shell, then the game-page picker/team/detail, then the analysis panels.
+
+Recorded by the lead engineer agent; no other clauses of `docs/PROMPT.md` are affected.

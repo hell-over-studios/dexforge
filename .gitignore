@@ -18,3 +18,11 @@ Thumbs.db
 # test artifacts (Playwright, from v0.2)
 test-results/
 playwright-report/
+
+# impeccable working artifacts (PRODUCT.md and surface briefs are committed)
+.impeccable/review/
+.impeccable/build/
+.impeccable/mocks/
+.impeccable/live/
+.impeccable/critique/
+.impeccable/config.local.json

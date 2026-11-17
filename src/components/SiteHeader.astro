@@ -1,0 +1,64 @@
+---
+import { withBase } from '../lib/paths';
+
+const home = withBase('');
+const games = `${home}#juegos`;
+const how = `${home}#como-funciona`;
+const github = 'https://github.com/hell-over-studios/dexforge';
+---
+
+<header class="sticky top-0 z-40 border-b-2 border-ink-950/70 bg-forest-950/95 forest-grain">
+  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
+    <a
+      href={home}
+      class="group flex items-center gap-3 focus-visible:outline-offset-4"
+      aria-label="Dexforge — inicio"
+    >
+      <span
+        class="grid size-10 shrink-0 place-items-center border-2 border-ink-950 bg-paper-100 shadow-pixel-sm transition-transform duration-150 group-hover:-translate-y-0.5"
+      >
+        <svg viewBox="0 0 8 8" class="size-6" shape-rendering="crispEdges" aria-hidden="true">
+          <rect width="8" height="8" fill="#241c12"></rect>
+          <rect x="2" y="1" width="4" height="1" fill="#f7931e"></rect>
+          <rect x="1" y="2" width="6" height="1" fill="#f7931e"></rect>
+          <rect x="1" y="3" width="6" height="2" fill="#fbf5e6"></rect>
+          <rect x="3" y="3" width="2" height="2" fill="#241c12"></rect>
+          <rect x="1" y="5" width="6" height="1" fill="#c3a473"></rect>
+          <rect x="2" y="6" width="4" height="1" fill="#c3a473"></rect>
+        </svg>
+      </span>
+      <span
+        class="font-display text-2xl leading-none text-paper-50 transition-colors group-hover:text-ember-300"
+      >
+        Dexforge
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-7 sm:flex" aria-label="Principal">
+      <a
+        href={games}
+        class="font-display text-sm tracking-wide text-paper-200 underline-offset-4 transition-colors hover:text-ember-300 hover:underline"
+        data-i18n="nav.games">Juegos</a
+      >
+      <a
+        href={how}
+        class="font-display text-sm tracking-wide text-paper-200 underline-offset-4 transition-colors hover:text-ember-300 hover:underline"
+        data-i18n="nav.how">Cómo funciona</a
+      >
+      <a
+        href={github}
+        class="font-display text-sm tracking-wide text-paper-200 underline-offset-4 transition-colors hover:text-ember-300 hover:underline"
+        rel="noopener noreferrer"
+        target="_blank">GitHub <span aria-hidden="true">↗</span></a
+      >
+    </nav>
+
+    <button
+      id="lang-toggle"
+      type="button"
+      class="min-h-9 cursor-pointer border-2 border-paper-300 bg-transparent px-3 font-display text-xs tracking-wide text-paper-100 uppercase shadow-pixel-forest transition-colors hover:border-ember-400 hover:bg-forest-900"
+    >
+      English
+    </button>
+  </div>
+</header>
