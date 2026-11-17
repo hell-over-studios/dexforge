@@ -105,6 +105,7 @@ export const dict = {
   'footer.art': { es: 'Ilustraciones: PokeAPI', en: 'Artwork: PokeAPI' },
 
   'game.back': { es: 'Volver al inicio', en: 'Back to home' },
+  'game.dexStamp': { es: 'Pokédex regional', en: 'Regional Pokédex' },
   'lang.toggle': { es: 'English', en: 'Español' },
 } as const;
 

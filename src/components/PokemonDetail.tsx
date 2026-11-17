@@ -4,9 +4,11 @@
  * info and height/weight. Visuals show ONLY the official artwork (owner
  * directive 2026-11-07: no game/shiny/animated/HOME sprites anywhere).
  * Mobile-first (verified at 360px). Charts land in v0.3 (ADR-005).
+ * v2 «Pergamino»: the drawer is a paper sheet with an ember top rule.
  */
 import { useState } from 'react';
 import type { GamePokemon } from '../lib/data-schema';
+import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 
 interface Props {
@@ -51,8 +53,7 @@ const STAT_LABELS: { key: keyof GamePokemon['stats']; es: string; en: string }[]
 ];
 
 export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose }: Props) {
-  const lang =
-    typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
+  const lang = useLang();
   const [note, setNote] = useState('');
   const team = useTeamStore((s) => s.teams[gameId]) ?? [];
   const toggle = useTeamStore((s) => s.toggle);
@@ -79,11 +80,11 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
   return (
     <section
       aria-label={mon.name[lang]}
-      className="animate-pop-in rounded-sm border-2 border-ember-600 bg-bark-900 dither p-4 shadow-pixel"
+      className="animate-pop-in border-2 border-t-4 border-ink-950 border-t-ember-500 bg-paper-50 p-4 shadow-pixel"
     >
       <div className="flex items-start gap-3">
         {/* official artwork ONLY (owner directive 2026-11-07) — smooth render */}
-        <div className="shrink-0">
+        <div className="grid size-24 shrink-0 place-items-center border-2 border-ink-900/15 bg-paper-100">
           {artwork ? (
             <img
               src={artwork}
@@ -93,10 +94,7 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
               className="size-20 [object-fit:contain]"
             />
           ) : (
-            <span
-              className="grid size-20 place-items-center rounded-sm border-2 border-bark-800 bg-bark-950 text-xs text-parchment-600"
-              aria-hidden="true"
-            >
+            <span className="font-display text-xs text-ink-500" aria-hidden="true">
               —
             </span>
           )}
@@ -104,36 +102,27 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="min-w-0 truncate font-display text-xl text-parchment-100">
-              {mon.name[lang]}
-            </h2>
+            <h2 className="min-w-0 truncate font-display text-xl text-ink-950">{mon.name[lang]}</h2>
             <button
               type="button"
               onClick={onClose}
               aria-label={lang === 'en' ? 'Close details' : 'Cerrar detalles'}
-              className="shrink-0 cursor-pointer rounded-sm border-2 border-bark-950 bg-bark-700 px-2 py-0.5 font-display text-sm text-parchment-200 shadow-pixel-sm hover:border-ember-600"
+              className="shrink-0 cursor-pointer border-2 border-ink-950 bg-paper-100 px-2 py-0.5 font-display text-sm text-ink-900 shadow-pixel-sm transition-colors hover:bg-paper-200"
             >
               ✕
             </button>
           </div>
-          <p className="text-sm text-parchment-400">
+          <p className="text-sm text-ink-500">
             n.º {mon.id} · dex {mon.dexNumber} · {formatMeters(mon.height)} · {formatKg(mon.weight)}
           </p>
           <div className="mt-2 flex flex-wrap gap-1">
             {mon.types.map((t) =>
               colors[t] ? (
-                <span
-                  key={t}
-                  style={{ backgroundColor: colors[t] }}
-                  className="rounded-sm border-2 border-bark-950 px-2 py-0.5 font-display text-xs font-bold text-bark-950"
-                >
+                <span key={t} className="type-chip" style={{ backgroundColor: colors[t] }}>
                   {t}
                 </span>
               ) : (
-                <span
-                  key={t}
-                  className="rounded-sm border border-bark-700 px-2 py-0.5 font-display text-xs text-parchment-400 uppercase"
-                >
+                <span key={t} className="type-chip bg-paper-300">
                   {t}
                 </span>
               ),
@@ -144,29 +133,23 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
 
       {/* pixel stat bars (quantized to 10% steps) */}
       <div
-        className="mt-2 grid gap-1"
+        className="mt-3 grid gap-1"
         role="table"
         aria-label={lang === 'en' ? 'Base stats' : 'Estadísticas base'}
       >
         {STAT_LABELS.map(({ key, es, en }) => (
           <div key={key} role="row" className="flex items-center gap-2">
-            <span
-              role="rowheader"
-              className="w-20 shrink-0 font-display text-xs text-parchment-400"
-            >
+            <span role="rowheader" className="w-20 shrink-0 font-display text-xs text-ink-600">
               {lang === 'en' ? en : es}
             </span>
-            <span
-              role="cell"
-              className="h-3 min-w-0 flex-1 rounded-sm border-2 border-bark-950 bg-bark-950"
-            >
+            <span role="cell" className="h-3 min-w-0 flex-1 border-2 border-ink-950 bg-paper-200">
               <span
-                className="block h-full rounded-none bg-ember-500"
+                className="block h-full bg-ember-500"
                 style={{ width: quantizedWidth(mon.stats[key]) }}
                 data-value={mon.stats[key]}
               ></span>
             </span>
-            <span role="cell" className="w-8 text-right font-display text-xs text-parchment-200">
+            <span role="cell" className="w-8 text-right font-display text-xs text-ink-900">
               {mon.stats[key]}
             </span>
           </div>
@@ -174,7 +157,7 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
       </div>
 
       {mon.abilities.length > 0 ? (
-        <p className="mt-3 text-xs text-parchment-400">
+        <p className="mt-3 text-xs text-ink-600">
           {lang === 'en' ? 'Abilities: ' : 'Habilidades: '}
           {mon.abilities
             .map(
@@ -189,12 +172,7 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
       <button
         type="button"
         onClick={onTeamButton}
-        className={
-          'mt-3 block w-full cursor-pointer rounded-sm border-2 px-3 py-2 font-display text-sm shadow-pixel-sm transition-colors ' +
-          (inTeam
-            ? 'border-bark-950 bg-bark-700 text-parchment-200 hover:border-moss-500'
-            : 'border-bark-950 bg-ember-500 text-bark-950 hover:bg-ember-400')
-        }
+        className={'pixel-btn mt-3 w-full ' + (inTeam ? 'pixel-btn-paper' : 'pixel-btn-primary')}
       >
         {inTeam
           ? lang === 'en'
@@ -208,7 +186,7 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
               ? 'Add to team'
               : 'Añadir al equipo'}
       </button>
-      <p aria-live="polite" className="mt-1 min-h-4 text-[10px] text-parchment-600">
+      <p aria-live="polite" className="mt-1 min-h-4 text-[10px] text-ink-500">
         {note}
       </p>
     </section>

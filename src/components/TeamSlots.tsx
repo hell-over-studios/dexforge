@@ -1,13 +1,15 @@
 /**
  * Team of 6 — pixel slot frames (T2.8). Pure CSS empty-state art (no ripped
- * assets): an ember "＋" over a faint inner border; filled slots use the
+ * assets): an ember "＋" over a dashed inner frame; filled slots use the
  * official artwork (owner directive 2026-11-07: artwork only, smooth render)
  * + name. Slots are accessible buttons; loaded only client-side (island), so
  * it never renders during SSR.
  * T2.9: copy-link button (shares `?t=<encoded>`) and seeding the team from
  * an incoming `?t=` param; toast is animation-free under reduced motion.
+ * v2 «Pergamino»: the team sheet is a parchment panel (sticky on desktop).
  */
 import { useEffect, useRef, useState } from 'react';
+import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 import { decodeTeam, encodeTeam } from '../lib/share';
 
@@ -20,8 +22,7 @@ interface Props {
 export default function TeamSlots({ gameId, resolve }: Props) {
   const team = useTeamStore((s) => s.teams[gameId]) ?? [];
   const remove = useTeamStore((s) => s.remove);
-  const lang =
-    typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'en' : 'es';
+  const lang = useLang();
   const [copied, setCopied] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -56,39 +57,43 @@ export default function TeamSlots({ gameId, resolve }: Props) {
   });
 
   return (
-    <div className="rounded-sm">
+    <div className="paper-panel paper-grain p-4">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-display text-sm tracking-widest text-parchment-400 uppercase">
-          {lang === 'en' ? 'Your team' : 'Tu equipo'}
-        </h2>
-        <div className="flex items-center gap-2">
-          <span className="font-display text-sm text-ember-300">{team.length}/6</span>
-          <button
-            type="button"
-            onClick={copyLink}
-            disabled={team.length === 0}
-            aria-label={
-              lang === 'en'
-                ? 'Copy share link to the team'
-                : 'Copiar enlace para compartir el equipo'
-            }
-            className="cursor-pointer rounded-sm border-2 border-bark-700 bg-bark-800 px-2 py-0.5 font-display text-[11px] tracking-wide text-parchment-200 uppercase shadow-pixel-sm hover:border-ember-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {lang === 'en' ? 'Copy link' : 'Copiar enlace'}
-          </button>
+        <div>
+          <p className="kicker text-ink-500">02 · {lang === 'en' ? 'Party' : 'Equipo'}</p>
+          <h2 className="mt-1 font-display text-2xl leading-none text-ink-950">
+            {lang === 'en' ? 'Your team' : 'Tu equipo'}
+          </h2>
         </div>
+        <span className="border-2 border-ink-950 bg-ember-500 px-2 py-1 font-display text-sm leading-none text-ink-950 shadow-pixel-sm">
+          {team.length}/6
+        </span>
       </div>
+
+      <button
+        type="button"
+        onClick={copyLink}
+        disabled={team.length === 0}
+        aria-label={
+          lang === 'en' ? 'Copy share link to the team' : 'Copiar enlace para compartir el equipo'
+        }
+        className="mt-3 w-full cursor-pointer border-2 border-ink-950 bg-paper-50 px-2 py-1.5 font-display text-[11px] tracking-wide text-ink-900 uppercase shadow-pixel-sm transition-colors hover:bg-paper-100 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        {lang === 'en' ? 'Copy link' : 'Copiar enlace'}
+      </button>
+
       {/* reduced-motion aware: global CSS freezes animation under prefers-reduced-motion */}
       <p
         aria-live="polite"
         className={
-          'fixed bottom-4 left-1/2 z-50 -translate-x-1/2 animate-pop-in rounded-sm border-2 border-ember-400 bg-bark-900 px-3 py-1.5 font-display text-sm text-parchment-100 shadow-pixel transition-opacity duration-200' +
+          'fixed bottom-4 left-1/2 z-50 -translate-x-1/2 border-2 border-ink-950 bg-ember-500 px-3 py-1.5 font-display text-sm text-ink-950 shadow-pixel transition-opacity duration-200' +
           (copied ? ' opacity-100' : ' pointer-events-none opacity-0')
         }
       >
-        {lang === 'en' ? 'Link copied!' : '¡Enlace copiado!'}
+        {copied ? (lang === 'en' ? 'Link copied!' : '¡Enlace copiado!') : ''}
       </p>
-      <ul role="list" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
+
+      <ul role="list" className="mt-3 grid grid-cols-3 gap-2">
         {slots.map((slot) => {
           if (slot.id !== null && slot.info) {
             return (
@@ -101,21 +106,21 @@ export default function TeamSlots({ gameId, resolve }: Props) {
                       ? `Remove ${slot.info.name} from the team`
                       : `Quitar a ${slot.info.name} del equipo`) + ` (${slot.index + 1}/6)`
                   }
-                  className="group flex h-full w-full cursor-pointer flex-col items-center gap-1 rounded-sm border-2 border-ember-500 bg-bark-900 p-1 shadow-pixel-sm transition-all ease-in-out hover:border-ember-600 hover:shadow-pixel-ember"
+                  className="group flex h-full w-full cursor-pointer flex-col items-center gap-1 border-2 border-ink-950 bg-paper-50 p-1 shadow-pixel-sm transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:bg-paper-100"
                 >
                   {slot.info.spriteUrl ? (
                     <img
                       src={slot.info.spriteUrl}
                       alt=""
                       aria-hidden="true"
-                      width={48}
-                      height={48}
-                      className="size-12 [object-fit:contain]"
+                      width={56}
+                      height={56}
+                      className="size-14 [object-fit:contain]"
                     />
                   ) : (
-                    <span className="size-12 rounded-sm" aria-hidden="true" />
+                    <span className="size-14" aria-hidden="true" />
                   )}
-                  <span className="w-full truncate text-center font-display text-[10px] text-parchment-200">
+                  <span className="w-full truncate text-center font-display text-[10px] text-ink-800">
                     {slot.info.name}
                   </span>
                 </button>
@@ -126,20 +131,18 @@ export default function TeamSlots({ gameId, resolve }: Props) {
             <li key={slot.index}>
               <div
                 aria-hidden="true"
-                className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-sm border-2 border-dashed border-bark-700 bg-bark-950/60 p-1"
+                className="flex h-full w-full flex-col items-center justify-center gap-1 border-2 border-dashed border-ink-900/35 bg-paper-100/60 p-1"
               >
-                <span className="grid size-12 place-items-center font-display text-lg text-ember-700">
+                <span className="grid size-14 place-items-center font-display text-2xl text-ember-600">
                   ＋
                 </span>
-                <span className="font-display text-[10px] text-parchment-600">
-                  {slot.index + 1}/6
-                </span>
+                <span className="font-display text-[10px] text-ink-500">{slot.index + 1}/6</span>
               </div>
             </li>
           );
         })}
       </ul>
-      <p className="mt-1 text-[10px] text-parchment-600">
+      <p className="mt-2 text-[10px] leading-relaxed text-ink-500">
         {lang === 'en'
           ? 'Click a filled slot to remove it.'
           : 'Haz clic en una casilla llena para quitarla.'}
