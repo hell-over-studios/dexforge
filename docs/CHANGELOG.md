@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Visual identity v2 «Pergamino» (ADR-008 revision): parchment panels over a deep forest ground, ink text, ember primary actions, larger pixel display type, solid canonical type chips and a field-journal landing with a paper-framed pixel diorama staging official artwork. Shared `SiteHeader`/`SiteFooter` now mount from `Base.astro`; the old bark/parchment tokens survive as aliases while the analysis panels finish their v2 pass. Product truth recorded in `PRODUCT.md`, direction contract in `.impeccable/surfaces/home.md`.
+- Visual identity v2 «Pergamino» (ADR-008 revision): parchment panels over a deep forest ground, ink text, ember primary actions, larger pixel display type, solid canonical type chips and a field-journal landing with a paper-framed pixel diorama staging official artwork. Shared `SiteHeader`/`SiteFooter` now mount from `Base.astro`; the legacy `bark-*`/`parchment-*` aliases and the `dither` utility are gone now that every screen is on the v2 tokens. Product truth recorded in `PRODUCT.md`, direction contract in `.impeccable/surfaces/home.md`.
 - Game page v2 workbench: paper header with a regional-Pokédex stamp, picker and team sheets side by side (team sticky on desktop), in-place detail drawer with ink stat bars and solid type chips. Behavior unchanged (ARIA combobox, share URL, official artwork only). New `useLang` hook removes the `?lang=en` hydration mismatch and lets islands follow the in-page language toggle.
+- Analysis panels v2: `DefenseCharts` is a calm paper heatmap (quiet ×1 cells, ember for weaknesses, moss for resists, ink for immunities) with a paper notes block, and `TeamProfile` is a paper profile sheet (ink radar grid, ember polygon, role chips, two-column roster on wide screens).
 
 ## [0.3.0] - 2026-11-10
 

@@ -4,6 +4,7 @@ import GameSelector from '../components/GameSelector.astro';
 import PixelScene from '../components/PixelScene.astro';
 import fs from 'node:fs';
 import type { GamesRegistry, TypeData } from '../lib/data-schema';
+import { typeChipStyle } from '../lib/contrast';
 import { dict, type DictKey } from '../lib/i18n';
 import { GAME_FEATURED, HERO_TRIO } from '../lib/showcase';
 
@@ -91,13 +92,8 @@ const features: {
       class="mx-auto grid max-w-6xl gap-12 px-5 pt-12 pb-16 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:pt-20 lg:pb-24"
     >
       <div class="relative z-10 animate-fade-rise">
-        <p class="kicker flex items-center gap-3 text-ember-300">
-          <span aria-hidden="true" class="inline-block size-2 bg-ember-500"></span>
-          <span data-i18n="hero.kicker">Proyecto de fans · datos abiertos</span>
-        </p>
-
         <h1
-          class="mt-5 font-display text-[clamp(2.9rem,6vw,4.6rem)] leading-[0.94] font-bold tracking-tight text-paper-50"
+          class="font-display text-[clamp(2.9rem,6vw,4.6rem)] leading-[0.94] font-bold tracking-tight text-paper-50"
         >
           <span class="block" data-i18n="hero.title1">Tu equipo,</span>
           <span data-i18n="hero.title2">forjado para</span>{' '}
@@ -181,7 +177,7 @@ const features: {
                 heroTypes.map((t) => {
                   const meta = typeLookup[t];
                   return (
-                    <span class="type-chip" style={`background-color:${meta?.color ?? '#9299a1'};`}>
+                    <span class="type-chip" style={typeChipStyle(meta?.color ?? '#9299a1')}>
                       <span data-i18n-pair={JSON.stringify(meta?.name ?? { es: t, en: t })}>
                         {meta?.name.es ?? t}
                       </span>
@@ -194,7 +190,7 @@ const features: {
         </div>
 
         <p
-          class="mt-6 text-center font-display text-[10px] tracking-[0.18em] text-paper-400 uppercase"
+          class="mt-6 text-center font-display text-[11px] tracking-[0.18em] text-paper-400 uppercase"
           data-i18n="hero.art"
         >
           Ilustraciones oficiales · PokeAPI
@@ -212,10 +208,9 @@ const features: {
     <div class="mx-auto max-w-6xl px-5 sm:px-8">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="kicker text-ember-300" data-i18n="selector.kicker">01 · Elige tu partida</p>
           <h2
             id="games-h"
-            class="mt-2 font-display text-4xl leading-none text-paper-50 sm:text-5xl"
+            class="font-display text-4xl leading-none text-paper-50 sm:text-5xl"
             data-i18n="selector.heading"
           >
             Elige tu juego
@@ -257,10 +252,9 @@ const features: {
     aria-labelledby="how-h"
   >
     <div class="max-w-2xl">
-      <p class="kicker text-ember-300" data-i18n="how.kicker">02 · Cómo funciona</p>
       <h2
         id="how-h"
-        class="mt-2 font-display text-4xl leading-none text-paper-50 sm:text-5xl"
+        class="font-display text-4xl leading-none text-paper-50 sm:text-5xl"
         data-i18n="how.heading"
       >
         Del juego a la decisión.
@@ -276,12 +270,6 @@ const features: {
       {
         steps.map((step) => (
           <li class="paper-panel-soft relative overflow-hidden p-5">
-            <span
-              aria-hidden="true"
-              class="absolute -top-2 right-2 font-display text-6xl leading-none text-ink-900/10"
-            >
-              {step.n}
-            </span>
             <span aria-hidden="true" class="mb-4 block h-2 w-12 bg-ember-500" />
             <h3 class="font-display text-xl text-ink-950" data-i18n={step.titleKey}>
               {dict[step.titleKey].es}
@@ -295,9 +283,8 @@ const features: {
     </ol>
 
     <div class="mt-16 max-w-2xl">
-      <p class="kicker text-moss-400" data-i18n="features.kicker">03 · Ya dentro</p>
       <h2
-        class="mt-2 font-display text-4xl leading-none text-paper-50 sm:text-5xl"
+        class="font-display text-4xl leading-none text-paper-50 sm:text-5xl"
         data-i18n="features.heading"
       >
         Lo que ya está forjado.
@@ -322,7 +309,7 @@ const features: {
                 {dict[feature.titleKey].es}
               </h3>
               {feature.badge ? (
-                <span class="ml-auto border-2 border-ink-950 bg-ember-500 px-1.5 py-0.5 font-display text-[10px] leading-none text-ink-950 uppercase">
+                <span class="ml-auto border-2 border-ink-950 bg-ember-500 px-1.5 py-0.5 font-display text-[11px] leading-none text-ink-950 uppercase">
                   {feature.badge}
                 </span>
               ) : null}
@@ -341,11 +328,10 @@ const features: {
     <div
       class="relative overflow-hidden border-[3px] border-ink-950 bg-paper-100 paper-grain p-7 shadow-pixel-lg sm:p-12"
     >
-      <span aria-hidden="true" class="pixel-rule absolute top-0 right-0 left-0"></span>
+      <span aria-hidden="true" class="absolute top-0 right-0 left-0 h-1.5 bg-ember-500"></span>
       <div class="relative z-10 max-w-2xl">
-        <p class="kicker text-ember-700">Dexforge</p>
         <h2
-          class="mt-2 font-display text-4xl leading-[0.98] text-balance text-ink-950 sm:text-5xl"
+          class="font-display text-4xl leading-[0.98] text-balance text-ink-950 sm:text-5xl"
           data-i18n="cta.heading"
         >
           Tu próxima partida empieza con un equipo.

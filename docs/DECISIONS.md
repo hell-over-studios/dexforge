@@ -83,7 +83,7 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
   - **Type chips:** solid canonical type colors with ink text and a 2px ink border, uppercase Pixelify Sans at `0.7rem` — legible, not pastel.
   - **Shape and depth:** square corners, 2px ink borders, hard ink offset shadows (4–6px), paper/forest dither grain. No blur, glow or glass.
   - **Shared shell:** `SiteHeader`/`SiteFooter` mounted by `Base.astro`; every route inherits the same wordmark, nav, language toggle and disclaimer.
-  - **Migration:** `bark-*`/`parchment-*` tokens and the `dither` utility remain as aliases until the game-page islands finish their v2 pass, so no screen loses contrast mid-migration.
+  - **Migration:** the `bark-*`/`parchment-*` aliases and the `dither` utility bridged the rollout and were removed once every screen (landing, game workbench, analysis panels) was on the v2 tokens.
 - **Alternatives:** keep the bark rendition and only polish spacing (rejected: owner dislikes the world itself); parchment-only light theme (rejected: loses the cozy dusk forest and the diorama contrast).
 - **Consequences:** Tokens are the contract (`forest-*`, `paper-*`, `ink-*`, `ember-*`, `moss-*`); `PRODUCT.md` and `.impeccable/surfaces/home.md` record the direction; `DESIGN.md` must be written once the game page lands. New UI reviews for the v2 world: paper panel, ink text, hard shadow, solid type chips, field-journal composition.
 

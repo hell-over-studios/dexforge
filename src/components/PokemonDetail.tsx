@@ -8,6 +8,7 @@
  */
 import { useState } from 'react';
 import type { GamePokemon } from '../lib/data-schema';
+import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 
@@ -94,7 +95,7 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
               className="size-20 [object-fit:contain]"
             />
           ) : (
-            <span className="font-display text-xs text-ink-500" aria-hidden="true">
+            <span className="font-display text-xs text-ink-600" aria-hidden="true">
               —
             </span>
           )}
@@ -112,17 +113,17 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
               ✕
             </button>
           </div>
-          <p className="text-sm text-ink-500">
+          <p className="text-sm text-ink-600">
             n.º {mon.id} · dex {mon.dexNumber} · {formatMeters(mon.height)} · {formatKg(mon.weight)}
           </p>
           <div className="mt-2 flex flex-wrap gap-1">
             {mon.types.map((t) =>
               colors[t] ? (
-                <span key={t} className="type-chip" style={{ backgroundColor: colors[t] }}>
+                <span key={t} className="type-chip" style={typeChipStyle(colors[t])}>
                   {t}
                 </span>
               ) : (
-                <span key={t} className="type-chip bg-paper-300">
+                <span key={t} className="type-chip bg-paper-300 text-ink-900">
                   {t}
                 </span>
               ),
@@ -186,7 +187,7 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
               ? 'Add to team'
               : 'Añadir al equipo'}
       </button>
-      <p aria-live="polite" className="mt-1 min-h-4 text-[10px] text-ink-500">
+      <p aria-live="polite" className="mt-1 min-h-4 text-[11px] text-ink-600">
         {note}
       </p>
     </section>

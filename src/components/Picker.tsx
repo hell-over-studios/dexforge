@@ -12,6 +12,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent } fr
 import PokemonDetail from './PokemonDetail';
 import TeamSlots from './TeamSlots';
 import { loadGame, loadTypeColors, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
+import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 import type { GameData } from '../lib/data-schema';
@@ -160,12 +161,11 @@ export default function Picker({ gameId }: Props) {
       <div className="paper-panel p-4 sm:p-5 lg:col-start-1 lg:row-start-1">
         <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-ink-900/15 pb-3">
           <div>
-            <p className="kicker text-ink-500">01 · Pokédex</p>
-            <h2 className="mt-1 font-display text-2xl leading-none text-ink-950">
+            <h2 className="font-display text-2xl leading-none text-ink-950">
               {lang === 'en' ? 'Search & add' : 'Busca y añade'}
             </h2>
           </div>
-          <p className="font-display text-xs tracking-wide text-ink-500">
+          <p className="font-display text-xs tracking-wide text-ink-600">
             {entries.length} {lang === 'en' ? 'species' : 'especies'}
           </p>
         </div>
@@ -189,9 +189,9 @@ export default function Picker({ gameId }: Props) {
             setQuery(ev.currentTarget.value);
             resetWindow();
           }}
-          className="mt-2 block w-full border-2 border-ink-950 bg-paper-50 px-3 py-2 font-body text-ink-900 shadow-pixel-sm placeholder:text-ink-400"
+          className="mt-2 block w-full border-2 border-ink-950 bg-paper-50 px-3 py-2 font-body text-ink-900 shadow-pixel-sm placeholder:text-ink-500"
         />
-        <p id="picker-help" className="mt-2 text-xs text-ink-500">
+        <p id="picker-help" className="mt-2 text-xs text-ink-600">
           {lang === 'en'
             ? 'Arrow keys to move, Enter to add, Escape to clear.'
             : 'Flechas para moverte, Enter para añadir, Escape para limpiar.'}
@@ -258,7 +258,7 @@ export default function Picker({ gameId }: Props) {
                 )}
                 <span className="min-w-0 flex-1">
                   <span className="font-display text-base text-ink-950">{entry.name[lang]}</span>
-                  <span className="ml-2 text-xs text-ink-500">
+                  <span className="ml-2 text-xs text-ink-600">
                     n.º {entry.id} · dex {entry.dexNumber}
                   </span>
                   <span className="mt-1 flex flex-wrap gap-1">
@@ -266,7 +266,7 @@ export default function Picker({ gameId }: Props) {
                       <span
                         key={t}
                         className="type-chip"
-                        style={{ backgroundColor: colors[t] ?? '#dcc49a' }}
+                        style={typeChipStyle(colors[t] ?? '#dcc49a')}
                       >
                         {t}
                       </span>

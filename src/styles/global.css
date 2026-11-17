@@ -6,9 +6,6 @@
  * parchment panels over a deep forest ground, ink text on paper, ember
  * primary actions, solid canonical type chips. Chunky 2px borders, hard
  * offset pixel shadows, subtle paper grain. No glow, no glass.
- *
- * Legacy bark/parchment tokens stay as aliases so untouched islands keep
- * their contrast while the redesign lands in small PRs (ADR-009).
  */
 @theme {
   /* Deep forest ground (page background, dark panels) */
@@ -49,17 +46,6 @@
   --color-moss-500: #62a85a;
   --color-moss-600: #4a8747;
   --color-moss-700: #356637;
-
-  /* Legacy aliases — old class names still resolve to the v2 world */
-  --color-bark-950: var(--color-forest-950);
-  --color-bark-900: var(--color-forest-900);
-  --color-bark-800: var(--color-forest-800);
-  --color-bark-700: var(--color-forest-700);
-  --color-bark-600: var(--color-forest-600);
-  --color-parchment-100: var(--color-paper-50);
-  --color-parchment-200: var(--color-paper-100);
-  --color-parchment-400: var(--color-paper-300);
-  --color-parchment-600: var(--color-paper-400);
 
   /* Typography — Latin-Extended pixel display + rounded warm body */
   --font-display: 'Pixelify Sans', 'Nunito', system-ui, sans-serif;
@@ -162,15 +148,6 @@
   background-size: 4px 4px;
 }
 
-/* Legacy texture utility kept until the game page gets its v2 pass (PR B/C) */
-@utility dither {
-  background-image: repeating-conic-gradient(
-    color-mix(in oklab, var(--color-paper-100) 4%, transparent) 0% 25%,
-    transparent 0% 50%
-  );
-  background-size: 4px 4px;
-}
-
 @layer components {
   .paper-panel {
     border: 2px solid var(--color-ink-950);
@@ -250,13 +227,6 @@
     box-shadow: 2px 2px 0 0 var(--color-forest-950);
   }
 
-  .kicker {
-    font-family: var(--font-display);
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-
   .type-chip {
     display: inline-flex;
     align-items: center;
@@ -268,15 +238,6 @@
     line-height: 1.25;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-  }
-
-  .pixel-rule {
-    height: 4px;
-    background-image: repeating-linear-gradient(
-      90deg,
-      var(--color-ink-950) 0 8px,
-      transparent 8px 16px
-    );
   }
 }
 
@@ -303,9 +264,11 @@ body {
   font-family: var(--font-body);
   background-color: var(--color-forest-950);
   color: var(--color-paper-100);
-  background-image:
-    radial-gradient(900px 520px at 50% -12%, rgba(57, 122, 81, 0.35), transparent 70%),
-    repeating-linear-gradient(0deg, transparent 0 3px, rgba(251, 245, 230, 0.012) 3px 4px);
+  background-image: radial-gradient(
+    900px 520px at 50% -12%,
+    rgba(57, 122, 81, 0.35),
+    transparent 70%
+  );
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
