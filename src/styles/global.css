@@ -1,58 +1,92 @@
 @import 'tailwindcss';
 
 /*
- * Dexforge design tokens — ADR-008 "pixel art + cozy" (docs/DECISIONS.md):
- * warm campfire-dusk palette, Pixelify Sans display + Nunito body,
- * chunky 2px borders, hard offset pixel shadows, subtle dither textures.
- * No glow, no glass. All UI must build on these tokens.
+ * Dexforge design tokens — ADR-008 "pixel art + cozy", owner-approved
+ * "Pixel-cozy v2 — Pergamino" revision (2026-11-16):
+ * parchment panels over a deep forest ground, ink text on paper, ember
+ * primary actions, solid canonical type chips. Chunky 2px borders, hard
+ * offset pixel shadows, subtle paper grain. No glow, no glass.
+ *
+ * Legacy bark/parchment tokens stay as aliases so untouched islands keep
+ * their contrast while the redesign lands in small PRs (ADR-009).
  */
 @theme {
-  /* Warm bark background ramp (dark, cozy, slightly warm hue) */
-  --color-bark-950: oklch(0.17 0.015 60);
-  --color-bark-900: oklch(0.21 0.02 60);
-  --color-bark-800: oklch(0.27 0.025 58);
-  --color-bark-700: oklch(0.36 0.03 56);
-  --color-bark-600: oklch(0.45 0.035 55);
+  /* Deep forest ground (page background, dark panels) */
+  --color-forest-950: #08130d;
+  --color-forest-900: #0d1f15;
+  --color-forest-800: #143021;
+  --color-forest-700: #1d4430;
+  --color-forest-600: #2a5c3e;
+  --color-forest-500: #397a51;
 
-  /* Parchment/cream text ramp */
-  --color-parchment-100: oklch(0.94 0.025 85);
-  --color-parchment-200: oklch(0.88 0.035 82);
-  --color-parchment-400: oklch(0.74 0.04 78);
-  --color-parchment-600: oklch(0.62 0.04 75);
+  /* Parchment panels (paper surfaces, light text on forest) */
+  --color-paper-50: #fbf5e6;
+  --color-paper-100: #f4e8cf;
+  --color-paper-200: #ead8b4;
+  --color-paper-300: #dcc49a;
+  --color-paper-400: #c3a473;
+  --color-paper-500: #a7855a;
 
-  /* Ember/amber accent ramp (primary interactive color) */
-  --color-ember-300: oklch(0.82 0.12 75);
-  --color-ember-400: oklch(0.77 0.14 68);
-  --color-ember-500: oklch(0.7 0.15 58);
-  --color-ember-600: oklch(0.62 0.16 48);
-  --color-ember-700: oklch(0.53 0.15 42);
+  /* Ink ramp (text and borders on paper) */
+  --color-ink-950: #1a140d;
+  --color-ink-900: #241c12;
+  --color-ink-800: #33281a;
+  --color-ink-700: #463722;
+  --color-ink-600: #5f4b30;
+  --color-ink-500: #7c6442;
+  --color-ink-400: #9a805a;
+
+  /* Ember accent ramp (primary interactive color) */
+  --color-ember-300: #ffd08a;
+  --color-ember-400: #ffb454;
+  --color-ember-500: #f7931e;
+  --color-ember-600: #d97706;
+  --color-ember-700: #a85408;
 
   /* Cozy moss green (secondary accent, "good" states) */
-  --color-moss-500: oklch(0.6 0.09 145);
-  --color-moss-700: oklch(0.45 0.08 148);
+  --color-moss-300: #b7d99a;
+  --color-moss-400: #8ec977;
+  --color-moss-500: #62a85a;
+  --color-moss-600: #4a8747;
+  --color-moss-700: #356637;
+
+  /* Legacy aliases — old class names still resolve to the v2 world */
+  --color-bark-950: var(--color-forest-950);
+  --color-bark-900: var(--color-forest-900);
+  --color-bark-800: var(--color-forest-800);
+  --color-bark-700: var(--color-forest-700);
+  --color-bark-600: var(--color-forest-600);
+  --color-parchment-100: var(--color-paper-50);
+  --color-parchment-200: var(--color-paper-100);
+  --color-parchment-400: var(--color-paper-300);
+  --color-parchment-600: var(--color-paper-400);
 
   /* Typography — Latin-Extended pixel display + rounded warm body */
   --font-display: 'Pixelify Sans', 'Nunito', system-ui, sans-serif;
   --font-body: 'Nunito', system-ui, sans-serif;
 
-  /* Hard offset "pixel" shadows (light source: top-left, like classic sprites) */
-  --shadow-pixel-sm: 2px 2px 0 0 var(--color-bark-950);
-  --shadow-pixel: 4px 4px 0 0 var(--color-bark-950);
+  /* Hard offset "pixel" shadows (light source: top-left) */
+  --shadow-pixel-sm: 2px 2px 0 0 var(--color-ink-950);
+  --shadow-pixel: 4px 4px 0 0 var(--color-ink-950);
+  --shadow-pixel-lg: 6px 6px 0 0 var(--color-ink-950);
   --shadow-pixel-ember: 4px 4px 0 0 var(--color-ember-700);
+  --shadow-pixel-forest: 4px 4px 0 0 var(--color-forest-950);
 
   /* Focus ring (a11y: visible on every interactive element) */
   --color-ring: var(--color-ember-400);
 
   /* Motion: snappy, step-y, reduced-motion aware */
-  --animate-pop-in: pop-in 0.3s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  --animate-pop-in: pop-in 0.3s steps(3) both;
   --animate-fade-rise: fade-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.3s ease-out both;
   --animate-blink: blink 1s steps(2) infinite;
+  --animate-bob: bob 3.4s ease-in-out infinite;
+  --animate-flicker: flicker 4s steps(4) infinite;
 
   @keyframes pop-in {
     from {
       opacity: 0;
-      transform: scale(0.9);
+      transform: scale(0.94);
     }
     to {
       opacity: 1;
@@ -82,6 +116,27 @@
       opacity: 0.4;
     }
   }
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+  @keyframes flicker {
+    0%,
+    100% {
+      opacity: 0.25;
+    }
+    45% {
+      opacity: 0.9;
+    }
+    60% {
+      opacity: 0.4;
+    }
+  }
 }
 
 /* Sprite util: keep low-res game sprites pixel-crisp at integer scales (ADR-008) */
@@ -89,13 +144,140 @@
   image-rendering: pixelated;
 }
 
-/* Subtle dither checker — very low alpha, for backgrounds "inside" panels */
-@utility dither {
+/* Subtle paper checker — very low alpha, for the inside of parchment panels */
+@utility paper-grain {
   background-image: repeating-conic-gradient(
-    oklch(0.94 0.025 85 / 0.035) 0% 25%,
+    color-mix(in oklab, var(--color-ink-900) 5%, transparent) 0% 25%,
     transparent 0% 50%
   );
   background-size: 4px 4px;
+}
+
+/* Forest grain for dark bands */
+@utility forest-grain {
+  background-image: repeating-conic-gradient(
+    color-mix(in oklab, var(--color-paper-100) 3%, transparent) 0% 25%,
+    transparent 0% 50%
+  );
+  background-size: 4px 4px;
+}
+
+/* Legacy texture utility kept until the game page gets its v2 pass (PR B/C) */
+@utility dither {
+  background-image: repeating-conic-gradient(
+    color-mix(in oklab, var(--color-paper-100) 4%, transparent) 0% 25%,
+    transparent 0% 50%
+  );
+  background-size: 4px 4px;
+}
+
+@layer components {
+  .paper-panel {
+    border: 2px solid var(--color-ink-950);
+    background-color: var(--color-paper-100);
+    color: var(--color-ink-900);
+    box-shadow: var(--shadow-pixel-lg);
+  }
+
+  .paper-panel-soft {
+    border: 2px solid var(--color-ink-950);
+    background-color: var(--color-paper-50);
+    color: var(--color-ink-900);
+    box-shadow: var(--shadow-pixel);
+  }
+
+  .pixel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid var(--color-ink-950);
+    padding: 0.7rem 1.1rem;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: var(--shadow-pixel);
+    transition:
+      transform 120ms steps(2, end),
+      box-shadow 120ms steps(2, end),
+      background-color 120ms ease-out;
+  }
+
+  .pixel-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 0 var(--color-ink-950);
+  }
+
+  .pixel-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 0 var(--color-ink-950);
+  }
+
+  .pixel-btn-primary {
+    background-color: var(--color-ember-500);
+    color: var(--color-ink-950);
+  }
+
+  .pixel-btn-primary:hover {
+    background-color: var(--color-ember-400);
+  }
+
+  .pixel-btn-paper {
+    background-color: var(--color-paper-100);
+    color: var(--color-ink-900);
+  }
+
+  .pixel-btn-paper:hover {
+    background-color: var(--color-paper-50);
+  }
+
+  .pixel-btn-quiet {
+    border-color: var(--color-paper-300);
+    background-color: transparent;
+    color: var(--color-paper-100);
+    box-shadow: var(--shadow-pixel-forest);
+  }
+
+  .pixel-btn-quiet:hover {
+    border-color: var(--color-paper-100);
+    background-color: var(--color-forest-900);
+    box-shadow: 5px 5px 0 0 var(--color-forest-950);
+  }
+
+  .pixel-btn-quiet:active {
+    box-shadow: 2px 2px 0 0 var(--color-forest-950);
+  }
+
+  .kicker {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 2px solid var(--color-ink-950);
+    padding: 0.12rem 0.4rem;
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .pixel-rule {
+    height: 4px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-ink-950) 0 8px,
+      transparent 8px 16px
+    );
+  }
 }
 
 /* Respect reduced motion globally (WCAG 2.3.3) */
@@ -104,18 +286,26 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto !important;
   }
 }
 
 html {
   color-scheme: dark;
+  scrollbar-color: var(--color-forest-600) var(--color-forest-950);
 }
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-bark-950);
-  color: var(--color-parchment-200);
+  background-color: var(--color-forest-950);
+  color: var(--color-paper-100);
+  background-image:
+    radial-gradient(900px 520px at 50% -12%, rgba(57, 122, 81, 0.35), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 3px, rgba(251, 245, 230, 0.012) 3px 4px);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -125,16 +315,16 @@ h2,
 h3,
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 ::selection {
   background: var(--color-ember-500);
-  color: var(--color-bark-950);
+  color: var(--color-ink-950);
 }
 
 /* Keyboard focus: chunky pixel ring everywhere */
 :focus-visible {
-  outline: 2px solid var(--color-ring);
+  outline: 3px solid var(--color-ring);
   outline-offset: 2px;
 }

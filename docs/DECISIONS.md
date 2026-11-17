@@ -72,6 +72,21 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
 - **Alternatives:** neon instrumented dark (v0.1 placeholder), light parchment-only theme, glassmorphism.
 - **Consequences:** All UI components must adopt the tokens in `src/styles/global.css`; any future component PR reviews for pixel/cozy consistency (chunky border? font used? contrast? reduced motion?).
 
+### Revision 2026-11-16 — Pixel-cozy v2 «Pergamino» (owner directive)
+
+- **Status:** Accepted · **Date:** 2026-11-16
+- **Context:** After v0.3.0 the owner rejected the current rendition outright ("No me gusta para nada como esta visualmente") while keeping the pixel-cozy mandate. The warm-bark/dark-panel world read as a generic dark dashboard and hid the product's field-journal character. The renovation was done with the Impeccable design workflow (PRODUCT.md + surface brief) and shipped in PR-sized slices under ADR-009.
+- **Decision:**
+  - **Ground and surfaces:** page ground becomes deep forest (`#08130d` → `#143021`); content sits on **parchment panels** (`#fbf5e6` / `#f4e8cf`) with **ink** text (`#241c12`). Ember (`#f7931e`) stays the primary action color; moss (`#62a85a`) is the secondary/"good" accent. Dark bands keep the forest and paper grain.
+  - **Typography:** Pixelify Sans + Nunito stay, but display sizes grow (landing hero up to `4.6rem`, section headings `4xl–5xl`) and body copy moves to `14–18px` with generous leading on paper.
+  - **Composition:** field-journal at the trailhead. The landing stages a paper-framed **pixel diorama** (`PixelScene`) with official artwork of the featured species, tape corners and a caption plate, then three game cards styled as trail markers. The game page becomes a parchment workbench (picker + team) with the analysis panels below as calm paper sheets.
+  - **Type chips:** solid canonical type colors with ink text and a 2px ink border, uppercase Pixelify Sans at `0.7rem` — legible, not pastel.
+  - **Shape and depth:** square corners, 2px ink borders, hard ink offset shadows (4–6px), paper/forest dither grain. No blur, glow or glass.
+  - **Shared shell:** `SiteHeader`/`SiteFooter` mounted by `Base.astro`; every route inherits the same wordmark, nav, language toggle and disclaimer.
+  - **Migration:** `bark-*`/`parchment-*` tokens and the `dither` utility remain as aliases until the game-page islands finish their v2 pass, so no screen loses contrast mid-migration.
+- **Alternatives:** keep the bark rendition and only polish spacing (rejected: owner dislikes the world itself); parchment-only light theme (rejected: loses the cozy dusk forest and the diorama contrast).
+- **Consequences:** Tokens are the contract (`forest-*`, `paper-*`, `ink-*`, `ember-*`, `moss-*`); `PRODUCT.md` and `.impeccable/surfaces/home.md` record the direction; `DESIGN.md` must be written once the game page lands. New UI reviews for the v2 world: paper panel, ink text, hard shadow, solid type chips, field-journal composition.
+
 ## ADR-011 — Deploy target: GitHub Pages via Actions
 
 - **Status:** Accepted (owner directive, 2026-11-07)
