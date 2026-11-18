@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type {
+  AbilityInfo,
   CuratedEncounter,
   CuratedGameData,
   Encounter,
@@ -24,6 +25,7 @@ import type {
 import { fetchPokeApi, mapPolite } from './lib/http';
 import { GAMES, TYPE_COLORS } from './lib/games';
 import {
+  buildAbilityInfo,
   buildMoveInfo,
   buildTypeChart,
   capitalize,
@@ -38,6 +40,7 @@ import {
   localName,
   pickGameSprites,
   type EvoLink,
+  type PokeAbility,
   type PokeEncounterArea,
   type PokeForm,
   type PokeLearnEntry,
@@ -244,23 +247,23 @@ async function main(): Promise<void> {
     locationNames.set(slug, { en: existing?.en ?? capitalize(slug), es });
   }
 
-  /* 5b. ability names (PokeAPI ships localized names; we previously stored the English slug) */
-  const abilitySlugs = [...new Set(forms.flatMap((f) => f.abilities.map((a) => a.ability.name)))];
+  /* 5b. abilities: localized name + one-line effect (PokeAPI ships both) */
+  const abilitySlugs = [
+    ...new Set(
+      [...forms, ...[...formOverridesByGame.values()].flatMap((m) => [...m.values()])].flatMap(
+        (f) => f.abilities.map((a) => a.ability.name),
+      ),
+    ),
+  ];
   console.log(`· unique abilities: ${abilitySlugs.length}`);
-  const abilityNames = new Map<string, LocalizedText>();
+  const abilityInfoBySlug = new Map<string, AbilityInfo>();
   await mapPolite(abilitySlugs, async (slug) => {
     try {
-      const ability = await fetchPokeApi<{ names: { name: string; language: { name: string } }[] }>(
-        `ability/${slug}`,
-      );
-      abilityNames.set(
+      abilityInfoBySlug.set(
         slug,
-        ability.names.length
-          ? localName(ability.names as never, capitalize(slug))
-          : { en: capitalize(slug), es: capitalize(slug) },
+        buildAbilityInfo(await fetchPokeApi<PokeAbility>(`ability/${slug}`)),
       );
     } catch {
-      abilityNames.set(slug, { en: capitalize(slug), es: capitalize(slug) });
       if (args.verbose) console.warn(`  ⚠ ability ${slug} missing`);
     }
   });
@@ -412,7 +415,7 @@ async function main(): Promise<void> {
         generationSlug: sp.generation.name,
         types,
         stats: extractStats(form),
-        abilities: extractAbilities(form, game.generation, abilityNames),
+        abilities: extractAbilities(form, game.generation, abilityInfoBySlug),
         height: form.height,
         weight: form.weight,
         captureRate: sp.capture_rate ?? null,
@@ -439,6 +442,19 @@ async function main(): Promise<void> {
       return { id: d.id, slug, name: d.names.length ? localName(d.names, capitalize(slug)) : null };
     });
 
+    /* ability dictionary, pruned to abilities referenced by this game's species */
+    const abilities: Record<string, AbilityInfo> = {};
+    for (const p of pokemon) {
+      for (const a of p.abilities) {
+        const info = abilityInfoBySlug.get(a.slug);
+        if (!info) {
+          dataGaps.push(`${p.slug}: ability ${a.slug} not fetched`);
+          continue;
+        }
+        abilities[a.slug] = info;
+      }
+    }
+
     const gameData: GameData = {
       meta: {
         id: game.id,
@@ -455,6 +471,7 @@ async function main(): Promise<void> {
       },
       typeChart,
       moves,
+      abilities,
       pokemon,
     };
 
@@ -463,6 +480,7 @@ async function main(): Promise<void> {
     const kb = (fs.statSync(dataFile).size / 1024).toFixed(0);
     console.log(
       `  ✔ ${game.id}.json — ${pokemon.length} species, ${Object.keys(moves).length} moves, ` +
+        `${Object.keys(abilities).length} abilities, ` +
         `${Object.keys(typeChart).length}x${Object.keys(typeChart).length} chart, ` +
         `${kb} kB` +
         (dataGaps.length ? `, ${dataGaps.length} data gaps` : '') +

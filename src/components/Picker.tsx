@@ -14,8 +14,8 @@ import TeamSlots from './TeamSlots';
 import { loadGame, loadTypeColors, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
 import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
-import { useTeamStore } from '../lib/team';
-import type { GameData } from '../lib/data-schema';
+import { NO_TEAM, useTeamStore } from '../lib/team';
+import type { GameData, GamePokemon } from '../lib/data-schema';
 
 interface Props {
   gameId: string;
@@ -73,6 +73,19 @@ export default function Picker({ gameId }: Props) {
   const selIdx = selected ? visible.findIndex((e) => e.id === selected.id) : -1;
   /* current UI language at render time (ES default, ?lang=en supported) */
   const lang = useLang();
+  /* ids in the team store (subscribed so the drawer and share panel re-render) */
+  const teamIds = useTeamStore((s) => s.teams[gameId] ?? NO_TEAM);
+  /* resolved team members; T4.4 uses them to highlight shared abilities */
+  const teamMons = useMemo(
+    () =>
+      game
+        ? teamIds
+            .map((id) => game.pokemon.find((p) => p.id === id))
+            .filter((m): m is GamePokemon => m !== undefined)
+        : [],
+    [game, teamIds],
+  );
+  const oldestName = teamMons[0]?.name[lang];
   const oneIndexed = (i: number) => i + 1;
 
   const resetWindow = () => {
@@ -140,12 +153,6 @@ export default function Picker({ gameId }: Props) {
 
   const activeId = visible[activeIdx] ? `picker-opt-${activeIdx}` : undefined;
 
-  const teamFirst = (useTeamStore.getState().teams[gameId] ?? [])[0];
-  const oldestName =
-    teamFirst !== undefined && game
-      ? game.pokemon.find((p) => p.id === teamFirst)?.name[lang]
-      : undefined;
-
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
       <div className="lg:sticky lg:top-20 lg:z-10 lg:col-start-2 lg:row-start-1">
@@ -210,6 +217,8 @@ export default function Picker({ gameId }: Props) {
                     mon={mon}
                     gameId={gameId}
                     colors={colors}
+                    abilities={game.abilities}
+                    team={teamMons}
                     oldestName={oldestName}
                     onClose={() => setSelected(null)}
                   />
@@ -286,6 +295,8 @@ export default function Picker({ gameId }: Props) {
                           mon={mon}
                           gameId={gameId}
                           colors={colors}
+                          abilities={game.abilities}
+                          team={teamMons}
                           oldestName={oldestName}
                           onClose={() => setSelected(null)}
                         />

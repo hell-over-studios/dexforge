@@ -5,18 +5,25 @@
  * directive 2026-11-07: no game/shiny/animated/HOME sprites anywhere).
  * Mobile-first (verified at 360px). Charts land in v0.3 (ADR-005).
  * v2 «Pergamino»: the drawer is a paper sheet with an ember top rule.
+ * T4.4: abilities expand in place (description, hidden/not-in-game markers and
+ * the team members that share them).
  */
 import { useState } from 'react';
-import type { GamePokemon } from '../lib/data-schema';
+import type { AbilityInfo, GamePokemon } from '../lib/data-schema';
 import { typeChipStyle } from '../lib/contrast';
+import { abilityEffect, abilityPeers } from '../lib/abilities';
 import { useLang } from '../lib/use-lang';
-import { useTeamStore } from '../lib/team';
+import { NO_TEAM, useTeamStore } from '../lib/team';
 
 interface Props {
   mon: GamePokemon;
   gameId: string;
   /** type slug -> hex color (may be partial; falls back to a neutral chip) */
   colors: Record<string, string>;
+  /** ability slug -> details, from the game dataset */
+  abilities: Record<string, AbilityInfo>;
+  /** the game's current team, used to highlight shared abilities */
+  team: GamePokemon[];
   /** name of the team's oldest member (for the full-team replace message) */
   oldestName?: string;
   onClose: () => void;
@@ -53,12 +60,22 @@ const STAT_LABELS: { key: keyof GamePokemon['stats']; es: string; en: string }[]
   { key: 'speed', es: 'Velocidad', en: 'Speed' },
 ];
 
-export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose }: Props) {
+export default function PokemonDetail({
+  mon,
+  gameId,
+  colors,
+  abilities,
+  team,
+  oldestName,
+  onClose,
+}: Props) {
   const lang = useLang();
   const [note, setNote] = useState('');
-  const team = useTeamStore((s) => s.teams[gameId]) ?? [];
+  /** slug of the ability expanded in place (one at a time) */
+  const [openAbility, setOpenAbility] = useState<string | null>(null);
+  const teamIds = useTeamStore((s) => s.teams[gameId] ?? NO_TEAM);
   const toggle = useTeamStore((s) => s.toggle);
-  const inTeam = team.includes(mon.id);
+  const inTeam = teamIds.includes(mon.id);
   const artwork = mon.sprites.official;
 
   const onTeamButton = () => {
@@ -158,15 +175,90 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
       </div>
 
       {mon.abilities.length > 0 ? (
-        <p className="mt-3 text-xs text-ink-600">
-          {lang === 'en' ? 'Abilities: ' : 'Habilidades: '}
-          {mon.abilities
-            .map(
-              (a) =>
-                `${a.name[lang]}${a.hidden ? (lang === 'en' ? ' (hidden)' : ' (oculta)') : ''}`,
-            )
-            .join(', ')}
-        </p>
+        <div className="mt-3">
+          <p className="font-display text-xs text-ink-600">
+            {lang === 'en' ? 'Abilities' : 'Habilidades'}
+          </p>
+          <ul className="mt-1 grid gap-1">
+            {mon.abilities.map((a) => {
+              const info = abilities[a.slug];
+              const effect = abilityEffect(info, lang);
+              const open = openAbility === a.slug;
+              const peers = abilityPeers(team, a.slug, mon.id);
+              const btnId = `ability-${mon.id}-${a.slug}-btn`;
+              const panelId = `ability-${mon.id}-${a.slug}-panel`;
+              return (
+                <li key={a.slug}>
+                  <button
+                    type="button"
+                    id={btnId}
+                    aria-expanded={open}
+                    aria-controls={panelId}
+                    onClick={() => setOpenAbility(open ? null : a.slug)}
+                    className={
+                      'flex w-full cursor-pointer items-center gap-1.5 border-2 px-2 py-1 text-left transition-colors ' +
+                      (open
+                        ? 'border-ember-600 bg-ember-300/30'
+                        : 'border-ink-900/20 bg-paper-50 hover:border-ink-700 hover:bg-paper-100')
+                    }
+                  >
+                    <span className="min-w-0 flex-1 truncate font-display text-xs text-ink-900">
+                      {a.name[lang]}
+                    </span>
+                    {a.hidden ? (
+                      <span className="shrink-0 border border-ink-900/30 bg-paper-200 px-1 text-[10px] text-ink-600">
+                        {lang === 'en' ? 'hidden' : 'oculta'}
+                      </span>
+                    ) : null}
+                    {!a.inGame ? (
+                      <span className="shrink-0 border border-ink-900/30 bg-paper-300 px-1 text-[10px] text-ink-600">
+                        {lang === 'en' ? 'not in this game' : 'no en este juego'}
+                      </span>
+                    ) : null}
+                    {peers.length > 0 ? (
+                      <span className="shrink-0 border border-ember-600 bg-ember-300/40 px-1 text-[10px] text-ink-900">
+                        {lang === 'en' ? 'team' : 'equipo'}
+                      </span>
+                    ) : null}
+                    <span aria-hidden="true" className="shrink-0 font-display text-xs text-ink-600">
+                      {open ? '−' : '+'}
+                    </span>
+                  </button>
+                  {open ? (
+                    <div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={btnId}
+                      className="animate-pop-in border-2 border-t-0 border-ink-900/20 bg-paper-100 px-2 py-2"
+                    >
+                      <p lang={effect.lang} className="text-xs leading-relaxed text-ink-800">
+                        {effect.text ||
+                          (lang === 'en'
+                            ? 'No description available.'
+                            : 'Sin descripción disponible.')}
+                      </p>
+                      {!a.inGame ? (
+                        <p className="mt-1 text-[11px] text-ink-600">
+                          {lang === 'en'
+                            ? 'This ability did not exist in this game.'
+                            : 'Esta habilidad no existía en este juego.'}
+                        </p>
+                      ) : null}
+                      {peers.length > 0 ? (
+                        <p className="mt-1 text-[11px] text-ink-700">
+                          {lang === 'en' ? 'Also on your team: ' : 'También en tu equipo: '}
+                          <span className="font-display">
+                            {peers.map((p) => p.name[lang]).join(', ')}
+                          </span>
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       ) : null}
 
       {/* team button (T2.8): add / remove / full -> replace oldest */}
@@ -179,7 +271,7 @@ export default function PokemonDetail({ mon, gameId, colors, oldestName, onClose
           ? lang === 'en'
             ? 'Remove from team'
             : 'Quitar del equipo'
-          : team.length >= 6
+          : teamIds.length >= 6
             ? lang === 'en'
               ? `Team full — replace ${oldestName ?? 'oldest'}`
               : `Equipo lleno — sustituye a ${oldestName ?? 'el más antiguo'}`

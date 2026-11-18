@@ -4,17 +4,17 @@ Last updated: 2026-11-17 (v0.4.0 moves pipeline)
 
 ## PokeAPI endpoints used (build time only — never at runtime)
 
-| Endpoint                              | Why                                                                                   | Notes                                                |
-| ------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `GET /api/v2/pokedex/{slug}`          | regional dex entries for a game                                                       | membership also defines the fetched species set      |
-| `GET /api/v2/pokemon-species/{id}`    | EN/ES names, generation, capture rate, evolution chain, default variety pointer       | species-level only; typing history moved to the form |
-| `GET /api/v2/pokemon/{slug}`          | stats, current types, abilities, dimensions, **sprites**, **full learnset** (`moves`) | per-form; learnsets come free with this payload      |
-| `GET /api/v2/pokemon/{id}/encounters` | wild encounters                                                                       | versions filtered to group members                   |
-| `GET /api/v2/move/{slug}`             | move type/class/power/accuracy/PP, generation, EN/ES names, `past_values`             | union of moves learnable in the selected games       |
-| `GET /api/v2/location-area/{slug}`    | localized area names (EN/ES)                                                          | also parent `location` for nicer labels              |
-| `GET /api/v2/evolution-chain/{id}`    | flattened family for "obtained by evolving X"                                         |                                                      |
-| `GET /api/v2/type/{slug}`             | EN/ES type names + game-accurate chart (`past_damage_relations`)                      |                                                      |
-| `GET /api/v2/ability/{slug}`          | EN/ES ability names                                                                   | deduped set per game                                 |
+| Endpoint                              | Why                                                                                   | Notes                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `GET /api/v2/pokedex/{slug}`          | regional dex entries for a game                                                       | membership also defines the fetched species set                         |
+| `GET /api/v2/pokemon-species/{id}`    | EN/ES names, generation, capture rate, evolution chain, default variety pointer       | species-level only; typing history moved to the form                    |
+| `GET /api/v2/pokemon/{slug}`          | stats, current types, abilities, dimensions, **sprites**, **full learnset** (`moves`) | per-form; learnsets come free with this payload                         |
+| `GET /api/v2/pokemon/{id}/encounters` | wild encounters                                                                       | versions filtered to group members                                      |
+| `GET /api/v2/move/{slug}`             | move type/class/power/accuracy/PP, generation, EN/ES names, `past_values`             | union of moves learnable in the selected games                          |
+| `GET /api/v2/location-area/{slug}`    | localized area names (EN/ES)                                                          | also parent `location` for nicer labels                                 |
+| `GET /api/v2/evolution-chain/{id}`    | flattened family for "obtained by evolving X"                                         |                                                                         |
+| `GET /api/v2/type/{slug}`             | EN/ES type names + game-accurate chart (`past_damage_relations`)                      |                                                                         |
+| `GET /api/v2/ability/{slug}`          | EN/ES ability name, one-line effect and introduction generation                       | deduped set per game; effect text is the current description (see gaps) |
 
 Images at runtime come from `https://raw.githubusercontent.com/PokeAPI/sprites/**`
 (URLs are stored at build time; no PokeAPI API calls).
@@ -60,6 +60,8 @@ Rules baked into `scripts/lib/games.ts`:
 - Gen-I HM compatibility is incomplete in the `red-blue` group: a few rows only exist under `yellow` (Charizard + Fly, Butterfree/Venonat/Venomoth + Flash, Diglett/Dugtrio/Kabutops + Cut). `red-blue` unions machine rows from `yellow` as a same-generation fallback (`machineFallbackGroups` in `scripts/lib/games.ts`); level-up rows stay version-group exact.
 - `pokemon/{default-form}` has no Emerald learnset for Deoxys (the game ships the Speed form); handled by the per-game variety fallback above. If a future dex has another game-locked form, extend that fallback rather than hardcoding a species.
 - Moves whose Gen II–IV type is `???` (Curse) come back as `unknown` type; there is no chart row for it, so validators allow it explicitly.
+- Ability text: PokeAPI only ships Spanish ability flavor text from X/Y on, so `AbilityInfo.effect` is the **current** official description for every game (there is no Gen-III Spanish wording). English prefers `short_effect`. When even the modern Spanish line is missing, `effect.es` stays `null` and the UI shows the English text with an explicit `lang`.
+- Per-species ability slots have no reliable history: `pokemon/{form}.past_abilities` entries carry `ability: null`, so `SpeciesAbility.inGame` only knows whether the **ability** existed in the game's generation. A species that gained an older ability later (Pelipper + Drizzle in Gen VII) is not flagged.
 
 ## Localization (ES)
 
@@ -68,8 +70,9 @@ Rules baked into `scripts/lib/games.ts`:
   `es` entry is missing in PokeAPI (see `getName`/`localName` in `scripts/lib/process.ts`).
 - Species and type names come straight from PokeAPI's `es` entries (they match the official
   es-ES names for Gen 1–3).
-- Ability names are now fetched from `ability/{slug}` and localized through the same path;
-  previously the pipeline stored the English slug for both locales.
+- Ability names are fetched from `ability/{slug}` and localized through the same path;
+  previously the pipeline stored the English slug for both locales. Ability effects use the
+  latest `es` flavor line (then `es-419`, then English `short_effect`).
 - Move names come from `move/{slug}.names` through the same `es` → `es-419` → `en` chain;
   all 346 fetched moves resolve a real Spanish name. Curated overrides live under the
   `moves` key of `/data/curated/i18n-fixes.json` (keyed by move slug).

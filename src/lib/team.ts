@@ -9,6 +9,12 @@ import { persist } from 'zustand/middleware';
 
 export const TEAM_SIZE = 6;
 
+/**
+ * Stable empty array for selectors: `s.teams[id] ?? []` would return a new
+ * reference on every snapshot read and trip React's getSnapshot check.
+ */
+export const NO_TEAM: number[] = [];
+
 /** hotkey-free alias: what the team map looks like */
 export type TeamsByGame = Record<string, number[]>;
 

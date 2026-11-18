@@ -97,4 +97,33 @@ describe.skipIf(!registry)('generated data snapshot', () => {
     const cyndaquil = gs.pokemon.find((p) => p.slug === 'cyndaquil')!;
     expect(cyndaquil.moves.some(([id]) => gs.moves[String(id)]?.slug === 'ember')).toBe(true);
   });
+
+  it('ships abilities only from Gen III on, with resolvable refs and inGame flags', () => {
+    const rb = JSON.parse(readFileSync(path.join(DATA, 'red-blue.json'), 'utf-8')) as GameData;
+    const gs = JSON.parse(readFileSync(path.join(DATA, 'gold-silver.json'), 'utf-8')) as GameData;
+    expect(Object.keys(rb.abilities)).toHaveLength(0);
+    expect(Object.keys(gs.abilities)).toHaveLength(0);
+    expect(rb.pokemon.every((p) => p.abilities.length === 0)).toBe(true);
+
+    const em = JSON.parse(readFileSync(path.join(DATA, 'emerald.json'), 'utf-8')) as GameData;
+    expect(Object.keys(em.abilities).length).toBeGreaterThan(100);
+    expect(em.abilities['levitate']).toMatchObject({
+      slug: 'levitate',
+      name: { en: 'Levitate', es: 'Levitación' },
+      generation: 3,
+    });
+    expect(em.abilities['levitate'].effect.es).toContain('Tierra');
+    for (const p of em.pokemon) {
+      expect(p.abilities.length).toBeGreaterThan(0);
+      for (const a of p.abilities) {
+        const info = em.abilities[a.slug];
+        expect(info, `${p.slug} ${a.slug}`).toBeTruthy();
+        expect(a.inGame).toBe(info.generation <= em.meta.generation);
+        expect(a.name.es.length).toBeGreaterThan(0);
+      }
+    }
+    const wingull = em.pokemon.find((p) => p.slug === 'wingull')!;
+    expect(wingull.abilities.find((a) => a.slug === 'hydration')?.inGame).toBe(false);
+    expect(wingull.abilities.find((a) => a.slug === 'keen-eye')?.inGame).toBe(true);
+  });
 });

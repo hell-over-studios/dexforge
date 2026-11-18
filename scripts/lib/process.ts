@@ -2,6 +2,7 @@
  * Pure processing helpers for the data pipeline (no I/O) — unit-tested in tests/.
  */
 import type {
+  AbilityInfo,
   CuratedEncounter,
   Encounter,
   EncounterKind,
@@ -146,6 +147,22 @@ export interface PokeMove {
   generation: NamedRef;
   names: NameEntry[];
   past_values: MovePastValues[];
+}
+/** `ability/{slug}` payload (only the fields we bake) */
+export interface PokeAbility {
+  name: string;
+  generation: NamedRef;
+  names: NameEntry[];
+  effect_entries: {
+    effect: string;
+    short_effect: string;
+    language: { name: string };
+  }[];
+  flavor_text_entries: {
+    flavor_text: string;
+    language: { name: string };
+    version_group: NamedRef;
+  }[];
 }
 export interface EvoLink {
   species: NamedRef;
@@ -520,20 +537,53 @@ export function extractStats(form: PokeForm): Stats {
   };
 }
 
+/* ------------------------------------------------------------------ */
+/* abilities                                                           */
+/* ------------------------------------------------------------------ */
+
+/** PokeAPI text fields carry hard line breaks and form feeds */
+export function normalizeText(text: string): string {
+  return text.replace(/[\s\f]+/g, ' ').trim();
+}
+
+/**
+ * One-line ability details. The effect text is the *current* description:
+ * PokeAPI only ships Spanish flavor text from X/Y on, so there is no
+ * game-era Spanish wording to pick. `es` stays null when even that is
+ * missing, letting the UI fall back to English with an explicit lang.
+ * English prefers `short_effect` (one line) over the flavor paragraph.
+ */
+export function buildAbilityInfo(ability: PokeAbility): AbilityInfo {
+  const flavor = (lang: string): string | null => {
+    const rows = ability.flavor_text_entries.filter((f) => f.language.name === lang);
+    const last = rows.at(-1);
+    return last ? normalizeText(last.flavor_text) : null;
+  };
+  const short = ability.effect_entries.find((e) => e.language.name === 'en')?.short_effect;
+  const en = (short ? normalizeText(short) : null) ?? flavor('en') ?? capitalize(ability.name);
+  return {
+    slug: ability.name,
+    name: localName(ability.names, capitalize(ability.name)),
+    effect: { en, es: flavor('es') ?? flavor('es-419') },
+    generation: genNumberFromSlug(ability.generation.name),
+  };
+}
+
 export function extractAbilities(
   form: PokeForm,
   generation: number,
-  abilityNames?: ReadonlyMap<string, LocalizedText>,
+  abilities?: ReadonlyMap<string, AbilityInfo>,
 ): SpeciesAbility[] {
   if (generation < 3) return [];
   return form.abilities.map((a) => {
     const slug = a.ability.name;
-    const localized = abilityNames?.get(slug);
+    const info = abilities?.get(slug);
     return {
       slug,
-      name: localized ?? { en: capitalize(slug), es: capitalize(slug) },
+      name: info?.name ?? { en: capitalize(slug), es: capitalize(slug) },
       slot: a.slot,
       hidden: a.is_hidden,
+      inGame: info ? info.generation <= generation : true,
     };
   });
 }

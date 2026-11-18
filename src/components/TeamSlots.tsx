@@ -10,7 +10,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { useLang } from '../lib/use-lang';
-import { useTeamStore } from '../lib/team';
+import { NO_TEAM, useTeamStore } from '../lib/team';
 import { decodeTeam, encodeTeam } from '../lib/share';
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function TeamSlots({ gameId, resolve }: Props) {
-  const team = useTeamStore((s) => s.teams[gameId]) ?? [];
+  const team = useTeamStore((s) => s.teams[gameId] ?? NO_TEAM);
   const remove = useTeamStore((s) => s.remove);
   const lang = useLang();
   const [copied, setCopied] = useState(false);
