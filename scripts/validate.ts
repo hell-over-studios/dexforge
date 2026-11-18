@@ -45,6 +45,21 @@ function countEffectiveness(chart: TypeChart, from: string, to: string): number 
   return chart[from]?.[to] ?? 1;
 }
 
+const MOVE_METHODS = ['level-up', 'machine', 'egg', 'tutor'];
+
+function learnSlugs(data: GameData, species: string): Set<string> {
+  const p = data.pokemon.find((x) => x.slug === species);
+  return new Set(
+    (p?.moves ?? [])
+      .map(([moveId]) => data.moves[String(moveId)]?.slug)
+      .filter((slug): slug is string => typeof slug === 'string'),
+  );
+}
+
+function moveInfo(data: GameData, slug: string) {
+  return Object.values(data.moves).find((m) => m.slug === slug);
+}
+
 for (const g of registry.games) {
   const data = readJson(`${g.id}.json`) as GameData;
   const id = g.id;
@@ -78,11 +93,68 @@ for (const g of registry.games) {
     );
     if (data.meta.generation < 3)
       check(p.abilities.length === 0, `${id} ${p.slug}: Gen 1-2 must not have abilities`);
+
+    /* learnsets: refs resolve, no later-gen leaks, sane levels */
+    check(p.moves.length > 0, `${id} ${p.slug}: empty learnset`);
+    const seenMoves = new Set<number>();
+    for (const [moveId, method, level] of p.moves) {
+      const move = data.moves[String(moveId)];
+      check(!!move, `${id} ${p.slug}: move id ${moveId} missing from the dictionary`);
+      if (!move) continue;
+      check(!seenMoves.has(moveId), `${id} ${p.slug}: duplicate move ${move.slug}`);
+      seenMoves.add(moveId);
+      if (method === 'level-up') {
+        check(
+          level !== null && level >= 0 && level <= 100,
+          `${id} ${p.slug}: ${move.slug} has level ${String(level)}`,
+        );
+      } else {
+        check(level === null, `${id} ${p.slug}: ${move.slug} (${method}) must not have a level`);
+      }
+    }
   }
   check(
     new Set(data.pokemon.map((p) => p.id)).size === data.pokemon.length,
     `${id}: duplicate ids`,
   );
+
+  /* move dictionary: schema + game accuracy */
+  const referencedMoves = new Set<number>();
+  for (const p of data.pokemon) for (const [moveId] of p.moves) referencedMoves.add(moveId);
+  for (const [key, move] of Object.entries(data.moves)) {
+    const moveId = Number(key);
+    check(Number.isInteger(moveId) && moveId > 0, `${id}: move key "${key}" is not a valid id`);
+    check(referencedMoves.has(moveId), `${id}: move ${key} is in the dictionary but unused`);
+    check(move.slug.length > 0, `${id} move ${key}: empty slug`);
+    check(
+      // Gen II-IV "???" moves (Curse) surface as `unknown` in PokeAPI
+      move.type === 'unknown' || move.type in data.typeChart,
+      `${id} move ${move.slug}: type "${move.type}" does not exist in this game's chart`,
+    );
+    check(
+      ['physical', 'special', 'status'].includes(move.damageClass),
+      `${id} move ${move.slug}: bad damage class "${move.damageClass}"`,
+    );
+    check(
+      Number.isInteger(move.generation) &&
+        move.generation >= 1 &&
+        move.generation <= data.meta.generation,
+      `${id} move ${move.slug}: generation ${move.generation} after the game`,
+    );
+    check(
+      move.power === null || (move.power >= 0 && move.power <= 250),
+      `${id} move ${move.slug}: power out of range`,
+    );
+    check(
+      move.name.en.length > 0 && move.name.es.length > 0,
+      `${id} move ${move.slug}: empty localized name`,
+    );
+  }
+  for (const p of data.pokemon) {
+    for (const [, method] of p.moves) {
+      check(MOVE_METHODS.includes(method), `${id} ${p.slug}: unsupported learn method "${method}"`);
+    }
+  }
 
   /* game-accuracy spot checks */
   switch (id) {
@@ -95,6 +167,46 @@ for (const g of registry.games) {
         countEffectiveness(data.typeChart, 'electric', 'ground') === 0,
         'red-blue: Electric vs Ground must be 0',
       );
+      check(
+        learnSlugs(data, 'charizard').has('flamethrower'),
+        'red-blue: charizard must learn flamethrower',
+      );
+      check(
+        learnSlugs(data, 'pikachu').has('thunderbolt'),
+        'red-blue: pikachu must learn thunderbolt',
+      );
+      const machop = learnSlugs(data, 'machop');
+      check(
+        !machop.has('brick-break') && !machop.has('rock-smash'),
+        'red-blue: machop must not learn fighting TMs from later generations',
+      );
+      check(
+        moveInfo(data, 'flamethrower')?.power === 95,
+        'red-blue: flamethrower must keep the Gen-I 95 power',
+      );
+      check(
+        moveInfo(data, 'tackle')?.power === 35,
+        'red-blue: tackle must keep the Gen-I 35 power',
+      );
+      check(
+        moveInfo(data, 'thunder')?.power === 120,
+        'red-blue: thunder must keep the Gen-I 120 power',
+      );
+      check(
+        moveInfo(data, 'blizzard')?.accuracy === 90,
+        'red-blue: blizzard must keep the Gen-I 90 accuracy',
+      );
+      check(moveInfo(data, 'bite')?.type === 'normal', 'red-blue: bite must be Normal in Gen I');
+      check(
+        moveInfo(data, 'karate-chop')?.type === 'normal',
+        'red-blue: karate-chop must be Normal in Gen I',
+      );
+      check(learnSlugs(data, 'charizard').has('fly'), 'red-blue: charizard must learn HM02 Fly');
+      check(
+        learnSlugs(data, 'butterfree').has('flash'),
+        'red-blue: butterfree must learn HM05 Flash',
+      );
+      check(learnSlugs(data, 'diglett').has('cut'), 'red-blue: diglett must learn HM01 Cut');
       break;
     }
     case 'gold-silver': {
@@ -107,6 +219,12 @@ for (const g of registry.games) {
         'gold-silver: Steel resists Dark in Gen 2-5',
       );
       check(data.typeChart['fairy'] === undefined, 'gold-silver: Fairy must not exist in Gen 2');
+      check(learnSlugs(data, 'cyndaquil').has('ember'), 'gold-silver: cyndaquil must learn ember');
+      check(moveInfo(data, 'bite')?.type === 'dark', 'gold-silver: bite must be Dark from Gen II');
+      check(
+        moveInfo(data, 'tackle')?.power === 35,
+        'gold-silver: tackle must keep 35 power in Gen II',
+      );
       break;
     }
     case 'emerald': {
@@ -114,6 +232,19 @@ for (const g of registry.games) {
       check(
         countEffectiveness(data.typeChart, 'dark', 'steel') === 0.5,
         'emerald: Steel resists Dark in Gen 3',
+      );
+      const mudkip = learnSlugs(data, 'mudkip');
+      check(
+        mudkip.has('water-gun') && mudkip.has('surf'),
+        'emerald: mudkip must learn water gun and surf',
+      );
+      check(
+        moveInfo(data, 'flamethrower')?.power === 95,
+        'emerald: flamethrower must still have 95 power in Gen III',
+      );
+      check(
+        moveInfo(data, 'crunch')?.damageClass === 'special',
+        'emerald: crunch must be special in Gen III (type-based split)',
       );
       break;
     }

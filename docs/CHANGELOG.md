@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Moves data pipeline (T4.1, issue #54): every game dataset now ships a version-group-filtered learnset per Pokémon (`moves: [moveId, method, level]`) plus a pruned move dictionary keyed by national move id (EN/ES name, game-accurate type/power/accuracy/PP and damage class). Learnsets ride along in the `pokemon/{form}` payload PokeAPI already caches, so the pipeline only fetches `move/{slug}` for the union of learnable moves. `past_values` are applied per field (Gen-I Bite/Karate Chop/Gust are Normal, Thunder/Fire Blast/Blizzard keep 120 power, Gen-I Blizzard keeps 90 accuracy, Gen-III Crunch is special); Gen 1–3 damage classes derive from type; Gen-I HM gaps are filled from Yellow's identical machine pool; Deoxys uses its Emerald Speed form. `pnpm data:check` now enforces learnset refs, generation limits, levels, types and spot facts for all three games. No UI changes yet (T4.2).
+
 ### Changed
 
 - Visual identity v2 «Pergamino» (ADR-008 revision): parchment panels over a deep forest ground, ink text, ember primary actions, larger pixel display type, solid canonical type chips and a field-journal landing with a paper-framed pixel diorama staging official artwork. Shared `SiteHeader`/`SiteFooter` now mount from `Base.astro`; the legacy `bark-*`/`parchment-*` aliases and the `dither` utility are gone now that every screen is on the v2 tokens. Product truth recorded in `PRODUCT.md`, direction contract in `.impeccable/surfaces/home.md`.

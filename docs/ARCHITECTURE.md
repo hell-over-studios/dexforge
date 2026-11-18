@@ -135,6 +135,19 @@ flowchart LR
     "normal":   { "rock": 0.5, "ghost": 0 },
     "electric": { "water": 2, "grass": 0.5 }
   },
+  "moves": {
+    // national move id (as string) -> details; pruned to moves learnable in this game
+    "53": {
+      "slug": "flamethrower",
+      "name": { "en": "Flamethrower", "es": "Lanzallamas" },
+      "type": "fire",                  // game-accurate (past_values applied per field)
+      "damageClass": "special",        // in Gen 1-3 derived from the type, not per move
+      "power": 95,                     // Gen 1-5 value, 90 from X/Y on
+      "accuracy": 100,
+      "pp": 15,
+      "generation": 1
+    }
+  },
   "pokemon": [
     {
       "id": 25,                        // national dex id
@@ -163,6 +176,10 @@ flowchart LR
           { "id": 25, "slug": "pikachu", "evolvesInto": [{ "id": 26, "trigger": "use-item", "item": "thunder-stone" }] }
         ]
       },
+      "moves": [                        // compact learnset, deduped by method priority
+        [85, "machine", null],          // [move id → moves dictionary, method, level]
+        [84, "level-up", 1]             // level only for level-up rows
+      ],
       "encounters": [                   // union of PokeAPI raw + curated; all fields optional-safe
         {
           "source": "pokeapi",           // "pokeapi" | "curated"
@@ -171,7 +188,7 @@ flowchart LR
           "name": { "en": "Route Anything", "es": "Ruta Cualquier" } | null,
           "rate": 5,                     // encounter chance %
           "minLevel": 2, "maxLevel": 4,
-          "methods": ["walk"],           // walk | surf | old-rod | good-rod | super-rod | rock-smash | headbutt
+          "method": "walk",              // walk | surf | old-rod | good-rod | super-rod | rock-smash | headbutt
           "version": "red",              // exclusive detail; null = all versions of the group
           "notes": null                  // e.g. "Requires HM03 Surf"
         }
@@ -184,13 +201,16 @@ flowchart LR
 ## Pipeline (scripts/build.ts)
 
 1. Load game definitions (`scripts/lib/games.ts`) → derive needed pokedexes & generations.
-2. `ensureGenerations()` — fetch `generation/{1..}` (type charts, version groups).
-3. `ensureTypes()` — fetch `type/{1..}` (EN/ES names).
-4. Resolve unique species set from pokedexes → fetch `pokemon-species/{id}` (+ names EN/ES, evolution chain, `past_types`).
-5. Fetch default `pokemon/{form}` per species (stats, game sprites, showdown/HOME).
+2. `ensureTypeDetails()` — fetch `type/{1..18}` (EN/ES names, `past_damage_relations` for game-accurate charts).
+3. Resolve the unique species set from the pokedexes → fetch `pokemon-species/{id}` (names, evolution chain, default variety).
+4. Fetch the default `pokemon/{form}` per species (stats, game sprites, showdown/HOME, full learnset).
+   If the default form has no learnset for a game's version group, use the variety that does
+   (Deoxys is Speed form in Emerald) and take its stats/sprites too.
+5. Per game, filter learnsets to the version group (method priority: level-up > machine > tutor > egg),
+   collect the union of move slugs and fetch `move/{slug}` (game-accurate stats via `past_values`).
 6. Fetch `pokemon/{id}/encounters` per species, filter to game versions.
-7. Fetch location-area names (EN/ES) for encountered areas.
-8. Merge curated `/data/curated/<game>.json` into encounters.
+7. Fetch location-area names (EN/ES) for encountered areas + ability names (EN/ES).
+8. Fetch evolution chains; merge curated `/data/curated/<game>.json` into encounters.
 9. Emit `games.json`, `types.json`, `<game>.json`; validate; report gaps.
 
 **Politeness:** cache-first (runs offline after first download), max concurrency 8,

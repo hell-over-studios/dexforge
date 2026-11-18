@@ -61,4 +61,40 @@ describe.skipIf(!registry)('generated data snapshot', () => {
       expect(curated.length).toBeGreaterThan(0);
     }
   });
+
+  it('every dataset ships a resolvable, generation-accurate move index', () => {
+    for (const id of ['red-blue', 'gold-silver', 'emerald']) {
+      const data = JSON.parse(readFileSync(path.join(DATA, `${id}.json`), 'utf-8')) as GameData;
+      expect(Object.keys(data.moves).length).toBeGreaterThan(100);
+      for (const p of data.pokemon) {
+        expect(p.moves.length).toBeGreaterThan(0);
+        for (const [moveId, method, level] of p.moves) {
+          const move = data.moves[String(moveId)];
+          expect(move, `${id} ${p.slug} move ${moveId}`).toBeTruthy();
+          expect(move.generation).toBeLessThanOrEqual(data.meta.generation);
+          if (method === 'level-up') expect(level).toBeGreaterThanOrEqual(0);
+          else expect(level).toBeNull();
+        }
+      }
+    }
+  });
+
+  it('keeps Gen-I move quirks per game (types, power, accuracy)', () => {
+    const rb = JSON.parse(readFileSync(path.join(DATA, 'red-blue.json'), 'utf-8')) as GameData;
+    const rbMove = (slug: string) => Object.values(rb.moves).find((m) => m.slug === slug);
+    expect(rbMove('bite')?.type).toBe('normal');
+    expect(rbMove('gust')?.type).toBe('normal');
+    expect(rbMove('karate-chop')?.type).toBe('normal');
+    expect(rbMove('flamethrower')?.power).toBe(95);
+    expect(rbMove('thunder')?.power).toBe(120);
+    expect(rbMove('blizzard')?.accuracy).toBe(90);
+
+    const gs = JSON.parse(readFileSync(path.join(DATA, 'gold-silver.json'), 'utf-8')) as GameData;
+    const gsMove = (slug: string) => Object.values(gs.moves).find((m) => m.slug === slug);
+    expect(gsMove('bite')?.type).toBe('dark');
+    expect(gsMove('flamethrower')?.power).toBe(95);
+    expect(gsMove('crunch')?.damageClass).toBe('special');
+    const cyndaquil = gs.pokemon.find((p) => p.slug === 'cyndaquil')!;
+    expect(cyndaquil.moves.some(([id]) => gs.moves[String(id)]?.slug === 'ember')).toBe(true);
+  });
 });

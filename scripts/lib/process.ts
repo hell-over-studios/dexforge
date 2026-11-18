@@ -8,6 +8,9 @@ import type {
   EvolutionStep,
   EvolutionTarget,
   LocalizedText,
+  MoveDamageClass,
+  MoveInfo,
+  MoveMethod,
   SpeciesAbility,
   Stats,
   TypeChart,
@@ -88,6 +91,8 @@ export interface PokeForm {
   types: { slot: number; type: NamedRef }[];
   /** 2026 schema: typing history lives on the FORM (moved from species) */
   past_types?: PastType[];
+  /** learnset for every version group the form exists in */
+  moves: PokeMoveEntry[];
   sprites: {
     /** e.g. `generation-ii` -> { gold: { front_default: url, front_shiny: url, … } } */
     versions?: Record<string, Record<string, string | null | undefined> | undefined>;
@@ -113,6 +118,35 @@ export interface PokeEncounterArea {
   location_area: NamedRef;
   version_details: PokeEncounterVersion[];
 }
+/** one learnset row inside a form payload (`pokemon/{id}`) */
+export interface PokeMoveEntry {
+  move: NamedRef;
+  version_group_details: {
+    level_learned_at: number;
+    move_learn_method: NamedRef;
+    version_group: NamedRef;
+  }[];
+}
+/** historical values: each entry holds the values used BEFORE that version group */
+export interface MovePastValues {
+  version_group: NamedRef;
+  power: number | null;
+  accuracy: number | null;
+  pp: number | null;
+  type: NamedRef | null;
+}
+export interface PokeMove {
+  id: number;
+  name: string;
+  accuracy: number | null;
+  power: number | null;
+  pp: number | null;
+  type: NamedRef;
+  damage_class: NamedRef | null;
+  generation: NamedRef;
+  names: NameEntry[];
+  past_values: MovePastValues[];
+}
 export interface EvoLink {
   species: NamedRef;
   evolution_details?: {
@@ -133,8 +167,13 @@ export function capitalize(s: string): string {
 }
 
 export function getName(names: NameEntry[], lang: 'en' | 'es', fallback: string): string {
-  const hit = names.find((n) => n.language.name === lang)?.name;
-  return hit ?? fallback;
+  // European Spanish first, Latin American as documented fallback (docs/DATA_SOURCES.md)
+  const order = lang === 'es' ? ['es', 'es-419'] : ['en'];
+  for (const code of order) {
+    const hit = names.find((n) => n.language.name === code)?.name;
+    if (hit) return hit;
+  }
+  return fallback;
 }
 
 export function localName(names: NameEntry[], fallback: string): LocalizedText {
@@ -168,6 +207,194 @@ export function idFromUrl(url: string): number {
 export function slugFromUrl(url: string): string {
   const m = url.match(/\/([a-z-]+)\/?$/);
   return m ? m[1] : url;
+}
+
+/* ------------------------------------------------------------------ */
+/* moves                                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Version-group slug -> generation number. PokeAPI's version-group resource
+ * carries no generation and its numeric ids are not stable across schema
+ * bumps, so the slug is the only reliable key. Unknown (newer) groups are
+ * treated as 0: they never win a historical-value lookup for the launched
+ * games, which is the safe default (modern values are not older values).
+ */
+export const VERSION_GROUP_GENERATION: Readonly<Record<string, number>> = Object.freeze({
+  'red-blue': 1,
+  yellow: 1,
+  'red-green-japan': 1,
+  'blue-japan': 1,
+  'gold-silver': 2,
+  crystal: 2,
+  'ruby-sapphire': 3,
+  emerald: 3,
+  'firered-leafgreen': 3,
+  colosseum: 3,
+  xd: 3,
+  'diamond-pearl': 4,
+  platinum: 4,
+  'heartgold-soulsilver': 4,
+  'black-white': 5,
+  'black-2-white-2': 5,
+  'x-y': 6,
+  'omega-ruby-alpha-sapphire': 6,
+  'sun-moon': 7,
+  'ultra-sun-ultra-moon': 7,
+  'lets-go-pikachu-lets-go-eevee': 7,
+  'sword-shield': 8,
+  'the-isle-of-armor': 8,
+  'the-crown-tundra': 8,
+  'brilliant-diamond-and-shining-pearl': 8,
+  'legends-arceus': 8,
+  'scarlet-violet': 9,
+  'the-teal-mask': 9,
+  'the-indigo-disk': 9,
+});
+
+export function versionGroupGeneration(slug: string): number {
+  return VERSION_GROUP_GENERATION[slug] ?? 0;
+}
+
+/** learnset row before it gains the national move id */
+export interface PokeLearnEntry {
+  slug: string;
+  method: MoveMethod;
+  level: number | null;
+}
+
+/** lower wins when the same move is learnable several ways */
+const MOVE_METHOD_PRIORITY: Record<MoveMethod, number> = {
+  'level-up': 0,
+  machine: 1,
+  tutor: 2,
+  egg: 3,
+};
+
+function isMoveMethod(name: string): name is MoveMethod {
+  return name in MOVE_METHOD_PRIORITY;
+}
+
+function preferredLearn(a: PokeLearnEntry, b: PokeLearnEntry): boolean {
+  const pa = MOVE_METHOD_PRIORITY[a.method];
+  const pb = MOVE_METHOD_PRIORITY[b.method];
+  if (pa !== pb) return pa < pb;
+  if (a.method === 'level-up' && b.method === 'level-up') return (a.level ?? 0) < (b.level ?? 0);
+  return false;
+}
+
+/**
+ * Learnsets are stored inside the form payload (`pokemon/{id}.moves`) for every
+ * version group; this keeps only the requested group and one row per move.
+ * Unsupported methods (e.g. `light-ball-egg`, `colosseum-purification`) are
+ * dropped. Priority: level-up > machine > tutor > egg; ties keep the lowest level.
+ *
+ * `machineFallbackGroups` adds machine (TM/HM) rows from same-generation groups
+ * whose pool is identical — PokeAPI's `red-blue` data misses a few Gen-I HM
+ * entries that `yellow` has (Charizard+Fly, Butterfree+Flash, Diglett+Cut…).
+ * Those groups are never consulted for level-up/egg/tutor rows.
+ */
+export function extractLearnset(
+  entries: PokeMoveEntry[],
+  versionGroup: string,
+  machineFallbackGroups: string[] = [],
+): PokeLearnEntry[] {
+  const bySlug = new Map<string, PokeLearnEntry>();
+  for (const entry of entries) {
+    let best: PokeLearnEntry | null = null;
+    for (const detail of entry.version_group_details) {
+      const method = detail.move_learn_method.name;
+      const fromFallback = detail.version_group.name !== versionGroup;
+      if (
+        fromFallback &&
+        !(method === 'machine' && machineFallbackGroups.includes(detail.version_group.name))
+      )
+        continue;
+      if (!isMoveMethod(method)) continue;
+      const candidate: PokeLearnEntry = {
+        slug: entry.move.name,
+        method,
+        level: method === 'level-up' ? detail.level_learned_at : null,
+      };
+      if (!best || preferredLearn(candidate, best)) best = candidate;
+    }
+    if (!best) continue;
+    const prev = bySlug.get(best.slug);
+    if (!prev || preferredLearn(best, prev)) bySlug.set(best.slug, best);
+  }
+  return [...bySlug.values()].sort((a, b) => {
+    const byMethod = MOVE_METHOD_PRIORITY[a.method] - MOVE_METHOD_PRIORITY[b.method];
+    if (byMethod) return byMethod;
+    if (a.method === 'level-up' && (a.level ?? 0) !== (b.level ?? 0))
+      return (a.level ?? 0) - (b.level ?? 0);
+    return a.slug.localeCompare(b.slug);
+  });
+}
+
+/** Gen 1-3 physical types (the split became per-move in Gen 4) */
+export const GEN1_3_PHYSICAL_TYPES: ReadonlySet<string> = new Set([
+  'normal',
+  'fighting',
+  'flying',
+  'poison',
+  'ground',
+  'rock',
+  'bug',
+  'ghost',
+  'steel',
+]);
+
+export function gameAccurateDamageClass(
+  type: string,
+  damageClass: string,
+  generation: number,
+): MoveDamageClass {
+  if (damageClass === 'status') return 'status';
+  if (generation <= 3) return GEN1_3_PHYSICAL_TYPES.has(type) ? 'physical' : 'special';
+  return damageClass === 'physical' ? 'physical' : 'special';
+}
+
+/**
+ * Game-accurate move details. PokeAPI's `past_values` entries are per-field
+ * change records: each entry holds the value that was in effect BEFORE the
+ * referenced version group, and only the fields that changed there (e.g.
+ * Thunder's gold-silver entry carries the old effect chance while x-y carries
+ * the old 120 power). So, per field, pick the oldest entry whose generation is
+ * still greater than the game's and fall back to the current value.
+ */
+export function buildMoveInfo(
+  move: PokeMove,
+  generation: number,
+  nameOverrides?: ReadonlyMap<string, { en?: string; es?: string }>,
+): MoveInfo {
+  const history = move.past_values
+    .map((past) => ({ past, gen: versionGroupGeneration(past.version_group.name) }))
+    .filter((x) => x.gen > generation)
+    .sort((a, b) => a.gen - b.gen);
+  const first = <T>(read: (past: MovePastValues) => T | null): T | null => {
+    for (const { past } of history) {
+      const value = read(past);
+      if (value !== null) return value;
+    }
+    return null;
+  };
+  const type = first((past) => past.type?.name ?? null) ?? move.type.name;
+  const base = localName(move.names, capitalize(move.name));
+  const override = nameOverrides?.get(move.name);
+  return {
+    slug: move.name,
+    name: override ? { en: override.en ?? base.en, es: override.es ?? base.es } : base,
+    type,
+    damageClass: gameAccurateDamageClass(
+      type,
+      move.damage_class?.name ?? (move.power === null ? 'status' : 'physical'),
+      generation,
+    ),
+    power: first((past) => past.power) ?? move.power,
+    accuracy: first((past) => past.accuracy) ?? move.accuracy,
+    pp: first((past) => past.pp) ?? move.pp,
+    generation: genNumberFromSlug(move.generation.name),
+  };
 }
 
 /**
