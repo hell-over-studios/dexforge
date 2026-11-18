@@ -72,6 +72,38 @@ export interface SpeciesAbility {
   hidden: boolean;
 }
 
+/* ---------- moves ---------- */
+
+/** PokeAPI learn-method slugs kept in the dataset (other methods are dropped) */
+export type MoveMethod = 'level-up' | 'machine' | 'egg' | 'tutor';
+
+export type MoveDamageClass = 'physical' | 'special' | 'status';
+
+export interface MoveInfo {
+  slug: string;
+  name: LocalizedText;
+  /** game-accurate attacking type (past_values applied); Gen II-IV "???" moves use `unknown` */
+  type: string;
+  /**
+   * Game-accurate class: in Gen 1-3 it is derived from the type (the physical/
+   * special split arrived with Gen 4), later gens keep PokeAPI's per-move class.
+   */
+  damageClass: MoveDamageClass;
+  /** base power; null for status and fixed-damage moves */
+  power: number | null;
+  /** accuracy %; null means it never misses */
+  accuracy: number | null;
+  pp: number | null;
+  /** numeric generation the move was introduced in (1..9) */
+  generation: number;
+}
+
+/**
+ * Compact learnset row: `[national move id, method, level]`.
+ * `level` is only set for `level-up` moves (null for machine/egg/tutor).
+ */
+export type MoveLearn = [moveId: number, method: MoveMethod, level: number | null];
+
 export interface SpeciesSprites {
   /** default sprite of the selected game version-group; may be null if not drawn that way */
   game: string | null;
@@ -181,6 +213,8 @@ export interface GamePokemon {
   sprites: SpeciesSprites;
   /** null if no evolution chain (single-stage, rare) */
   evolution: { family: EvolutionStep[] } | null;
+  /** moves learnable in this game's version group, deduped by method priority */
+  moves: MoveLearn[];
   encounters: Encounter[];
 }
 
@@ -207,6 +241,8 @@ export interface GameData {
     dataGaps: string[];
   };
   typeChart: TypeChart;
+  /** national move id (as string) -> move details, pruned to this game's learnsets */
+  moves: Record<string, MoveInfo>;
   pokemon: GamePokemon[];
 }
 

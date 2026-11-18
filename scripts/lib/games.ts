@@ -13,6 +13,12 @@ interface GameDef extends GameRegistryEntry {
    * separate `gold` / `silver` / `crystal` keys.
    */
   spriteGroups: string[];
+  /**
+   * Same-generation version groups whose TM/HM pool is identical; their machine
+   * rows fill PokeAPI gaps in `versionGroup` (Gen-I HM omissions live in yellow).
+   * Never used for level-up/egg/tutor rows.
+   */
+  machineFallbackGroups?: string[];
 }
 
 export const GAMES: GameDef[] = [
@@ -26,6 +32,7 @@ export const GAMES: GameDef[] = [
     versions: ['red', 'blue'],
     spriteVersionGroup: 'red-blue',
     spriteGroups: ['red-blue', 'yellow'],
+    machineFallbackGroups: ['yellow'],
     pokedexes: ['kanto'],
     pokemonCount: 0, // derived
     curatedFile: 'red-blue',

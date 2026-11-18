@@ -21,6 +21,7 @@ const mkPokemon = (over: Partial<GamePokemon> & Pick<GamePokemon, 'id' | 'slug'>
   captureRate: null,
   sprites: { game: null, shinyGame: null, official: null, showdown: null, home: null },
   evolution: null,
+  moves: [],
   encounters: [],
   ...over,
 });
@@ -40,6 +41,7 @@ const fixture: GameData = {
     dataGaps: [],
   },
   typeChart: {},
+  moves: {},
   pokemon: [
     mkPokemon({
       id: 172,

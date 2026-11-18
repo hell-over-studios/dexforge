@@ -16,17 +16,21 @@ import type {
   GamePokemon,
   GamesRegistry,
   LocalizedText,
+  MoveInfo,
+  MoveLearn,
   PokedexMeta,
   TypeData,
 } from '../src/lib/data-schema';
 import { fetchPokeApi, mapPolite } from './lib/http';
 import { GAMES, TYPE_COLORS } from './lib/games';
 import {
+  buildMoveInfo,
   buildTypeChart,
   capitalize,
   curatedToEncounter,
   extractAbilities,
   extractEvolutionChain,
+  extractLearnset,
   extractStats,
   flattenWild,
   gameAccurateTypes,
@@ -36,6 +40,8 @@ import {
   type EvoLink,
   type PokeEncounterArea,
   type PokeForm,
+  type PokeLearnEntry,
+  type PokeMove,
   type PokePokedex,
   type PokeSpecies,
   type PokeType,
@@ -119,6 +125,76 @@ async function main(): Promise<void> {
   );
   const formBySpeciesName = new Map<string, PokeForm>();
   species.forEach((sp, i) => formBySpeciesName.set(sp.name, forms[i]));
+
+  /* 3b. learnsets: the form payload already carries every version group, so
+     filter + dedupe per game. Some species are represented by a non-default
+     form in a given game (e.g. Deoxys is Speed form in Emerald): when the
+     default form has no rows for the version group, fall back to the variety
+     that does, and remember it so stats/sprites match that form too. */
+  const learnsetsByGame = new Map<string, Map<string, PokeLearnEntry[]>>();
+  for (const game of games) {
+    const perSpecies = new Map<string, PokeLearnEntry[]>();
+    for (const slug of dexMembership.get(game.id)!.keys()) {
+      const form = formBySpeciesName.get(slug);
+      if (!form) continue;
+      perSpecies.set(
+        slug,
+        extractLearnset(form.moves ?? [], game.versionGroup, game.machineFallbackGroups),
+      );
+    }
+    learnsetsByGame.set(game.id, perSpecies);
+  }
+
+  const formOverridesByGame = new Map<string, Map<string, PokeForm>>();
+  const emptyBySpecies = new Map<string, Set<string>>();
+  for (const game of games) {
+    for (const [slug, learnset] of learnsetsByGame.get(game.id)!) {
+      if (learnset.length) continue;
+      const games = emptyBySpecies.get(slug);
+      if (games) games.add(game.id);
+      else emptyBySpecies.set(slug, new Set([game.id]));
+    }
+  }
+  for (const [slug, emptyGames] of emptyBySpecies) {
+    const sp = speciesByKey.get(slug);
+    const varieties = sp?.varieties.filter((v) => !v.is_default) ?? [];
+    if (!varieties.length) continue;
+    const altForms = await mapPolite(
+      varieties,
+      (v) => fetchPokeApi<PokeForm>(`pokemon/${v.pokemon.name}`),
+      `forms (${slug})`,
+    );
+    for (const game of games.filter((g) => emptyGames.has(g.id))) {
+      const match = altForms
+        .map((form) => ({
+          form,
+          learnset: extractLearnset(
+            form.moves ?? [],
+            game.versionGroup,
+            game.machineFallbackGroups,
+          ),
+        }))
+        .find((x) => x.learnset.length);
+      if (!match) continue;
+      learnsetsByGame.get(game.id)!.set(slug, match.learnset);
+      if (!formOverridesByGame.has(game.id)) formOverridesByGame.set(game.id, new Map());
+      formOverridesByGame.get(game.id)!.set(slug, match.form);
+      console.log(`  · ${game.id}: ${slug} uses ${match.form.name} (default form has no learnset)`);
+    }
+  }
+
+  const moveSlugs = new Set<string>();
+  for (const perSpecies of learnsetsByGame.values()) {
+    for (const learnset of perSpecies.values()) for (const row of learnset) moveSlugs.add(row.slug);
+  }
+  const moveSlugList = [...moveSlugs].sort();
+  console.log(`· unique moves to fetch: ${moveSlugList.length}`);
+  const movesRaw = await mapPolite(
+    moveSlugList,
+    (slug) => fetchPokeApi<PokeMove>(`move/${slug}`),
+    'moves',
+  );
+  const moveBySlug = new Map(movesRaw.map((m) => [m.name, m]));
 
   /* 4. wild encounters */
   const encounters = await mapPolite(
@@ -252,6 +328,39 @@ async function main(): Promise<void> {
     const dataGaps: string[] = [];
     const pokemon: GamePokemon[] = [];
 
+    /* game-accurate move dictionary + learnsets (already version-group filtered) */
+    const learnsets = learnsetsByGame.get(game.id) ?? new Map<string, PokeLearnEntry[]>();
+    const moveOverrides = new Map(Object.entries(i18nFixes.moves ?? {}));
+    const moveInfoById = new Map<number, MoveInfo>();
+    for (const move of moveBySlug.values()) {
+      moveInfoById.set(move.id, buildMoveInfo(move, game.generation, moveOverrides));
+    }
+    const movesById = new Map<number, MoveInfo>();
+    const learnRows = new Map<string, MoveLearn[]>();
+    for (const [slug, learnset] of learnsets) {
+      const rows: MoveLearn[] = [];
+      for (const row of learnset) {
+        const move = moveBySlug.get(row.slug);
+        const info = move ? moveInfoById.get(move.id) : undefined;
+        if (!move || !info) {
+          dataGaps.push(`${slug}: move ${row.slug} not fetched`);
+          continue;
+        }
+        if (info.generation > game.generation) {
+          dataGaps.push(`${slug}: move ${row.slug} introduced after the game`);
+          continue;
+        }
+        rows.push([move.id, row.method, row.level]);
+        if (!movesById.has(move.id)) movesById.set(move.id, info);
+      }
+      if (!rows.length) dataGaps.push(`${slug}: empty learnset`);
+      learnRows.set(slug, rows);
+    }
+    const moves: Record<string, MoveInfo> = {};
+    for (const [id, info] of [...movesById.entries()].sort((a, b) => a[0] - b[0])) {
+      moves[String(id)] = info;
+    }
+
     const membership = dexMembership.get(game.id)!;
     const gameSpecies = [...membership.entries()].sort((a, b) => a[1] - b[1]);
     let missingSpecies = 0;
@@ -263,7 +372,8 @@ async function main(): Promise<void> {
         missingSpecies++;
         continue;
       }
-      const form = formBySpeciesName.get(sp.name)!;
+      const form =
+        formOverridesByGame.get(game.id)?.get(sp.name) ?? formBySpeciesName.get(sp.name)!;
       const types = gameAccurateTypes(form, game.generation);
       const invalidTypes = types.filter((t) => !knownTypes.has(t));
       if (invalidTypes.length) dataGaps.push(`${sp.name}: unknown types ${invalidTypes.join(',')}`);
@@ -319,6 +429,7 @@ async function main(): Promise<void> {
               dataGaps.push(`${sp.name}: no evolution chain`);
               return null;
             })(),
+        moves: learnRows.get(sp.name) ?? [],
         encounters: enc,
       });
     }
@@ -343,6 +454,7 @@ async function main(): Promise<void> {
         dataGaps,
       },
       typeChart,
+      moves,
       pokemon,
     };
 
@@ -350,7 +462,7 @@ async function main(): Promise<void> {
     fs.writeFileSync(dataFile, JSON.stringify(gameData));
     const kb = (fs.statSync(dataFile).size / 1024).toFixed(0);
     console.log(
-      `  ✔ ${game.id}.json — ${pokemon.length} species, ` +
+      `  ✔ ${game.id}.json — ${pokemon.length} species, ${Object.keys(moves).length} moves, ` +
         `${Object.keys(typeChart).length}x${Object.keys(typeChart).length} chart, ` +
         `${kb} kB` +
         (dataGaps.length ? `, ${dataGaps.length} data gaps` : '') +
@@ -395,6 +507,8 @@ function loadCurated(gameId: string): CuratedGameData | null {
 
 interface I18nFixes {
   locations?: Record<string, { es?: string }>;
+  /** English/European Spanish name overrides, keyed by PokeAPI move slug */
+  moves?: Record<string, { en?: string; es?: string }>;
 }
 
 function loadI18nFixes(): I18nFixes {
