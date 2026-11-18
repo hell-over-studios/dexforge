@@ -42,6 +42,7 @@ const fixture: GameData = {
   },
   typeChart: {},
   moves: {},
+  abilities: {},
   pokemon: [
     mkPokemon({
       id: 172,

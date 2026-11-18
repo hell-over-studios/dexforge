@@ -70,6 +70,22 @@ export interface SpeciesAbility {
   name: LocalizedText;
   slot: number;
   hidden: boolean;
+  /** false when the ability was introduced after the game's generation */
+  inGame: boolean;
+}
+
+/* ---------- abilities ---------- */
+
+export interface AbilityInfo {
+  slug: string;
+  name: LocalizedText;
+  /**
+   * One-line effect text. `es` is null when PokeAPI has no Spanish flavor for
+   * the ability, so the UI can fall back to English explicitly.
+   */
+  effect: { en: string; es: string | null };
+  /** numeric generation the ability was introduced in (3..9) */
+  generation: number;
 }
 
 /* ---------- moves ---------- */
@@ -243,6 +259,8 @@ export interface GameData {
   typeChart: TypeChart;
   /** national move id (as string) -> move details, pruned to this game's learnsets */
   moves: Record<string, MoveInfo>;
+  /** ability slug -> details, pruned to abilities used by this game's species */
+  abilities: Record<string, AbilityInfo>;
   pokemon: GamePokemon[];
 }
 

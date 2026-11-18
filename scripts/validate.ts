@@ -156,6 +156,38 @@ for (const g of registry.games) {
     }
   }
 
+  /* ability dictionary: refs resolve, no unused rows, generation guard */
+  const referencedAbilities = new Set<string>();
+  for (const p of data.pokemon) {
+    for (const a of p.abilities) {
+      referencedAbilities.add(a.slug);
+      const info = data.abilities[a.slug];
+      check(!!info, `${id} ${p.slug}: ability "${a.slug}" missing from the dictionary`);
+      if (!info) continue;
+      check(
+        a.inGame === info.generation <= data.meta.generation,
+        `${id} ${p.slug}: ability ${a.slug} has a wrong inGame flag`,
+      );
+      check(a.name.en.length > 0 && a.name.es.length > 0, `${id} ${p.slug}: ability without name`);
+    }
+  }
+  for (const [slug, info] of Object.entries(data.abilities)) {
+    check(
+      referencedAbilities.has(slug),
+      `${id}: ability "${slug}" is in the dictionary but unused`,
+    );
+    check(info.slug === slug, `${id}: ability key "${slug}" does not match its slug`);
+    check(
+      Number.isInteger(info.generation) && info.generation >= 3 && info.generation <= 9,
+      `${id} ability ${slug}: generation ${info.generation} out of range`,
+    );
+    check(
+      info.name.en.length > 0 && info.name.es.length > 0,
+      `${id} ability ${slug}: empty localized name`,
+    );
+    check(info.effect.en.length > 0, `${id} ability ${slug}: empty English effect`);
+  }
+
   /* game-accuracy spot checks */
   switch (id) {
     case 'red-blue': {
@@ -166,6 +198,10 @@ for (const g of registry.games) {
       check(
         countEffectiveness(data.typeChart, 'electric', 'ground') === 0,
         'red-blue: Electric vs Ground must be 0',
+      );
+      check(
+        Object.keys(data.abilities).length === 0,
+        'red-blue: Gen 1 must not ship an ability dictionary',
       );
       check(
         learnSlugs(data, 'charizard').has('flamethrower'),
@@ -219,6 +255,10 @@ for (const g of registry.games) {
         'gold-silver: Steel resists Dark in Gen 2-5',
       );
       check(data.typeChart['fairy'] === undefined, 'gold-silver: Fairy must not exist in Gen 2');
+      check(
+        Object.keys(data.abilities).length === 0,
+        'gold-silver: Gen 2 must not ship an ability dictionary',
+      );
       check(learnSlugs(data, 'cyndaquil').has('ember'), 'gold-silver: cyndaquil must learn ember');
       check(moveInfo(data, 'bite')?.type === 'dark', 'gold-silver: bite must be Dark from Gen II');
       check(
@@ -245,6 +285,24 @@ for (const g of registry.games) {
       check(
         moveInfo(data, 'crunch')?.damageClass === 'special',
         'emerald: crunch must be special in Gen III (type-based split)',
+      );
+      check(
+        Object.keys(data.abilities).length > 0,
+        'emerald: the ability dictionary must not be empty',
+      );
+      check(
+        data.abilities['levitate']?.name.es === 'Levitación' &&
+          (data.abilities['levitate']?.effect.es ?? '').includes('Tierra'),
+        'emerald: levitate must carry its Spanish name and effect',
+      );
+      const wingull = data.pokemon.find((p) => p.slug === 'wingull');
+      check(
+        wingull?.abilities.some((a) => a.slug === 'keen-eye' && a.inGame) ?? false,
+        'emerald: wingull must have keen-eye in game',
+      );
+      check(
+        data.pokemon.some((p) => p.abilities.some((a) => !a.inGame)),
+        'emerald: later-generation abilities must be flagged as not in game',
       );
       break;
     }

@@ -148,6 +148,19 @@ flowchart LR
       "generation": 1
     }
   },
+  "abilities": {
+    // ability slug -> details; pruned to abilities used by this game's species
+    // (empty for Red/Blue and Gold/Silver: abilities arrived in Gen III)
+    "static": {
+      "slug": "static",
+      "name": { "en": "Static", "es": "Electricidad estática" },
+      "effect": {                      // current official text; `es` may be null (pre-Gen-VI flavor gap)
+        "en": "Has a 30% chance of paralyzing attacking Pokémon on contact.",
+        "es": "La electricidad estática que lo envuelve puede paralizar al Pokémon que lo ataque."
+      },
+      "generation": 3
+    }
+  },
   "pokemon": [
     {
       "id": 25,                        // national dex id
@@ -158,7 +171,7 @@ flowchart LR
       "types": ["electric"],           // game-accurate (uses past_types)
       "stats": { "hp": 35, "attack": 55, "defense": 40, "specialAttack": 50, "specialDefense": 50, "speed": 90 },
       "abilities": [                   // empty for Gen 1-2
-        { "slug": "static", "name": { "en": "Static", "es": "Electricidad estática" }, "slot": 1, "hidden": false }
+        { "slug": "static", "name": { "en": "Static", "es": "Electricidad estática" }, "slot": 1, "hidden": false, "inGame": true }
       ],
       "height": 4,                     // decimetres
       "weight": 60,                    // hectograms
@@ -209,7 +222,9 @@ flowchart LR
 5. Per game, filter learnsets to the version group (method priority: level-up > machine > tutor > egg),
    collect the union of move slugs and fetch `move/{slug}` (game-accurate stats via `past_values`).
 6. Fetch `pokemon/{id}/encounters` per species, filter to game versions.
-7. Fetch location-area names (EN/ES) for encountered areas + ability names (EN/ES).
+7. Fetch location-area names (EN/ES) for encountered areas + `ability/{slug}` details
+   (EN/ES name, one-line effect, introduction generation). `inGame` marks abilities introduced
+   after the game's generation; Red/Blue and Gold/Silver have no abilities (Gen III feature).
 8. Fetch evolution chains; merge curated `/data/curated/<game>.json` into encounters.
 9. Emit `games.json`, `types.json`, `<game>.json`; validate; report gaps.
 
