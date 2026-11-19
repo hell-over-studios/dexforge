@@ -58,12 +58,12 @@ for what must exist in each version; GitHub issues reference it.
       (≥2 members at ×2+), member immunities, team-wide resists (everybody ≤×½; neutral-
       everywhere deliberately not a note), rendered as cozy "Notas" lines under the table.
 
-## v0.4.0 — Moves, abilities, offensive coverage
+## v0.4.0 - Moves, abilities, offensive coverage
 
-- [ ] Moves data per game (version-group filtered)
-- [ ] Move picker per Pokémon
-- [ ] Offensive coverage matrix + "types the team can't hit super effectively"
-- [ ] Abilities detail view
+- [x] Moves data per game (version-group filtered)
+- [x] Move picker per Pokémon
+- [x] Offensive coverage matrix + "types the team can't hit super effectively"
+- [x] Abilities detail view
 
 ## v0.5.0 — Encounters & curated data
 

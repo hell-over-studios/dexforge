@@ -1,26 +1,62 @@
 # Progress
 
-Last updated: 2026-11-10
+Last updated: 2026-11-18
 
-## Current version: v0.3.0 released (v0.1.0 / v0.2.0 / v0.3.0 all tagged & published 2026-11-10)
+## Current version: v0.3.0 released · v0.4.0 content complete (tag gate)
 
-**Status:** all v0.3.0 tasks (T3.1–T3.4) are merged to `main` (PRs #47–#50). The owner
-approved the three pending MINOR releases on 2026-11-10; all three tags + GitHub releases
-are live (`v0.1.0` @ 6f373fb · `v0.2.0` @ 45e5267 · `v0.3.0` @ 86bfd39) and the GitHub
-milestones v0.2.0 / v0.3.0 are closed. Next up: v0.4.0 "Moves & offensive coverage"
-(triaged into issues #54–#57); CHANGELOG restructured into per-release sections.
+**Status:** all v0.4.0 tasks (T4.1–T4.4) are merged to `main` (PRs #63–#67, 2026-11-10 → 18);
+issues #54–#57 are closed and the board is Done. v0.4.0 «Moves & offensive coverage» is
+**content complete but NOT tagged**: the MINOR release gate is waiting for owner approval.
+The session also shipped the pixel-cozy v2 «Pergamino» identity (PRs #59–#62). Next after
+the tag: v0.5.0 "Encounters & curated data".
 
-| Milestone                        | %    | Notes                                                                                                                                  |
-| -------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| v0.1.0 scaffold/docs/CI/pipeline | 100% | released 2026-11-10 · tag @ 6f373fb (historical PR #1 merge)                                                                           |
-| v0.2.0 team builder core         | 100% | released 2026-11-10 · tag @ 45e5267 (includes drawer-in-place + artwork-only fixes)                                                    |
-| v0.3.0 team analysis             | 100% | released 2026-11-10 · tag @ 86bfd39 (analysis layer, defensive table, radar+roles, suggestions v1)                                     |
-| v0.4.0 moves/offense             | 0%   | triaged: issues #54–#57 (T4.1 data pipeline · T4.2 move picker · T4.3 offense matrix · T4.4 abilities); T4.1 + T4.4 Ready on the board |
-| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                                                     |
-| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                                                             |
-| v1.0.0 share/polish              | 0%   |                                                                                                                                        |
+| Milestone                        | %    | Notes                                                                                              |
+| -------------------------------- | ---- | -------------------------------------------------------------------------------------------------- |
+| v0.1.0 scaffold/docs/CI/pipeline | 100% | released 2026-11-10 · tag @ 6f373fb (historical PR #1 merge)                                       |
+| v0.2.0 team builder core         | 100% | released 2026-11-10 · tag @ 45e5267 (includes drawer-in-place + artwork-only fixes)                |
+| v0.3.0 team analysis             | 100% | released 2026-11-10 · tag @ 86bfd39 (analysis layer, defensive table, radar+roles, suggestions v1) |
+| v0.4.0 moves/offense             | 100% | content complete 2026-11-18 (PRs #63–#67, issues #54–#57) · **tag pending owner approval**         |
+| v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                 |
+| v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                         |
+| v1.0.0 share/polish              | 0%   |                                                                                                    |
 
-## Done this session
+## Done this session (2026-11-10 → 18 — v2 «Pergamino» + v0.4.0 content complete)
+
+- **Pixel-cozy v2 «Pergamino»** (PRs #59–#62, ADR-008 revision): field-journal landing,
+  shared `SiteHeader`/`SiteFooter` from `Base.astro`, game workbench with paper sheets and
+  the in-place drawer, calm paper analysis panels and solid canonical type chips.
+  `useLang` follows the in-page language toggle without hydration mismatches; legacy
+  `bark-*`/`parchment-*` aliases and the `dither` utility are gone. Product truth in
+  `PRODUCT.md`, surface contract in `.impeccable/surfaces/home.md`.
+- **PR #63 (T4.1, #54):** moves pipeline — version-group-filtered learnsets
+  `[moveId, method, level]` per Pokémon plus a pruned move dictionary (EN/ES name,
+  game-accurate type/power/accuracy/PP/class). `past_values` applied per field (Gen-I
+  Bite/Karate Chop/Gust Normal; 120-power Thunder/Fire Blast/Blizzard; Gen-III Crunch
+  special), Gen 1–3 classes derived from type, Gen-I HM gaps filled from Yellow, Emerald
+  Speed Deoxys. `data:check` enforces refs, generations, levels, types and spot facts.
+- **PR #64 (T4.4, #57):** abilities dictionary + `inGame` flags; drawer expanders with the
+  effect, `oculta`, `no en este juego` and team peers; RB/GS keep no abilities. 9 unit
+  tests + `e2e/abilities.spec.ts`.
+- **PR #65 (T4.2 part 1, #55):** `src/lib/moves.ts` pure helpers (rows, accent-insensitive
+  filters, four-slot toggle with replace-oldest, immutable move map), persisted `moves`
+  map + `toggleMove` in the team store, and share **v2**
+  (`v2.<game>.<id[:moves]>`; v1 still decodes, `?t=` consumed after seeding).
+  18 share cases + 11 move-slot cases.
+- **PR #66 (T4.2 part 2, #55):** `MovePicker` in the drawer — four type-colored slots,
+  in-place learnset list (search, localized type chips, class/power/accuracy/PP,
+  level/TM/tutor/egg), replace-oldest + removal notes, team-only gating; localized type
+  labels in the drawer; `e2e/moves.spec.ts` covers the flow and v2 round-trip on desktop
+  and mobile widths.
+- **PR #67 (T4.3, #56):** `src/lib/coverage.ts` + `OffensiveCoverage` panel — best
+  multiplier per member/defender from the picked moves, covered/gaps partition at 2×,
+  status and fixed-damage moves excluded; desktop matrix, mobile per-member answers and
+  the “Sin golpe súper eficaz” callout. 14 unit cases (incl. Emerald Treecko + Absorb) and
+  `e2e/coverage.spec.ts`.
+- Suite after the session: **146 unit tests in 13 files** + **8 Playwright e2e**
+  (desktop + Pixel 5); `data:check`, build and CI green. Board #54–#57 Done.
+- **Release gate:** v0.4.0 is NOT tagged — owner approval is required before tagging.
+
+## Done in earlier sessions (scaffold → v0.1.0)
 
 - Full `/docs` system, AGENTS.md, community files (README ES/EN, CONTRIBUTING, CoC, MIT).
 - Stack scaffold (Astro 5 + React + TS strict + Tailwind 4, pnpm, ESLint+Prettier, Vitest).

@@ -94,6 +94,34 @@ Also this window: #6 (Verify PokeAPI ES names) advanced by the owner's PR #51 (a
 location ES names localized; curated `i18n-fixes.json`). v0.3.0 milestone (#41–#44) closed;
 v0.4.0 will be triaged into PR-sized issues at milestone start.
 
+## Classification update (2026-11-18)
+
+v0.4.0 «Moves & offensive coverage» is content complete (PRs #63–#67); the milestone is
+waiting at the MINOR tag gate for owner approval. All four tasks are now Done.
+
+| #   | Item                           | Status | Priority | Area     | Size |
+| --- | ------------------------------ | ------ | -------- | -------- | ---- |
+| 54  | T4.1 moves data pipeline       | Done   | P1       | Data     | M    |
+| 55  | T4.2 move picker + share v2    | Done   | P1       | Frontend | M    |
+| 56  | T4.3 offensive coverage matrix | Done   | P1       | Frontend | M    |
+| 57  | T4.4 abilities detail view     | Done   | P1       | Frontend | M    |
+
+Remaining open work (unchanged unless noted):
+
+| #   | Item                                        | Status  | Priority | Area   | Size |
+| --- | ------------------------------------------- | ------- | -------- | ------ | ---- |
+| 2   | red-blue — curate encounter data            | Ready   | P2       | Data   | L    |
+| 3   | gold-silver — curate encounter data (Kanto) | Ready   | P2       | Data   | L    |
+| 4   | emerald — curate encounter data (Hoenn)     | Ready   | P2       | Data   | L    |
+| 5   | Gym leader & Elite Four data model          | Backlog | P2       | Data   | M    |
+| 7   | Accessibility audit of landing              | Ready   | P2       | Design | S    |
+| 8   | Landing/game-selector visual pass           | Backlog | P3       | Design | L    |
+| 9   | DATA_SOURCES.md — 2026 schema findings      | Ready   | P2       | Docs   | S    |
+
+#6 (Verify PokeAPI ES names) is **Done** (issue closed via PR #51). #39 and #41–#45 stay
+Done from the v0.3.0 window. v0.5.0 starts after the v0.4.0 tag: encounters UX + curated
+data, then the leader/E4 matchup view.
+
 ## Maintenance
 
 Add an issue to the board and set its fields (requires the `project` scope on the
