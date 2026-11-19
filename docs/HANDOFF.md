@@ -1,41 +1,45 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-10 (sessions 5–7: artwork + in-place drawer directives, v0.3.0
-complete, **all three releases tagged & published**)
+Last updated: 2026-11-18 (v2 «Pergamino» + v0.4.0 content complete, **tag gate armed**)
 
 ## Exactly where we stopped
 
-- **v0.3.0 "Team analysis" is released.** Owner approved ALL pending MINOR releases on
-  2026-11-10 ("acepto todo"); tags + GitHub releases are live:
-  - `v0.1.0` @ `6f373fb` (PR #1 historical merge) → https://github.com/hell-over-studios/dexforge/releases/tag/v0.1.0
-  - `v0.2.0` @ `45e5267` (includes the two owner-directive fixes #40/#46) → …/releases/tag/v0.2.0
-  - `v0.3.0` @ `86bfd39` → …/releases/tag/v0.3.0
-  - Release notes were cut per milestone from the pre-split CHANGELOG; the CHANGELOG is
-    now restructured into `[0.1.0] / [0.2.0] / [0.3.0]` sections (docs PR #58).
-  - GitHub milestones v0.2.0 and v0.3.0 are CLOSED.
-- **v0.3.0 content, day-of-merging recap:**
-  - PR #47 (T3.1, #41) `src/lib/analysis.ts` — pure per-game defensive analysis layer.
-    NOTE: an earlier handoff claimed the typeChart pipeline needed fixes; that was WRONG
-    (verified against the PokeAPI cache — steel has been immune to poison since Gen 2, RB
-    fire→ghost genuinely = 1). No pipeline change was needed; proof is on issue #41.
-  - PR #48 (T3.2, #42) `DefenseCharts` island (mobile cards / desktop matrix) +
-    `loadTypeMeta()` in `src/lib/dex.ts`.
-  - PR #49 (T3.3, #43) `src/lib/roles.ts` + `TeamProfile` island (static SVG radar + role
-    heuristic v1).
-  - PR #50 (T3.4, #44) `src/lib/summary.ts` + "Notas" block inside DefenseCharts
-    (shared weaknesses / immunities / team-wide resists).
-- Between T3.3 and T3.4 the OWNER merged **PR #51** (`fix(i18n)` ability/location ES names,
-  issue #6) from another workspace — it landed `docs/KNOWN_ISSUES.md` unformatted and broke
-  `main` CI at Format check; fixed via PR #52 (`docs:` whitespace-only). The PR also
-  introduced `data/curated/i18n-fixes.json` + a hook in `scripts/build.ts` (counted into
-  v0.3.0's release notes as a Fixed item).
-- Tests: **82 unit tests in 8 files** + **2 Playwright e2e** (Chromium desktop + Pixel 5).
-- Owner autonomy grant stands ("ok bien, continua", 2026-11-08; plus release approval
-  2026-11-10). The MINOR tag gate re-arms at the end of v0.4.0.
-- **v0.4.0 is triaged into PR-sized tasks** (milestone "v0.4.0 — Moves & offensive coverage"):
-  issues **#54** (T4.1 moves data pipeline — Ready), **#57** (T4.4 abilities view — Ready),
-  **#55** (T4.2 move picker + share v2 — Backlog, depends on #54), **#56** (T4.3 offense
-  matrix — Backlog, depends on #54/#55).
+- **v0.4.0 «Moves & offensive coverage» is content complete and NOT tagged.** The MINOR
+  release gate is waiting for owner approval. Everything is merged to `main` at
+  `ca010e6`; issues #54–#57 are closed and Done on the board.
+- Shipped this stretch (2026-11-10 → 18):
+  - **PRs #59–#62** — visual identity v2 «Pergamino»: field-journal landing, shared
+    header/footer from `Base.astro`, paper game workbench with the in-place drawer and
+    calm analysis panels. Product truth in `PRODUCT.md`, direction contract in
+    `.impeccable/surfaces/home.md`.
+  - **PR #63 (T4.1, #54)** — moves pipeline: per-game version-group-filtered learnsets +
+    pruned move dictionary; `past_values` applied per field; Gen-I HM gaps filled from
+    Yellow; `data:check` invariants.
+  - **PR #64 (T4.4, #57)** — abilities dictionary + `inGame`, drawer expanders with effect,
+    hidden/not-in-game markers and team peers.
+  - **PR #65 (T4.2 part 1, #55)** — `src/lib/moves.ts`, persisted `moves` map +
+    `toggleMove`, share **v2** payload with v1 compatibility, `?t=` consumption.
+  - **PR #66 (T4.2 part 2, #55)** — `MovePicker` drawer UI (four slots, learnset search +
+    type filters, replace-oldest), localized drawer type labels, `e2e/moves.spec.ts`.
+  - **PR #67 (T4.3, #56)** — `src/lib/coverage.ts` + `OffensiveCoverage` panel: matrix,
+    mobile per-member answers and the “no super-effective hit” callout.
+- **Tests: 146 unit tests in 13 files + 8 Playwright e2e** (Chromium desktop + Pixel 5);
+  `data:check`, build and CI green.
+- **Release prep (next owner action):** v0.4.0 notes will be cut from CHANGELOG
+  `[Unreleased]` (moves/abilities/coverage under Added, Pergamino under Changed). Do not
+  tag until the owner approves. After tagging: move `[Unreleased]` into
+  `[0.4.0] - <date>`, close the GitHub milestone and keep the compare links contiguous.
+
+## Open decisions / watch-outs
+
+- Offensive coverage counts **only damaging moves with base power**; status and
+  fixed-damage moves are excluded by design (the panel says so). Do not “fix” that.
+- Share encoding emits **v1** while nobody has moves and **v2** once any member does;
+  both decoders and the strict caps (6 members / 4 moves) must stay.
+- The move picker is **team-only** (non-members get a one-line hint) — intentional.
+- `?t=` is consumed with `history.replaceState` after seeding so reloads keep newer
+  local picks; don't re-apply stale links.
+- Coverage gaps use the **2×** threshold against single types (no dual-type math).
 
 ## v0.2.0 context (kept short)
 
@@ -44,26 +48,25 @@ v0.2.0 was finished in session 4 via PRs #24–#37 plus the two owner-directive 
 https://hell-over-studios.github.io/dexforge/ (home → game → picker → drawer → team →
 analysis panels). Full detail in docs/CHANGELOG.md [0.2.0].
 
-## Releases (resolved 2026-11-10 — for the record)
+## Releases
 
-All three MINOR releases were owner-approved ("acepto todo") and executed end-to-end:
-tagging (see exact SHAs in the top block), pushing, and `gh release create` with notes cut
-per milestone. The CHANGELOG was then restructured into `[0.1.0] / [0.2.0] / [0.3.0]`
-sections with fresh compare link refs (docs PR #58). GitHub milestones v0.2.0 and v0.3.0
-are closed. The same gate re-arms before tagging v0.4.0: STOP for owner approval again.
+v0.1.0 / v0.2.0 / v0.3.0 are tagged and published (2026-11-10; SHAs 6f373fb / 45e5267 /
+86bfd39) and their GitHub milestones are closed. The CHANGELOG carries per-release
+sections. **v0.4.0 re-arms the same MINOR gate: tag only after explicit owner approval.**
 
 ## What to do next (first work of next session)
 
-1. Start **T4.1 (issue #54, Ready)** — moves data pipeline (version-group filtered
-   learnsets). Candidate follow-ups while waiting for review: **T4.4 (issue #57)** abilities
-   view (independent). T4.2 (#55) and T4.3 (#56) follow once T4.1 lands.
-2. PR discipline unchanged: `pnpm pre-commit` locally; `gh pr checks --watch --fail-fast` before
-   merge; watch `main` after merge (CI + Deploy); board: branch→In progress, merge→Done.
-3. Formatting gotcha from #51/#52: never edit repo docs with tools that don't run Prettier
-   before committing; `docs/*.md` are all covered by `pnpm format:check`.
-4. Data-pipeline caveat for T4.1: the 2026 PokeAPI schema findings in `docs/DATA_SOURCES.md`
-   - `HANDOFF.md` state facts below apply; the owner's #51 also added the i18n hook inside
-     `scripts/build.ts` — read it before extending the pipeline.
+1. **Ask the owner to approve v0.4.0** using the release package above. On approval: tag,
+   publish the GitHub release with notes cut from `[Unreleased]`, close the milestone and
+   fold the section into `[0.4.0]`.
+2. Then start **v0.5.0 "Encounters & curated data"**: where-to-find UX (route, method,
+   level, rate, exclusives, HM/badge requirements) and the curated-data UI (“obtained by
+   evolving X”, gifts, trades, statics). Curated datasets are issues #2–#4 (Ready).
+3. PR discipline unchanged: one small cohesive PR, `pnpm pre-commit` locally,
+   `gh pr checks --watch --fail-fast` before merge, watch `main` after merge (CI + Deploy),
+   board branch→In progress / merge→Done.
+4. Formatting gotcha (from #51/#52): `docs/*.md` are covered by `prettier --check`; run
+   `pnpm format` before committing docs edited with other tools.
 
 ### Environment notes for browser verification
 
@@ -79,8 +82,8 @@ are closed. The same gate re-arms before tagging v0.4.0: STOP for owner approval
 pnpm install          # if fresh machine
 pnpm data             # regenerate data (cache in scripts/.cache persists locally)
 pnpm data:check       # validate
-pnpm pre-commit       # lint+format+typecheck+test (82 tests in 8 files)
-pnpm test:e2e         # build + Playwright (2 e2e, desktop+mobile projects)
+pnpm pre-commit       # lint+format+typecheck+test (146 tests in 13 files)
+pnpm test:e2e         # build + Playwright (8 e2e, desktop+mobile projects)
 pnpm build && pnpm preview
 pnpm dev              # pixel-cozy landing page
 ```
@@ -90,8 +93,10 @@ pnpm dev              # pixel-cozy landing page
 - pnpm 12.16.1 installed via `npm i -g pnpm` (corepack failed without admin).
 - pnpm ≥11 renamed `onlyBuiltDependencies` → `allowBuilds` in `pnpm-workspace.yaml` (esbuild + sharp approved there).
 - `pnpm typecheck` = `astro sync && astro check`.
-- Data cache hot: `scripts/.cache/pokeapi/` (~7 MB gz; species/forms/encounters re-fetched after the
-  schema purge — the OLD pre-schema payloads were deleted deliberately).
+- Data cache hot: `scripts/.cache/pokeapi/` (~9 MB; `pokemon`, `pokemon-species`, `move`,
+  `ability`, `type`, `location-area`, `evolution-chain`, `generation`, `pokedex`). Species/forms
+  and encounters were re-fetched after the schema purge — the OLD pre-schema payloads were
+  deleted deliberately.
 - **2026 PokeAPI schema findings** (do not trust pre-2026 knowledge):
   - `past_types` lives on the FORM endpoint (`pokemon/{id}`), items are `{slot, type}`; an entry's
     generation is the last generation **up to and including** which those types applied → pick the
@@ -108,9 +113,10 @@ pnpm dev              # pixel-cozy landing page
   - Old cached species payloads (pre-schema) LACKED `past_types`; forms fetched afterwards have it —
     if regenerating with a partially stale cache, purge `scripts/.cache/pokeapi/{pokemon,pokemon-species}`.
 - The landing page reads `public/data/games.json` at build time via fs in `src/pages/index.astro`.
-- Design tokens live in `src/styles/global.css` (`@theme`): raw oklch values, one ramp per surface
-  (bark = backgrounds, parchment = text, ember = accents, moss = secondary). New components must
-  use tokens — never hard-code colors.
+- Design tokens live in `src/styles/global.css` (`@theme`): forest (page ground),
+  paper (panels), ink (text/borders), ember (primary actions) and moss (“good” states)
+  ramps, plus the pixel display / rounded body type. New components must use tokens —
+  never hard-code colors.
 - `gh project ...` commands require the `project` OAuth scope: `gh auth refresh -s project -h github.com`
   (one-time device flow). Board sync scripts: see docs/BOARD.md §Maintenance.
 - `gh` in PowerShell: stderr from successful commands raises NativeCommandError noise —
