@@ -6,6 +6,14 @@
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import {
+  MAX_MOVES,
+  memberMoves,
+  toggleMoveSlot,
+  withMemberMoves,
+  type MoveToggleResult,
+  type MovesByGame,
+} from './moves';
 
 export const TEAM_SIZE = 6;
 
@@ -54,18 +62,29 @@ export function removeAt(teams: TeamsByGame, gameId: string, index: number): Tea
 
 /* ---------- Zustand store (client-only island) ---------- */
 
+/** what a shared link (or an incoming `?t=`) brings per team member */
+export interface SeedMember {
+  id: number;
+  moves?: number[];
+}
+
 interface TeamStore {
   teams: TeamsByGame;
+  /** game id -> pokemon id -> selected move ids (T4.2) */
+  moves: MovesByGame;
   toggle: (gameId: string, id: number) => AddResult;
   remove: (gameId: string, index: number) => void;
-  /** seed a game's team from a share URL (T2.9); caps at TEAM_SIZE */
-  seed: (gameId: string, ids: number[]) => void;
+  /** seed a game's team (and its move slots) from a share URL; caps at TEAM_SIZE */
+  seed: (gameId: string, members: SeedMember[]) => void;
+  /** toggle one move in a team member's four slots (T4.2) */
+  toggleMove: (gameId: string, pokemonId: number, moveId: number) => MoveToggleResult;
 }
 
 export const useTeamStore = create<TeamStore>()(
   persist(
     (set, get) => ({
       teams: {},
+      moves: {},
       toggle: (gameId: string, id: number) => {
         const team = get().teams[gameId] ?? [];
         const result: AddResult = team.includes(id)
@@ -79,8 +98,30 @@ export const useTeamStore = create<TeamStore>()(
       remove: (gameId: string, index: number) => {
         set({ teams: removeAt(get().teams, gameId, index) });
       },
-      seed: (gameId: string, ids: number[]) => {
-        set({ teams: { ...get().teams, [gameId]: ids.slice(0, TEAM_SIZE) } });
+      seed: (gameId: string, members: SeedMember[]) => {
+        const clean = members
+          .filter((member) => Number.isInteger(member.id) && member.id > 0)
+          .slice(0, TEAM_SIZE);
+        const moves = { ...get().moves };
+        const gameSlots: Record<string, number[]> = {};
+        for (const member of clean) {
+          const slots = (member.moves ?? []).filter(
+            (moveId) => Number.isInteger(moveId) && moveId > 0,
+          );
+          if (slots.length === 0) continue;
+          gameSlots[String(member.id)] = [...new Set(slots)].slice(0, MAX_MOVES);
+        }
+        if (Object.keys(gameSlots).length === 0) delete moves[gameId];
+        else moves[gameId] = gameSlots;
+        set({ teams: { ...get().teams, [gameId]: clean.map((member) => member.id) }, moves });
+      },
+      toggleMove: (gameId: string, pokemonId: number, moveId: number) => {
+        const { slots, result } = toggleMoveSlot(
+          memberMoves(get().moves, gameId, pokemonId),
+          moveId,
+        );
+        set({ moves: withMemberMoves(get().moves, gameId, pokemonId, slots) });
+        return result;
       },
     }),
     { name: 'dexforge-team', version: 1 },
