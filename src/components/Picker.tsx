@@ -11,11 +11,11 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import PokemonDetail from './PokemonDetail';
 import TeamSlots from './TeamSlots';
-import { loadGame, loadTypeColors, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
+import { loadGame, loadTypeMeta, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
 import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
 import { NO_TEAM, useTeamStore } from '../lib/team';
-import type { GameData, GamePokemon } from '../lib/data-schema';
+import type { GameData, GamePokemon, LocalizedText } from '../lib/data-schema';
 
 interface Props {
   gameId: string;
@@ -27,6 +27,7 @@ export default function Picker({ gameId }: Props) {
   const [entries, setEntries] = useState<DexEntry[] | null>(null);
   const [game, setGame] = useState<GameData | null>(null);
   const [colors, setColors] = useState<Record<string, string>>({});
+  const [typeNames, setTypeNames] = useState<Record<string, LocalizedText>>({});
   const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
@@ -47,9 +48,12 @@ export default function Picker({ gameId }: Props) {
       .catch(() => {
         if (!cancelled) setLoadError(true);
       });
-    /* type badge colors are cosmetic — fail open with neutral chips */
-    loadTypeColors().then((c) => {
-      if (!cancelled) setColors(c);
+    /* type badge colors/labels are cosmetic — fail open with neutral chips */
+    loadTypeMeta().then(({ colors: typeColors, names }) => {
+      if (!cancelled) {
+        setColors(typeColors);
+        setTypeNames(names);
+      }
     });
     return () => {
       cancelled = true;
@@ -217,7 +221,9 @@ export default function Picker({ gameId }: Props) {
                     mon={mon}
                     gameId={gameId}
                     colors={colors}
+                    typeNames={typeNames}
                     abilities={game.abilities}
+                    moveDex={game.moves}
                     team={teamMons}
                     oldestName={oldestName}
                     onClose={() => setSelected(null)}
@@ -295,7 +301,9 @@ export default function Picker({ gameId }: Props) {
                           mon={mon}
                           gameId={gameId}
                           colors={colors}
+                          typeNames={typeNames}
                           abilities={game.abilities}
+                          moveDex={game.moves}
                           team={teamMons}
                           oldestName={oldestName}
                           onClose={() => setSelected(null)}
