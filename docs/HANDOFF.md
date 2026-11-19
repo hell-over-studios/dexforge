@@ -1,12 +1,13 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-18 (v2 «Pergamino» + v0.4.0 content complete, **tag gate armed**)
+Last updated: 2026-11-18 (v2 «Pergamino» + **v0.4.0 released**)
 
 ## Exactly where we stopped
 
-- **v0.4.0 «Moves & offensive coverage» is content complete and NOT tagged.** The MINOR
-  release gate is waiting for owner approval. Everything is merged to `main` at
-  `ca010e6`; issues #54–#57 are closed and Done on the board.
+- **v0.4.0 «Moves & offensive coverage» is released.** Owner approved it on 2026-11-18;
+  tag `v0.4.0` @ `5cdacef`, release published at
+  https://github.com/hell-over-studios/dexforge/releases/tag/v0.4.0 and the milestone is
+  closed. Issues #54–#57 are closed and Done on the board.
 - Shipped this stretch (2026-11-10 → 18):
   - **PRs #59–#62** — visual identity v2 «Pergamino»: field-journal landing, shared
     header/footer from `Base.astro`, paper game workbench with the in-place drawer and
@@ -25,10 +26,10 @@ Last updated: 2026-11-18 (v2 «Pergamino» + v0.4.0 content complete, **tag gate
     mobile per-member answers and the “no super-effective hit” callout.
 - **Tests: 146 unit tests in 13 files + 8 Playwright e2e** (Chromium desktop + Pixel 5);
   `data:check`, build and CI green.
-- **Release prep (next owner action):** v0.4.0 notes will be cut from CHANGELOG
-  `[Unreleased]` (moves/abilities/coverage under Added, Pergamino under Changed). Do not
-  tag until the owner approves. After tagging: move `[Unreleased]` into
-  `[0.4.0] - <date>`, close the GitHub milestone and keep the compare links contiguous.
+- **Release executed:** CHANGELOG `[Unreleased]` folded into `[0.4.0] - 2026-11-18` (PR
+  #69, tag commit `5cdacef`), annotated tag pushed, GitHub release published from that
+  section and milestone v0.4.0 closed. **v0.5.0 re-arms the same MINOR gate** — tag only
+  after explicit owner approval.
 
 ## Open decisions / watch-outs
 
@@ -50,23 +51,22 @@ analysis panels). Full detail in docs/CHANGELOG.md [0.2.0].
 
 ## Releases
 
-v0.1.0 / v0.2.0 / v0.3.0 are tagged and published (2026-11-10; SHAs 6f373fb / 45e5267 /
-86bfd39) and their GitHub milestones are closed. The CHANGELOG carries per-release
-sections. **v0.4.0 re-arms the same MINOR gate: tag only after explicit owner approval.**
+v0.1.0 / v0.2.0 / v0.3.0 / v0.4.0 are tagged and published (SHAs 6f373fb / 45e5267 /
+86bfd39 / 5cdacef) and their GitHub milestones are closed. The CHANGELOG carries
+per-release sections. **v0.5.0 will re-arm the same MINOR gate: tag only after explicit
+owner approval.**
 
 ## What to do next (first work of next session)
 
-1. **Ask the owner to approve v0.4.0** using the release package above. On approval: tag,
-   publish the GitHub release with notes cut from `[Unreleased]`, close the milestone and
-   fold the section into `[0.4.0]`.
-2. Then start **v0.5.0 "Encounters & curated data"**: where-to-find UX (route, method,
-   level, rate, exclusives, HM/badge requirements) and the curated-data UI (“obtained by
-   evolving X”, gifts, trades, statics). Curated datasets are issues #2–#4 (Ready).
-3. PR discipline unchanged: one small cohesive PR, `pnpm pre-commit` locally,
+1. Start **v0.5.0 "Encounters & curated data"**: where-to-find UX (route, method, level,
+   rate, exclusives, HM/badge requirements) and the curated-data UI (“obtained by evolving
+   X”, gifts, trades, statics). Curated datasets are issues #2–#4 (Ready).
+2. PR discipline unchanged: one small cohesive PR, `pnpm pre-commit` locally,
    `gh pr checks --watch --fail-fast` before merge, watch `main` after merge (CI + Deploy),
    board branch→In progress / merge→Done.
-4. Formatting gotcha (from #51/#52): `docs/*.md` are covered by `prettier --check`; run
+3. Formatting gotcha (from #51/#52): `docs/*.md` are covered by `prettier --check`; run
    `pnpm format` before committing docs edited with other tools.
+4. Release discipline: v0.5.0 is a MINOR too — stop before tagging and ask the owner.
 
 ### Environment notes for browser verification
 
