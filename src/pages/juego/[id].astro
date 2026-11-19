@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Picker from '../../components/Picker';
 import DefenseCharts from '../../components/DefenseCharts';
+import OffensiveCoverage from '../../components/OffensiveCoverage';
 import TeamProfile from '../../components/TeamProfile';
 import fs from 'node:fs';
 import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
@@ -86,6 +87,11 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
     <!-- Defensive analysis island (T3.2) — reads the same static /data JSON -->
     <section aria-label="Análisis defensivo del equipo" class="mt-6">
       <DefenseCharts client:visible gameId={game.id} />
+    </section>
+
+    <!-- Offensive coverage island (T4.3) — picked moves vs the per-game chart -->
+    <section aria-label="Cobertura ofensiva del equipo" class="mt-6">
+      <OffensiveCoverage client:visible gameId={game.id} />
     </section>
 
     <!-- Team profile island (T3.3) — averages + roles, same static JSON -->
