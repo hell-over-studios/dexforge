@@ -96,8 +96,8 @@ v0.4.0 will be triaged into PR-sized issues at milestone start.
 
 ## Classification update (2026-11-18)
 
-v0.4.0 «Moves & offensive coverage» is content complete (PRs #63–#67); the milestone is
-waiting at the MINOR tag gate for owner approval. All four tasks are now Done.
+v0.4.0 «Moves & offensive coverage» is **released** (2026-11-18, tag `5cdacef`); the
+milestone is closed and all four tasks are Done.
 
 | #   | Item                           | Status | Priority | Area     | Size |
 | --- | ------------------------------ | ------ | -------- | -------- | ---- |
@@ -119,8 +119,8 @@ Remaining open work (unchanged unless noted):
 | 9   | DATA_SOURCES.md — 2026 schema findings      | Ready   | P2       | Docs   | S    |
 
 #6 (Verify PokeAPI ES names) is **Done** (issue closed via PR #51). #39 and #41–#45 stay
-Done from the v0.3.0 window. v0.5.0 starts after the v0.4.0 tag: encounters UX + curated
-data, then the leader/E4 matchup view.
+Done from the v0.3.0 window. v0.5.0 is next: encounters UX + curated data, then the
+leader/E4 matchup view.
 
 ## Maintenance
 

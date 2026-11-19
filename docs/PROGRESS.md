@@ -2,20 +2,20 @@
 
 Last updated: 2026-11-18
 
-## Current version: v0.3.0 released · v0.4.0 content complete (tag gate)
+## Current version: v0.3.0 / v0.4.0 released
 
-**Status:** all v0.4.0 tasks (T4.1–T4.4) are merged to `main` (PRs #63–#67, 2026-11-10 → 18);
-issues #54–#57 are closed and the board is Done. v0.4.0 «Moves & offensive coverage» is
-**content complete but NOT tagged**: the MINOR release gate is waiting for owner approval.
-The session also shipped the pixel-cozy v2 «Pergamino» identity (PRs #59–#62). Next after
-the tag: v0.5.0 "Encounters & curated data".
+**Status:** v0.4.0 «Moves & offensive coverage» is **released** — owner approved it on
+2026-11-18; tag `v0.4.0` @ `5cdacef`, GitHub release published and the milestone closed.
+All four tasks (T4.1–T4.4, issues #54–#57) merged via PRs #63–#67; the session also shipped
+the pixel-cozy v2 «Pergamino» identity (PRs #59–#62). Next up: v0.5.0 "Encounters & curated
+data".
 
 | Milestone                        | %    | Notes                                                                                              |
 | -------------------------------- | ---- | -------------------------------------------------------------------------------------------------- |
 | v0.1.0 scaffold/docs/CI/pipeline | 100% | released 2026-11-10 · tag @ 6f373fb (historical PR #1 merge)                                       |
 | v0.2.0 team builder core         | 100% | released 2026-11-10 · tag @ 45e5267 (includes drawer-in-place + artwork-only fixes)                |
 | v0.3.0 team analysis             | 100% | released 2026-11-10 · tag @ 86bfd39 (analysis layer, defensive table, radar+roles, suggestions v1) |
-| v0.4.0 moves/offense             | 100% | content complete 2026-11-18 (PRs #63–#67, issues #54–#57) · **tag pending owner approval**         |
+| v0.4.0 moves/offense             | 100% | released 2026-11-18 · tag @ 5cdacef (moves pipeline, picker + share v2, coverage, abilities)       |
 | v0.5.0 encounters UI             | 0%   | curated-data issues #2–#4 opened for collaborators                                                 |
 | v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                         |
 | v1.0.0 share/polish              | 0%   |                                                                                                    |
@@ -54,7 +54,8 @@ the tag: v0.5.0 "Encounters & curated data".
   `e2e/coverage.spec.ts`.
 - Suite after the session: **146 unit tests in 13 files** + **8 Playwright e2e**
   (desktop + Pixel 5); `data:check`, build and CI green. Board #54–#57 Done.
-- **Release gate:** v0.4.0 is NOT tagged — owner approval is required before tagging.
+- **Release:** owner approved v0.4.0 on 2026-11-18. Tag `v0.4.0` @ `5cdacef`, GitHub release
+  published with notes cut from the CHANGELOG and the milestone closed.
 
 ## Done in earlier sessions (scaffold → v0.1.0)
 

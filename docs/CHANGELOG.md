@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Moves, abilities and offensive coverage: game-accurate learnsets, a per-Pokémon move
 picker with shareable move slots, an offensive coverage panel and ability details, on
-the pixel-cozy v2 «Pergamino» identity. Owner-approved 2026-11-18.
+the pixel-cozy v2 «Pergamino» identity. Tagged at `5cdacef`; owner-approved 2026-11-18.
 
 ### Added
 
