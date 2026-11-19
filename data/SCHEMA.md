@@ -54,3 +54,25 @@ PokeAPI `pokemon/{id}/encounters` only covers **wild** encounters. It misses:
 - Localize the _location_ (`{"en": "…", "es": "…"}`); method strings can stay English-ish for consistency since they are rendered as-is.
 - In version-exclusive groups, fill `versions` with the **exact** member slugs ("red", "blue"…).
 - Test locally: `pnpm run data -- --game <id> --verbose && pnpm test`.
+
+## Place names (`data/curated/place-names.json`)
+
+PokeAPI has no Spanish names for most Gen 1–3 location areas. This dictionary feeds
+`scripts/lib/place-names.ts`, which localizes every untranslated location name at build time.
+
+```jsonc
+{
+  // English base name (without the "(…)" qualifier) → official Spanish name
+  "places": { "Granite Cave": "Cueva Granito", "Rustboro City": "Ciudad Férrica" },
+  // repairs to the English side (slug fallbacks, wrong-language entries)
+  "enFixes": { "Shoal-cave-b2f": "Shoal Cave (B2F)" },
+}
+```
+
+- Routes need no entry: `Road 102` becomes `Ruta 102` (and `Route 102` in English).
+- Qualifiers are handled by the code: floors stay (`B1F`), words are translated
+  (`back` → `fondo`) and nested places use this same dictionary
+  (`towards Viridian City` → `hacia Ciudad Verde`).
+- Only add names you can verify in the Spanish release of the game. A place without an
+  entry keeps its English name, which is better than a wrong one.
+- A per-slug entry in `i18n-fixes.json` (`locations`) still overrides the result.

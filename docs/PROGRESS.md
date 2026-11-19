@@ -20,6 +20,17 @@ data".
 | v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                         |
 | v1.0.0 share/polish              | 0%   |                                                                                                    |
 
+## Done 2026-11-18 (late) — Spanish names fix (pre-v0.5.0)
+
+- Pokédex list type chips localized (were raw slugs: `WATER`, `GROUND`).
+- Location names localized through `scripts/lib/place-names.ts` + curated
+  `data/curated/place-names.json`: 309 location areas, only 11 still in English
+  (unverified official names: Team Rocket HQ, Desert Underpass, Altering Cave, Jagged Pass,
+  New Mauville, Desert Ruins, Island Cave, Ancient Tomb, Marine Cave, Terra Cave). English
+  side now says `Route N`. Datasets regenerated; 168 unit tests in 15 files.
+- Design exploration for the next UI pass lives outside the repo (two boards shared with
+  the owner); no UI direction change is decided yet.
+
 ## Done this session (2026-11-10 → 18 — v2 «Pergamino» + v0.4.0 content complete)
 
 - **Pixel-cozy v2 «Pergamino»** (PRs #59–#62, ADR-008 revision): field-journal landing,

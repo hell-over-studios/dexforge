@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Pokédex list type chips showed the raw slug (`WATER`, `GROUND`) instead of the localized type name; they now use `types.json` names like the drawer and analysis panels.
+- Encounter location names are now localized: `scripts/lib/place-names.ts` turns `Road N` into `Ruta N`, translates qualifiers and maps base places through the new curated dictionary `data/curated/place-names.json` (unknown places keep English instead of a guessed name). English names say `Route N`, and slug fallbacks plus a German `Wandert durch Johto` entry are repaired. 7 unit tests.
+
 ### Added
 
 - Where-to-find data layer (T5.1, issue #72): `src/lib/encounters.ts` turns each Pokémon’s static `encounters` array into display sections. PokeAPI reports gifts, trades and statics as `kind: "wild"`, so categories come from the method (wild / gift / trade / static / event / evolve); rows that only differ by version collapse into one entry with version chips, exact repeats are dropped, and rows sort by category then location. Localized method labels cover the Gen I–III methods while unknown/curated strings pass through, and helpers format level ranges, rates and version names. 15 unit tests, including real Emerald and Red/Blue data.

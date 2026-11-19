@@ -283,7 +283,7 @@ export default function Picker({ gameId }: Props) {
                         className="type-chip"
                         style={typeChipStyle(colors[t] ?? '#dcc49a')}
                       >
-                        {t}
+                        {typeNames[t]?.[lang] ?? t}
                       </span>
                     ))}
                   </span>

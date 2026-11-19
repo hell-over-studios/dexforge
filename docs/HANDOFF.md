@@ -1,6 +1,6 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-18 (v2 «Pergamino» + **v0.4.0 released**)
+Last updated: 2026-11-18 (late — Spanish type/place names fix on a branch)
 
 ## Exactly where we stopped
 
@@ -30,6 +30,21 @@ Last updated: 2026-11-18 (v2 «Pergamino» + **v0.4.0 released**)
   #69, tag commit `5cdacef`), annotated tag pushed, GitHub release published from that
   section and milestone v0.4.0 closed. **v0.5.0 re-arms the same MINOR gate** — tag only
   after explicit owner approval.
+
+## Latest (2026-11-18, late)
+
+- Branch `fix/spanish-type-and-place-names`: Pokédex list chips show localized type names;
+  encounter location names are localized at build time (`scripts/lib/place-names.ts`,
+  dictionary `data/curated/place-names.json`, documented in `data/SCHEMA.md`). The owner
+  asked for a PR only: **do not merge it without their go-ahead**.
+- The regeneration also picked up upstream PokeAPI edits (10 Emerald ability effect texts
+  in Spanish, Sneasel → Sneasler now `use-item` Razor Claw). Expected, not a regression.
+- `scripts/.cache` was empty on this machine, so `pnpm data` fetched everything again
+  (~10 min). It is warm now.
+- 11 location areas remain English on purpose (no verified official Spanish name); add them
+  to `place-names.json` once checked.
+- The owner is exploring a new UI personality (design boards outside the repo). Hold the
+  big workbench redesign until a direction is chosen.
 
 ## Open decisions / watch-outs
 
