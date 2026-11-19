@@ -9,9 +9,10 @@
  * the team members that share them).
  */
 import { useState } from 'react';
-import type { AbilityInfo, GamePokemon } from '../lib/data-schema';
+import type { AbilityInfo, GamePokemon, LocalizedText, MoveInfo } from '../lib/data-schema';
 import { typeChipStyle } from '../lib/contrast';
 import { abilityEffect, abilityPeers } from '../lib/abilities';
+import MovePicker from './MovePicker';
 import { useLang } from '../lib/use-lang';
 import { NO_TEAM, useTeamStore } from '../lib/team';
 
@@ -20,8 +21,12 @@ interface Props {
   gameId: string;
   /** type slug -> hex color (may be partial; falls back to a neutral chip) */
   colors: Record<string, string>;
+  /** type slug -> localized label (falls back to the slug) */
+  typeNames: Record<string, LocalizedText>;
   /** ability slug -> details, from the game dataset */
   abilities: Record<string, AbilityInfo>;
+  /** national move id (as string) -> details, from the game dataset */
+  moveDex: Record<string, MoveInfo>;
   /** the game's current team, used to highlight shared abilities */
   team: GamePokemon[];
   /** name of the team's oldest member (for the full-team replace message) */
@@ -64,7 +69,9 @@ export default function PokemonDetail({
   mon,
   gameId,
   colors,
+  typeNames,
   abilities,
+  moveDex,
   team,
   oldestName,
   onClose,
@@ -137,11 +144,11 @@ export default function PokemonDetail({
             {mon.types.map((t) =>
               colors[t] ? (
                 <span key={t} className="type-chip" style={typeChipStyle(colors[t])}>
-                  {t}
+                  {typeNames[t]?.[lang] ?? t}
                 </span>
               ) : (
                 <span key={t} className="type-chip bg-paper-300 text-ink-900">
-                  {t}
+                  {typeNames[t]?.[lang] ?? t}
                 </span>
               ),
             )}
@@ -260,6 +267,16 @@ export default function PokemonDetail({
           </ul>
         </div>
       ) : null}
+
+      {/* T4.2: four move slots + version-group-accurate move list */}
+      <MovePicker
+        mon={mon}
+        gameId={gameId}
+        moveDex={moveDex}
+        colors={colors}
+        typeNames={typeNames}
+        inTeam={inTeam}
+      />
 
       {/* team button (T2.8): add / remove / full -> replace oldest */}
       <button
