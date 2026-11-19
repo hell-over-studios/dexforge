@@ -11,6 +11,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLang } from '../lib/use-lang';
 import { NO_TEAM, useTeamStore } from '../lib/team';
+import { NO_MEMBER_MOVES } from '../lib/moves';
 import { decodeTeam, encodeTeam } from '../lib/share';
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
 
 export default function TeamSlots({ gameId, resolve }: Props) {
   const team = useTeamStore((s) => s.teams[gameId] ?? NO_TEAM);
+  const moves = useTeamStore((s) => s.moves[gameId] ?? NO_MEMBER_MOVES);
   const remove = useTeamStore((s) => s.remove);
   const lang = useLang();
   const [copied, setCopied] = useState(false);
@@ -28,16 +30,28 @@ export default function TeamSlots({ gameId, resolve }: Props) {
 
   /* incoming share: `?t=<value>` wins for this game only when it names this game */
   useEffect(() => {
-    const raw = new URLSearchParams(window.location.search).get('t');
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('t');
     if (!raw) return;
     const payload = decodeTeam(raw);
-    if (payload?.gameId === gameId && payload.ids.length > 0) {
-      useTeamStore.getState().seed(gameId, payload.ids);
-    }
+    if (payload?.gameId !== gameId || payload.members.length === 0) return;
+    useTeamStore.getState().seed(gameId, payload.members);
+    /* consume the param so a reload keeps newer local picks instead of
+       re-seeding the (now stale) link */
+    params.delete('t');
+    const query = params.toString();
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`,
+    );
   }, [gameId]);
 
   const copyLink = async () => {
-    const value = encodeTeam(gameId, team);
+    const value = encodeTeam(
+      gameId,
+      team.map((id) => ({ id, moves: moves[String(id)] ?? [] })),
+    );
     const url = `${window.location.origin}${window.location.pathname}?t=${encodeURIComponent(value)}`;
     try {
       await navigator.clipboard.writeText(url);
