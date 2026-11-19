@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Where-to-find data layer (T5.1, issue #72): `src/lib/encounters.ts` turns each Pokémon’s static `encounters` array into display sections. PokeAPI reports gifts, trades and statics as `kind: "wild"`, so categories come from the method (wild / gift / trade / static / event / evolve); rows that only differ by version collapse into one entry with version chips, exact repeats are dropped, and rows sort by category then location. Localized method labels cover the Gen I–III methods while unknown/curated strings pass through, and helpers format level ranges, rates and version names. 15 unit tests, including real Emerald and Red/Blue data.
+
 ## [0.4.0] - 2026-11-18
 
 Moves, abilities and offensive coverage: game-accurate learnsets, a per-Pokémon move
