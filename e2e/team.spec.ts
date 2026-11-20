@@ -29,6 +29,9 @@ test('pick game, add 6 via drawer, share by URL, restore everywhere', async ({ b
   await expect(page.locator('ul[role="list"] li')).toHaveCount(6);
   await expect(page.getByText('6/6')).toBeVisible();
 
+  // UX-04: the Defensa tab counts types that hit 2+ members (bug, electric, grass)
+  await expect(page.getByRole('tab', { name: 'Defensa 3 alertas' })).toBeVisible();
+
   // UX-03: the index marks members already in the team
   await input.fill('absol');
   await expect(page.locator('#picker-list [role="option"]').first()).toContainText(

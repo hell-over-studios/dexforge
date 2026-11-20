@@ -12,6 +12,7 @@ import TeamSlots from '../../components/TeamSlots';
 import DefenseCharts from '../../components/DefenseCharts';
 import OffensiveCoverage from '../../components/OffensiveCoverage';
 import TeamProfile from '../../components/TeamProfile';
+import AnalysisTabs from '../../components/AnalysisTabs';
 import fs from 'node:fs';
 import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
 import { withBase } from '../../lib/paths';
@@ -41,12 +42,6 @@ const COVER: Record<string, string> = {
   emerald: 'linear-gradient(120deg, #17a35e 0 100%)',
 };
 const typesInChart = game.generation === 1 ? 15 : 17;
-
-const tabs = [
-  { id: 'defensa', key: 'tabs.defense', es: 'Defensa' },
-  { id: 'cobertura', key: 'tabs.coverage', es: 'Cobertura' },
-  { id: 'perfil', key: 'tabs.profile', es: 'Perfil' },
-] as const;
 ---
 
 <Base title={title} description={description}>
@@ -125,29 +120,7 @@ const tabs = [
       <div
         class="lg:sticky lg:top-20 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:pr-2 lg:pb-2"
       >
-        <div
-          role="tablist"
-          aria-label="Análisis del equipo"
-          data-i18n-aria="tabs.label"
-          class="flex flex-wrap gap-2 border-b-[3px] border-ink-950 pb-3"
-          data-tabs
-        >
-          {
-            tabs.map((tab, i) => (
-              <button
-                type="button"
-                role="tab"
-                id={`tab-${tab.id}`}
-                aria-controls={`panel-${tab.id}`}
-                aria-selected={i === 0 ? 'true' : 'false'}
-                tabindex={i === 0 ? 0 : -1}
-                class="cursor-pointer border-2 border-ink-950 bg-paper-50 px-4 py-2 kicker text-sm text-ink-950 shadow-pixel-sm transition-colors hover:bg-ember-300 aria-selected:bg-ink-950 aria-selected:text-ember-500"
-              >
-                <span data-i18n={tab.key}>{tab.es}</span>
-              </button>
-            ))
-          }
-        </div>
+        <AnalysisTabs client:load gameId={game.id} />
 
         <div id="panel-defensa" role="tabpanel" aria-labelledby="tab-defensa" class="mt-5">
           <section aria-label="Análisis defensivo del equipo">
@@ -174,41 +147,3 @@ const tabs = [
     </div>
   </div>
 </Base>
-
-<script>
-  /* Analysis tabs (WAI-ARIA tabs pattern): click or ←/→/Home/End to switch.
-     Hidden panels keep their islands unhydrated until first shown. */
-  for (const list of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
-    const tabs = [...list.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-    const select = (next: HTMLButtonElement, focus: boolean) => {
-      for (const tab of tabs) {
-        const on = tab === next;
-        tab.setAttribute('aria-selected', String(on));
-        tab.tabIndex = on ? 0 : -1;
-        const panel = document.getElementById(tab.getAttribute('aria-controls') ?? '');
-        if (panel) panel.hidden = !on;
-      }
-      if (focus) next.focus();
-    };
-    for (const tab of tabs) {
-      tab.addEventListener('click', () => select(tab, false));
-      tab.addEventListener('keydown', (ev) => {
-        const i = tabs.indexOf(tab);
-        const to =
-          ev.key === 'ArrowRight'
-            ? tabs[(i + 1) % tabs.length]
-            : ev.key === 'ArrowLeft'
-              ? tabs[(i - 1 + tabs.length) % tabs.length]
-              : ev.key === 'Home'
-                ? tabs[0]
-                : ev.key === 'End'
-                  ? tabs[tabs.length - 1]
-                  : null;
-        if (to) {
-          ev.preventDefault();
-          select(to, true);
-        }
-      });
-    }
-  }
-</script>
