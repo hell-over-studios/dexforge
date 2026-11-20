@@ -4,7 +4,7 @@
  * untested here (tested via browser e2e in T2.10).
  */
 import { describe, expect, it } from 'vitest';
-import { removeAt, TEAM_SIZE, toggleMember, type TeamsByGame } from '../src/lib/team';
+import { insertAt, removeAt, TEAM_SIZE, toggleMember, type TeamsByGame } from '../src/lib/team';
 
 describe('toggleMember', () => {
   it('appends with space', () => {
@@ -72,5 +72,24 @@ describe('removeAt', () => {
 
   it('is a no-op for an unknown game', () => {
     expect(removeAt({}, 'missing', 0)).toEqual({});
+  });
+});
+
+describe('insertAt (undo a removal, UX-01)', () => {
+  it('puts the member back at its slot', () => {
+    const teams: TeamsByGame = { emerald: [252, 258, 280] };
+    expect(insertAt(teams, 'emerald', 1, 255).emerald).toEqual([252, 255, 258, 280]);
+  });
+
+  it('appends when the slot is past the end and starts an empty team', () => {
+    expect(insertAt({ emerald: [252] }, 'emerald', 5, 255).emerald).toEqual([252, 255]);
+    expect(insertAt({}, 'emerald', 0, 255).emerald).toEqual([255]);
+  });
+
+  it('ignores full teams and species already in the team', () => {
+    const full: TeamsByGame = { emerald: [1, 2, 3, 4, 5, 6] };
+    expect(insertAt(full, 'emerald', 0, 7)).toBe(full);
+    const dup: TeamsByGame = { emerald: [252] };
+    expect(insertAt(dup, 'emerald', 0, 252)).toBe(dup);
   });
 });

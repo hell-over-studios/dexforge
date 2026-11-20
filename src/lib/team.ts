@@ -60,6 +60,22 @@ export function removeAt(teams: TeamsByGame, gameId: string, index: number): Tea
   return next;
 }
 
+/**
+ * Put a member back at a slot (undo after a removal). No-op when the team is
+ * full or the species is already in it; an index past the end appends.
+ */
+export function insertAt(
+  teams: TeamsByGame,
+  gameId: string,
+  index: number,
+  id: number,
+): TeamsByGame {
+  const team = teams[gameId] ?? [];
+  if (team.length >= TEAM_SIZE || team.includes(id)) return teams;
+  const at = Math.max(0, Math.min(index, team.length));
+  return { ...teams, [gameId]: [...team.slice(0, at), id, ...team.slice(at)] };
+}
+
 /* ---------- Zustand store (client-only island) ---------- */
 
 /** what a shared link (or an incoming `?t=`) brings per team member */
@@ -74,6 +90,8 @@ interface TeamStore {
   moves: MovesByGame;
   toggle: (gameId: string, id: number) => AddResult;
   remove: (gameId: string, index: number) => void;
+  /** put a removed member back at its slot (undo) */
+  insert: (gameId: string, index: number, id: number) => void;
   /** seed a game's team (and its move slots) from a share URL; caps at TEAM_SIZE */
   seed: (gameId: string, members: SeedMember[]) => void;
   /** toggle one move in a team member's four slots (T4.2) */
@@ -97,6 +115,9 @@ export const useTeamStore = create<TeamStore>()(
       },
       remove: (gameId: string, index: number) => {
         set({ teams: removeAt(get().teams, gameId, index) });
+      },
+      insert: (gameId: string, index: number, id: number) => {
+        set({ teams: insertAt(get().teams, gameId, index, id) });
       },
       seed: (gameId: string, members: SeedMember[]) => {
         const clean = members
