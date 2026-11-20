@@ -73,11 +73,37 @@ export async function loadDexIndex(gameId: string): Promise<DexEntry[]> {
   return buildDexIndex(await loadGame(gameId));
 }
 
+/**
+ * One in-flight/settled promise per dataset URL, shared by every island on the
+ * page (UX-05, #81): the index, team sheet, tabs and panels all read the same
+ * ~700 KB file, so it is downloaded and parsed once. A failed load is evicted
+ * so the next caller can retry.
+ */
+const dataCache = new Map<string, Promise<unknown>>();
+
+function cachedLoad<T>(key: string, load: () => Promise<T>): Promise<T> {
+  const hit = dataCache.get(key) as Promise<T> | undefined;
+  if (hit) return hit;
+  const promise = load().catch((err: unknown) => {
+    dataCache.delete(key);
+    throw err;
+  });
+  dataCache.set(key, promise);
+  return promise;
+}
+
+/** test hook: forget every cached dataset */
+export function clearDataCache(): void {
+  dataCache.clear();
+}
+
 /** Client-side loader for the full per-game dataset (detail drawer needs it). */
-export async function loadGame(gameId: string): Promise<GameData> {
-  const res = await fetch(`${siteBase}/data/${gameId}.json`);
-  if (!res.ok) throw new Error(`dataset does not exist for game: ${gameId}`);
-  return (await res.json()) as GameData;
+export function loadGame(gameId: string): Promise<GameData> {
+  return cachedLoad(`game:${gameId}`, async () => {
+    const res = await fetch(`${siteBase}/data/${gameId}.json`);
+    if (!res.ok) throw new Error(`dataset does not exist for game: ${gameId}`);
+    return (await res.json()) as GameData;
+  });
 }
 
 /** type slug -> hex color, from the static /data/types.json */
@@ -94,11 +120,18 @@ export interface TypeMeta {
 
 /** type slug -> { color, localized names }, from the static /data/types.json */
 export async function loadTypeMeta(): Promise<TypeMeta> {
-  const res = await fetch(`${siteBase}/data/types.json`);
-  if (!res.ok) return { colors: {}, names: {} };
-  const data = (await res.json()) as TypeData;
-  return {
-    colors: Object.fromEntries(data.types.map((t) => [t.slug, t.color])),
-    names: Object.fromEntries(data.types.map((t) => [t.slug, t.name])),
-  };
+  try {
+    const data = await cachedLoad('types', async () => {
+      const res = await fetch(`${siteBase}/data/types.json`);
+      if (!res.ok) throw new Error('types.json is missing');
+      return (await res.json()) as TypeData;
+    });
+    return {
+      colors: Object.fromEntries(data.types.map((t) => [t.slug, t.color])),
+      names: Object.fromEntries(data.types.map((t) => [t.slug, t.name])),
+    };
+  } catch {
+    /* cosmetic data: fail open with neutral chips (and retry on the next call) */
+    return { colors: {}, names: {} };
+  }
 }
