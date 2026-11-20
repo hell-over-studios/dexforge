@@ -106,7 +106,6 @@ export default function Picker({ gameId }: Props) {
         : [],
     [game, teamIds],
   );
-  const oldestName = teamMons[0]?.name[lang];
   const oneIndexed = (i: number) => i + 1;
 
   const resetWindow = () => {
@@ -236,7 +235,6 @@ export default function Picker({ gameId }: Props) {
                     abilities={game.abilities}
                     moveDex={game.moves}
                     team={teamMons}
-                    oldestName={oldestName}
                     onClose={() => setSelected(null)}
                   />
                 </div>
@@ -316,7 +314,6 @@ export default function Picker({ gameId }: Props) {
                           abilities={game.abilities}
                           moveDex={game.moves}
                           team={teamMons}
-                          oldestName={oldestName}
                           onClose={() => setSelected(null)}
                         />
                       </li>
