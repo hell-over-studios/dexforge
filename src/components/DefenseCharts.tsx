@@ -7,8 +7,9 @@
  * attacker x member matrix. Below: v1 suggestions (shared weaknesses,
  * immunities, team-wide resists) as cozy text lines. Fails silent if the
  * data won't load (cosmetic panel).
- * v2 «Pergamino»: a calm paper heatmap — quiet neutral cells, ember for
- * danger, moss for resists, ink for immunities.
+ * ADR-012 «Revista»: a "what hurts most" box on top (magenta, with the
+ * members that suffer it), then the heatmap in press colors — magenta for
+ * danger, cyan for resists, black for immunities.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { analyzeTeam, type TeamMemberInput } from '../lib/analysis';
@@ -29,22 +30,26 @@ const MULT_LABEL: Record<string, string> = {
   '4': '×4',
 };
 
-/** calm heatmap: ember = weakness, moss = resistance, ink = immune */
+/** press heatmap: magenta = weakness, cyan = resistance, black = immune */
 const chipClass = (m: number) => {
   switch (m) {
     case 4:
-      return 'border-ink-950 bg-ember-500 text-ink-950';
+      return 'border-ink-950 bg-magenta-500 text-paper-50';
     case 2:
-      return 'border-ember-700 bg-ember-300/80 text-ink-950';
+      return 'border-ink-950 bg-magenta-300 text-ink-950';
     case 0:
-      return 'border-ink-950 bg-ink-900 text-paper-100';
+      return 'border-ink-950 bg-ink-950 text-paper-50';
     case 0.25:
+      return 'border-ink-950 bg-moss-500 text-ink-950';
     case 0.5:
-      return 'border-moss-600 bg-moss-300/60 text-ink-900';
+      return 'border-ink-950 bg-moss-300 text-ink-950';
     default:
       return 'border-ink-900/20 bg-paper-50 text-ink-500';
   }
 };
+
+/** the most damaging attacking types: most weak members first, then the worst multiplier */
+const HURT_TOP = 3;
 
 interface MemberRow extends TeamMemberInput {
   artwork: string | null;
@@ -92,6 +97,22 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
 
   const summary = useMemo(() => (profile ? summarizeDefenses(profile) : null), [profile]);
 
+  const hurts = useMemo(() => {
+    if (!profile) return [];
+    return profile.rows
+      .map((row) => {
+        const weak = row.perMember
+          .map((m, i) => ({ m, i }))
+          .filter((x) => x.m > 1)
+          .map((x) => x.i);
+        const worst = Math.max(...row.perMember);
+        return { attack: row.attack, weak, worst };
+      })
+      .filter((h) => h.weak.length > 0)
+      .sort((a, b) => b.weak.length - a.weak.length || b.worst - a.worst)
+      .slice(0, HURT_TOP);
+  }, [profile]);
+
   if (loadError) return null;
 
   const t = {
@@ -109,6 +130,15 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
         ? 'Multipliers of each attacking type against each team member'
         : 'Multiplicadores de cada tipo atacante contra cada miembro del equipo',
     notes: lang === 'en' ? 'Notes' : 'Notas',
+    hurtKicker: lang === 'en' ? 'What hurts most' : 'Lo que más duele',
+    hurtCount: (n: number) =>
+      lang === 'en'
+        ? `${n} weak member${n === 1 ? '' : 's'}`
+        : `${n} ${n === 1 ? 'miembro débil' : 'miembros débiles'}`,
+    hurtNone:
+      lang === 'en'
+        ? 'Nothing hits this team super effectively. Rare: enjoy it.'
+        : 'Ningún tipo golpea súper eficaz a este equipo. Es raro: disfrútalo.',
     warn: (names: string, ty: string) =>
       lang === 'en'
         ? `Watch out for ${ty}: it hits ×2 or more on ${names}.`
@@ -142,20 +172,83 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
   return (
     <div className="paper-panel p-4 sm:p-5">
       <div className="border-b-2 border-ink-900/15 pb-3">
-        <h2 className="font-display text-2xl leading-none text-ink-950">{t.heading}</h2>
+        <h2 className="font-headline text-3xl leading-none text-ink-950 uppercase">{t.heading}</h2>
         <p className="mt-2 text-xs leading-relaxed text-ink-600">{t.hint}</p>
       </div>
 
       {!profile ? (
         /* empty team state */
         <div className="mt-4 border-2 border-dashed border-ink-900/30 bg-paper-50 p-6 text-center">
-          <span aria-hidden="true" className="text-2xl text-ember-600">
+          <span aria-hidden="true" className="text-2xl text-magenta-500">
             ⬡
           </span>
           <p className="mt-2 text-sm text-ink-600">{t.empty}</p>
         </div>
       ) : (
         <>
+          {/* «Revista»: the headline of the analysis — what hurts the team most */}
+          <div className="mt-4">
+            <p className="kicker text-xs text-magenta-600">{t.hurtKicker}</p>
+            {hurts.length === 0 ? (
+              <p className="mt-2 border-2 border-ink-950 bg-moss-300 px-3 py-2 text-sm font-semibold text-ink-950">
+                {t.hurtNone}
+              </p>
+            ) : (
+              <ol className="mt-2 grid gap-3 sm:grid-cols-3">
+                {hurts.map((h, rank) => (
+                  <li
+                    key={h.attack}
+                    className={
+                      'border-2 border-ink-950 p-2.5 ' +
+                      (rank === 0
+                        ? 'rotate-[-1deg] bg-magenta-500 text-paper-50 shadow-pixel'
+                        : 'bg-paper-50 text-ink-950 shadow-pixel-sm')
+                    }
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        aria-hidden="true"
+                        className="size-3 shrink-0 rounded-full border-2 border-ink-950"
+                        style={{ backgroundColor: typeColor(h.attack) }}
+                      />
+                      <span className="font-headline text-2xl leading-none uppercase">
+                        {typeName(h.attack)}
+                      </span>
+                      <span className="ml-auto font-headline text-2xl leading-none">
+                        {h.weak.length}/{members.length}
+                      </span>
+                    </span>
+                    <span className="mt-1 block kicker text-[11px] opacity-90">
+                      {t.hurtCount(h.weak.length)}
+                      {h.worst >= 4 ? ' · ×4' : ''}
+                    </span>
+                    <span className="mt-2 flex flex-wrap gap-1">
+                      {h.weak.map((i) =>
+                        members[i].artwork ? (
+                          <img
+                            key={members[i].id}
+                            src={members[i].artwork ?? undefined}
+                            alt={members[i].name[lang]}
+                            title={members[i].name[lang]}
+                            loading="lazy"
+                            decoding="async"
+                            width={32}
+                            height={32}
+                            className="size-8 rounded-full border-2 border-ink-950 bg-paper-50 [object-fit:contain]"
+                          />
+                        ) : (
+                          <span key={members[i].id} className="text-xs">
+                            {members[i].name[lang]}
+                          </span>
+                        ),
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
           {/* mobile-first: stacked per-member cards */}
           <ul className="mt-4 grid gap-3 md:hidden">
             {profile.members.map((_, mi) => {
@@ -281,13 +374,11 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
       {/* T3.4: suggestions v1 — cozy text notes from the same profile, no fake data */}
       {summary ? (
         <div className="mt-4 border-t-2 border-ink-900/15 pt-3">
-          <h3 className="font-display text-xs tracking-[0.14em] text-ink-600 uppercase">
-            {t.notes}
-          </h3>
+          <h3 className="kicker text-xs text-magenta-600">{t.notes}</h3>
           <ul className="mt-2 space-y-1.5 text-sm">
             {summary.sharedWeaknesses.map((w) => (
               <li key={`sh-${w.attack}`} className="text-ink-800">
-                <span aria-hidden="true" className="mr-1 text-ember-700">
+                <span aria-hidden="true" className="mr-1 text-magenta-600">
                   ⚠
                 </span>
                 {t.warn(w.indices.map((i) => members[i].name[lang]).join(', '), typeName(w.attack))}
@@ -296,7 +387,7 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
             {summary.immunities.map((imm) =>
               imm.indices.map((i) => (
                 <li key={`im-${imm.attack}-${i}`} className="text-ink-800">
-                  <span aria-hidden="true" className="mr-1 text-moss-700">
+                  <span aria-hidden="true" className="mr-1 text-moss-600">
                     ⬡
                   </span>
                   {t.immune(members[i].name[lang], typeName(imm.attack))}
@@ -305,7 +396,7 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
             )}
             {summary.teamResists.map((r) => (
               <li key={`tr-${r}`} className="text-ink-800">
-                <span aria-hidden="true" className="mr-1 text-moss-700">
+                <span aria-hidden="true" className="mr-1 text-moss-600">
                   ▐
                 </span>
                 {t.resists(typeName(r))}

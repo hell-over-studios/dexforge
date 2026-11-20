@@ -145,7 +145,7 @@ export default function MovePicker({ mon, gameId, moveDex, colors, typeNames, in
                 >
                   <span
                     aria-hidden="true"
-                    className="font-display text-lg leading-none text-ember-600"
+                    className="font-display text-lg leading-none text-magenta-500"
                   >
                     ＋
                   </span>
@@ -318,7 +318,7 @@ export default function MovePicker({ mon, gameId, moveDex, colors, typeNames, in
                       {selected ? (
                         <span
                           aria-hidden="true"
-                          className="shrink-0 font-display text-xs text-ember-700"
+                          className="shrink-0 font-display text-xs text-magenta-600"
                         >
                           ✓
                         </span>

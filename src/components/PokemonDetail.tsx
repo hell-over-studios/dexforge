@@ -4,7 +4,7 @@
  * info and height/weight. Visuals show ONLY the official artwork (owner
  * directive 2026-11-07: no game/shiny/animated/HOME sprites anywhere).
  * Mobile-first (verified at 360px). Charts land in v0.3 (ADR-005).
- * v2 «Pergamino»: the drawer is a paper sheet with an ember top rule.
+ * ADR-012 «Revista»: the drawer is a white sheet with a yellow top rule.
  * T4.4: abilities expand in place (description, hidden/not-in-game markers and
  * the team members that share them).
  */
@@ -105,18 +105,22 @@ export default function PokemonDetail({
   return (
     <section
       aria-label={mon.name[lang]}
-      className="animate-pop-in border-2 border-t-4 border-ink-950 border-t-ember-500 bg-paper-50 p-4 shadow-pixel"
+      className="animate-pop-in border-[3px] border-t-8 border-ink-950 border-t-ember-500 bg-paper-50 p-4 shadow-pixel-lg"
     >
       <div className="flex items-start gap-3">
         {/* official artwork ONLY (owner directive 2026-11-07) — smooth render */}
-        <div className="grid size-24 shrink-0 place-items-center border-2 border-ink-900/15 bg-paper-100">
+        <div
+          className="relative grid size-24 shrink-0 place-items-center overflow-hidden border-2 border-ink-950"
+          style={{ backgroundColor: colors[mon.types[0]] ?? 'var(--color-paper-200)' }}
+        >
+          <span aria-hidden="true" className="absolute inset-0 halftone" />
           {artwork ? (
             <img
               src={artwork}
               alt={ART_ALT[lang](mon.name[lang])}
               width={96}
               height={96}
-              className="size-20 [object-fit:contain]"
+              className="relative size-20 [object-fit:contain] cutout"
             />
           ) : (
             <span className="font-display text-xs text-ink-600" aria-hidden="true">
@@ -127,7 +131,9 @@ export default function PokemonDetail({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="min-w-0 truncate font-display text-xl text-ink-950">{mon.name[lang]}</h2>
+            <h2 className="min-w-0 truncate font-headline text-3xl leading-none text-ink-950 uppercase">
+              {mon.name[lang]}
+            </h2>
             <button
               type="button"
               onClick={onClose}

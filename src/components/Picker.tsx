@@ -5,12 +5,11 @@
  * (owner request 2026-11-08) instead of pinning to the top.
  * Data comes from the static /public/data/<game>.json via loadGame();
  * the deployed site never calls PokeAPI.
- * v2 «Pergamino»: parchment workbench — picker sheet on paper, team sheet on
- * the right (sticky on desktop), solid type chips.
+ * ADR-012 «Revista»: the index column of the workbench — it scrolls on its
+ * own on desktop; the team sheet is its own island above it.
  */
 import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import PokemonDetail from './PokemonDetail';
-import TeamSlots from './TeamSlots';
 import { loadGame, loadTypeMeta, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
 import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
@@ -158,30 +157,21 @@ export default function Picker({ gameId }: Props) {
   const activeId = visible[activeIdx] ? `picker-opt-${activeIdx}` : undefined;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
-      <div className="lg:sticky lg:top-20 lg:z-10 lg:col-start-2 lg:row-start-1">
-        <TeamSlots
-          gameId={gameId}
-          resolve={(id) => {
-            const p = game?.pokemon.find((x) => x.id === id);
-            return p ? { name: p.name[lang], spriteUrl: p.sprites.official } : undefined;
-          }}
-        />
-      </div>
-
-      <div className="paper-panel p-4 sm:p-5 lg:col-start-1 lg:row-start-1">
-        <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-ink-900/15 pb-3">
+    <div className="paper-panel flex flex-col lg:max-h-[calc(100dvh-7rem)]">
+      <div className="border-b-[3px] border-ink-950 p-4 sm:px-5">
+        <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h2 className="font-display text-2xl leading-none text-ink-950">
+            <p className="kicker text-xs text-magenta-600">{lang === 'en' ? 'Index' : 'Índice'}</p>
+            <h2 className="mt-0.5 font-headline text-3xl leading-none text-ink-950 uppercase">
               {lang === 'en' ? 'Search & add' : 'Busca y añade'}
             </h2>
           </div>
-          <p className="font-display text-xs tracking-wide text-ink-600">
+          <p className="kicker text-xs text-ink-600">
             {entries.length} {lang === 'en' ? 'species' : 'especies'}
           </p>
         </div>
 
-        <label htmlFor="picker-input" className="mt-4 block font-display text-sm text-ink-600">
+        <label htmlFor="picker-input" className="mt-4 block kicker text-xs text-ink-700">
           {lang === 'en' ? 'Search Pokémon' : 'Buscar Pokémon'}
         </label>
         <input
@@ -200,14 +190,17 @@ export default function Picker({ gameId }: Props) {
             setQuery(ev.currentTarget.value);
             resetWindow();
           }}
-          className="mt-2 block w-full border-2 border-ink-950 bg-paper-50 px-3 py-2 font-body text-ink-900 shadow-pixel-sm placeholder:text-ink-500"
+          className="mt-2 block w-full border-2 border-ink-950 bg-ember-300/50 px-3 py-2.5 font-body text-base font-semibold text-ink-950 shadow-pixel-sm placeholder:font-normal placeholder:text-ink-600 focus:bg-paper-50"
         />
         <p id="picker-help" className="mt-2 text-xs text-ink-600">
           {lang === 'en'
             ? 'Arrow keys to move, Enter to add, Escape to clear.'
             : 'Flechas para moverte, Enter para añadir, Escape para limpiar.'}
         </p>
+      </div>
 
+      {/* the index scrolls on its own on desktop so the team and analysis stay in view */}
+      <div className="max-h-[70vh] min-h-0 flex-1 overflow-y-auto p-4 sm:px-5 lg:max-h-none">
         {selected && game && selIdx === -1
           ? /* Detail drawer (T2.6) fallback — the selected row is not in the visible
                window, so the panel cosplays as a top banner until it reappears. */
@@ -249,7 +242,7 @@ export default function Picker({ gameId }: Props) {
                 className={
                   'flex cursor-pointer items-center gap-3 border-2 p-2 transition-colors ' +
                   (idx === activeIdx
-                    ? 'border-ember-600 bg-ember-300/40 shadow-pixel-sm'
+                    ? 'border-ink-950 bg-ember-400/70 shadow-pixel-sm'
                     : 'border-ink-900/20 bg-paper-50 hover:border-ink-700 hover:bg-paper-100')
                 }
               >

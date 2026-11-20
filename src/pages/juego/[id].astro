@@ -1,6 +1,14 @@
 ---
+/**
+ * Game workbench (ADR-012 «Revista»): an edition opener, then "Tu sexteto"
+ * (team sheet) across the top and a two-column desk — the index (search,
+ * drawer) on the left, the analysis in tabs on the right (sticky on desktop,
+ * each column scrolls on its own). Every island reads the static
+ * /data/<game>.json; the deployed site never calls PokeAPI.
+ */
 import Base from '../../layouts/Base.astro';
 import Picker from '../../components/Picker';
+import TeamSlots from '../../components/TeamSlots';
 import DefenseCharts from '../../components/DefenseCharts';
 import OffensiveCoverage from '../../components/OffensiveCoverage';
 import TeamProfile from '../../components/TeamProfile';
@@ -8,7 +16,7 @@ import fs from 'node:fs';
 import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
 import { withBase } from '../../lib/paths';
 
-/* Build-time static pages, one per game in the registry (no client JS). */
+/* Build-time static pages, one per game in the registry. */
 export function getStaticPaths() {
   const registry = JSON.parse(
     fs.readFileSync(new URL('../../../public/data/games.json', import.meta.url), 'utf-8'),
@@ -25,78 +33,182 @@ const title = `Dexforge — ${game.label.es}`;
 const description =
   'Team builder de Pokémon por juego: estadísticas, tabla de tipos exacta por generación, cobertura, localizaciones de captura y enfrentamientos contra líderes de gimnasio. Proyecto de fans, de código abierto.';
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/* same version colors as the edition cards on the home page */
+const COVER: Record<string, string> = {
+  'red-blue': 'linear-gradient(120deg, #e3262b 0 52%, #2f6bd8 52% 100%)',
+  'gold-silver': 'linear-gradient(120deg, #d9a520 0 52%, #aab4bf 52% 100%)',
+  emerald: 'linear-gradient(120deg, #17a35e 0 100%)',
+};
+const typesInChart = game.generation === 1 ? 15 : 17;
+
+const tabs = [
+  { id: 'defensa', key: 'tabs.defense', es: 'Defensa' },
+  { id: 'cobertura', key: 'tabs.coverage', es: 'Cobertura' },
+  { id: 'perfil', key: 'tabs.profile', es: 'Perfil' },
+] as const;
 ---
 
 <Base title={title} description={description}>
-  <div class="mx-auto max-w-6xl px-5 pt-8 pb-20 sm:px-8">
-    <a
-      href={withBase('')}
-      class="inline-flex items-center gap-2 font-display text-sm text-paper-300 underline-offset-4 transition-colors hover:text-ember-300 hover:underline"
-    >
-      <span aria-hidden="true">←</span>
-      <span data-i18n="game.back">Volver al inicio</span>
-    </a>
+  <!-- EDITION OPENER -->
+  <section class="border-b-[3px] border-ink-950 bg-paper-100">
+    <div class="mx-auto max-w-7xl px-5 pt-6 pb-7 sm:px-8">
+      <a
+        href={withBase('')}
+        class="inline-flex items-center gap-2 kicker text-xs text-ink-700 decoration-magenta-500 decoration-2 underline-offset-4 hover:text-ink-950 hover:underline"
+      >
+        <span aria-hidden="true">←</span>
+        <span data-i18n="game.back">Volver al inicio</span>
+      </a>
 
-    <header class="paper-panel relative mt-6 overflow-hidden p-5 sm:p-7">
-      <span aria-hidden="true" class="absolute top-0 right-0 left-0 h-1.5 bg-ember-500"></span>
-      <div class="flex flex-wrap items-center justify-between gap-6">
+      <div class="mt-4 flex flex-wrap items-end justify-between gap-5">
         <div>
+          <p class="kicker text-xs text-magenta-600">
+            <span data-i18n="game.kicker">Edición</span> · Gen {game.generation} ·
+            {capitalize(game.region)}
+          </p>
           <h1
-            class="font-display text-4xl leading-none text-ink-950 sm:text-5xl"
+            class="mt-1 text-[clamp(3.2rem,9vw,6.5rem)] leading-[0.88] text-ink-950 uppercase"
             data-i18n-pair={JSON.stringify(game.label)}
           >
             {game.label.es}
           </h1>
-          <p class="mt-3 text-sm text-ink-600">
-            Gen {game.generation} ·{' '}
-            <span class="font-display text-base text-ink-900">{game.pokemonCount}</span> Pokémon ·{
-              ' '
-            }
-            {capitalize(game.region)}
-          </p>
         </div>
 
-        <div class="hidden rotate-2 items-center gap-3 text-ink-700 sm:flex" aria-hidden="true">
-          <svg viewBox="0 0 8 8" class="size-9" shape-rendering="crispEdges">
-            <rect width="8" height="8" fill="#241c12"></rect>
-            <rect x="2" y="1" width="4" height="1" fill="#f7931e"></rect>
-            <rect x="1" y="2" width="6" height="1" fill="#f7931e"></rect>
-            <rect x="1" y="3" width="6" height="2" fill="#fbf5e6"></rect>
-            <rect x="3" y="3" width="2" height="2" fill="#241c12"></rect>
-            <rect x="1" y="5" width="6" height="1" fill="#c3a473"></rect>
-            <rect x="2" y="6" width="4" height="1" fill="#c3a473"></rect>
-          </svg>
-          <span
-            class="font-display text-[11px] leading-tight tracking-[0.18em] text-ink-900 uppercase"
-            data-i18n="game.dexStamp">Pokédex regional</span
-          >
-        </div>
+        <dl class="flex flex-wrap gap-3">
+          <div class="border-2 border-ink-950 bg-paper-50 px-3 py-2 shadow-pixel-sm">
+            <dt class="kicker text-[10px] text-ink-600">Pokémon</dt>
+            <dd class="font-headline text-3xl leading-none text-ink-950">{game.pokemonCount}</dd>
+          </div>
+          <div class="border-2 border-ink-950 bg-paper-50 px-3 py-2 shadow-pixel-sm">
+            <dt class="kicker text-[10px] text-ink-600" data-i18n="game.types">
+              tipos en la tabla
+            </dt>
+            <dd class="font-headline text-3xl leading-none text-ink-950">{typesInChart}</dd>
+          </div>
+          <div class="border-2 border-ink-950 bg-paper-50 px-3 py-2 shadow-pixel-sm">
+            <dt class="kicker text-[10px] text-ink-600" data-i18n="game.dexStamp">
+              Pokédex regional
+            </dt>
+            <dd class="font-headline text-3xl leading-none text-ink-950">
+              {capitalize(game.region)}
+            </dd>
+          </div>
+        </dl>
       </div>
-    </header>
+    </div>
+    <div
+      class="h-3 border-t-[3px] border-ink-950"
+      style={`background:${COVER[game.id] ?? '#0e0e0e'}`}
+      aria-hidden="true"
+    >
+    </div>
+  </section>
 
-    <!-- Pokémon picker island (T2.5) — data is the static /data/<game>.json -->
-    <section aria-label="Seleccionar Pokémon" class="mt-6">
+  <div class="mx-auto max-w-7xl px-5 pt-8 pb-20 sm:px-8">
+    <!-- TEAM SHEET (T2.8) — its own island, seeded from ?t= links -->
+    <section aria-label="Tu equipo">
       <noscript>
         <p class="paper-panel-soft p-4 text-sm text-ink-600">
           El creador de equipos necesita JavaScript para buscar Pokémon.
         </p>
       </noscript>
-      <Picker client:visible gameId={game.id} />
+      <TeamSlots client:load gameId={game.id} />
     </section>
 
-    <!-- Defensive analysis island (T3.2) — reads the same static /data JSON -->
-    <section aria-label="Análisis defensivo del equipo" class="mt-6">
-      <DefenseCharts client:visible gameId={game.id} />
-    </section>
+    <!-- DESK: index on the left, analysis tabs on the right -->
+    <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start">
+      <section aria-label="Seleccionar Pokémon" class="lg:sticky lg:top-20">
+        <Picker client:load gameId={game.id} />
+      </section>
 
-    <!-- Offensive coverage island (T4.3) — picked moves vs the per-game chart -->
-    <section aria-label="Cobertura ofensiva del equipo" class="mt-6">
-      <OffensiveCoverage client:visible gameId={game.id} />
-    </section>
+      <div
+        class="lg:sticky lg:top-20 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:pr-2 lg:pb-2"
+      >
+        <div
+          role="tablist"
+          aria-label="Análisis del equipo"
+          data-i18n-aria="tabs.label"
+          class="flex flex-wrap gap-2 border-b-[3px] border-ink-950 pb-3"
+          data-tabs
+        >
+          {
+            tabs.map((tab, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${tab.id}`}
+                aria-controls={`panel-${tab.id}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                class="cursor-pointer border-2 border-ink-950 bg-paper-50 px-4 py-2 kicker text-sm text-ink-950 shadow-pixel-sm transition-colors hover:bg-ember-300 aria-selected:bg-ink-950 aria-selected:text-ember-500"
+              >
+                <span data-i18n={tab.key}>{tab.es}</span>
+              </button>
+            ))
+          }
+        </div>
 
-    <!-- Team profile island (T3.3) — averages + roles, same static JSON -->
-    <section aria-label="Perfil del equipo" class="mt-6">
-      <TeamProfile client:visible gameId={game.id} />
-    </section>
+        <div id="panel-defensa" role="tabpanel" aria-labelledby="tab-defensa" class="mt-5">
+          <section aria-label="Análisis defensivo del equipo">
+            <DefenseCharts client:visible gameId={game.id} />
+          </section>
+        </div>
+        <div
+          id="panel-cobertura"
+          role="tabpanel"
+          aria-labelledby="tab-cobertura"
+          class="mt-5"
+          hidden
+        >
+          <section aria-label="Cobertura ofensiva del equipo">
+            <OffensiveCoverage client:visible gameId={game.id} />
+          </section>
+        </div>
+        <div id="panel-perfil" role="tabpanel" aria-labelledby="tab-perfil" class="mt-5" hidden>
+          <section aria-label="Perfil del equipo">
+            <TeamProfile client:visible gameId={game.id} />
+          </section>
+        </div>
+      </div>
+    </div>
   </div>
 </Base>
+
+<script>
+  /* Analysis tabs (WAI-ARIA tabs pattern): click or ←/→/Home/End to switch.
+     Hidden panels keep their islands unhydrated until first shown. */
+  for (const list of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
+    const tabs = [...list.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const select = (next: HTMLButtonElement, focus: boolean) => {
+      for (const tab of tabs) {
+        const on = tab === next;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(tab.getAttribute('aria-controls') ?? '');
+        if (panel) panel.hidden = !on;
+      }
+      if (focus) next.focus();
+    };
+    for (const tab of tabs) {
+      tab.addEventListener('click', () => select(tab, false));
+      tab.addEventListener('keydown', (ev) => {
+        const i = tabs.indexOf(tab);
+        const to =
+          ev.key === 'ArrowRight'
+            ? tabs[(i + 1) % tabs.length]
+            : ev.key === 'ArrowLeft'
+              ? tabs[(i - 1 + tabs.length) % tabs.length]
+              : ev.key === 'Home'
+                ? tabs[0]
+                : ev.key === 'End'
+                  ? tabs[tabs.length - 1]
+                  : null;
+        if (to) {
+          ev.preventDefault();
+          select(to, true);
+        }
+      });
+    }
+  }
+</script>

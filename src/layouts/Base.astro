@@ -33,6 +33,10 @@ const script = `
       const v = dict[el.getAttribute('data-i18n')]?.[lang];
       if (v) el.textContent = v;
     }
+    for (const el of document.querySelectorAll('[data-i18n-aria]')) {
+      const v = dict[el.getAttribute('data-i18n-aria')]?.[lang];
+      if (v) el.setAttribute('aria-label', v);
+    }
     /* game labels come from generated data (games.json), carried inline as JSON pairs */
     for (const el of document.querySelectorAll('[data-i18n-pair]')) {
       try {
@@ -69,21 +73,21 @@ const script = `
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#08130d" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#0e0e0e" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <!-- ADR-008 fonts: Pixelify Sans (display, Latin-Extended) + Nunito (body) -->
+    <!-- ADR-012 fonts: Anton (headlines) + Archivo with its width axis (labels + body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..900&display=swap"
     />
   </head>
-  <body class="min-h-dvh bg-forest-950 text-paper-100 antialiased">
+  <body class="min-h-dvh bg-paper-200 text-ink-950 antialiased">
     <a
       href="#main"
-      class="sr-only border-2 border-ink-950 bg-ember-500 px-3 py-2 font-display text-sm text-ink-950 shadow-pixel-sm focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
+      class="sr-only border-2 border-ink-950 bg-ember-500 px-3 py-2 kicker text-sm text-ink-950 shadow-pixel-sm focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
       ><span data-i18n="a11y.skip">Saltar al contenido</span></a
     >
     <SiteHeader />

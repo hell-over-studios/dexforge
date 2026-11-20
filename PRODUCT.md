@@ -60,11 +60,12 @@ per-game chart, the version-group roster or the availability constraints.
 
 - Name: **Dexforge**. Fan-made, not affiliated with Nintendo, Game Freak or The Pokémon
   Company; Pokémon names and images belong to their owners.
-- Visual identity: **pixel art + cozy** (owner directive 2026-11-06, ADR-008).
-- Owner-approved revision 2026-11-16, "Pixel-cozy v2 — Pergamino": parchment panels over
-  a deep forest ground, larger pixel display type, solid legible type chips, official
-  artwork staged as a field-journal diorama. This supersedes the warm-bark/dark-panel
-  rendition without changing the pixel-cozy mandate.
+- Visual identity: **«Revista»**, a strategy-guide magazine (design team decision
+  2026-11-19, ADR-012): newsprint ground, black press ink, process yellow for actions,
+  cyan for "good", magenta for "it hurts", Anton headlines with condensed Archivo labels,
+  halftone and hard black shadows, official artwork as cut-outs. It supersedes the
+  pixel-cozy «Pergamino» identity (ADR-008).
+- Logo: the Pokédex forged into an anvil (`src/components/LogoMark.astro`).
 - Spanish is the default voice; English is not an afterthought.
 
 ## Evidence on Hand

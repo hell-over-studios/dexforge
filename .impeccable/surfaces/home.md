@@ -1,5 +1,9 @@
 # Surface brief — Home (`/`)
 
+> **Superseded direction (2026-11-19):** the visual sections below describe the «Pergamino»
+> field-journal look. The live direction is ADR-012 «Revista» (magazine cover landing); see
+> `docs/DECISIONS.md`. Audience, job and proof rules still apply.
+
 **Scope:** the public landing page plus the shared site shell (header, footer, body
 ground) that every route inherits. **Mode:** Persuade.
 

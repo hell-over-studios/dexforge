@@ -19,6 +19,8 @@ test('coverage: gaps, answers and damage-only filtering', async ({ page }, testI
   const input = await openEmerald(page);
 
   // 1. Empty team state
+  // the analysis lives in tabs on the workbench (ADR-012): open Cobertura first
+  await page.getByRole('tab', { name: 'Cobertura' }).click();
   const section = page.getByRole('region', { name: 'Cobertura ofensiva del equipo' });
   await section.scrollIntoViewIfNeeded();
   await expect(section.getByRole('heading', { name: 'Cobertura ofensiva' })).toBeVisible();

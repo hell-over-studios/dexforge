@@ -79,8 +79,8 @@ export const dict = {
   },
   'f.offense.title': { es: 'Cobertura ofensiva', en: 'Offensive coverage' },
   'f.offense': {
-    es: 'Cobertura ofensiva por movimientos, en camino para la v0.4.',
-    en: 'Offensive coverage by moves, on the way in v0.4.',
+    es: 'Elige hasta cuatro movimientos por miembro y mira qué tipos no puedes golpear súper eficaz.',
+    en: 'Pick up to four moves per member and see which types you cannot hit super effectively.',
   },
 
   'cta.heading': {
@@ -101,6 +101,38 @@ export const dict = {
   'footer.art': { es: 'Ilustraciones: PokeAPI', en: 'Artwork: PokeAPI' },
 
   'game.back': { es: 'Volver al inicio', en: 'Back to home' },
+  /* ADR-012 «Revista»: masthead, cover lines, game spread and analysis tabs */
+  'mast.tagline': { es: 'Guía de equipos por juego', en: 'Team guide by game' },
+  'strip.charts': {
+    es: 'Tablas de tipos exactas por generación',
+    en: 'Exact type charts per generation',
+  },
+  'strip.local': {
+    es: 'Sin cuentas: se guarda en tu navegador',
+    en: 'No accounts: saved in your browser',
+  },
+  'strip.fans': { es: 'Hecho por fans, código abierto', en: 'Fan-made, open source' },
+  'cover.kicker': { es: 'Especial · Tu sexteto, analizado', en: 'Special · Your six, analyzed' },
+  'cover.lineA': { es: 'Pokémon en 3 ediciones', en: 'Pokémon across 3 editions' },
+  'cover.lineB': {
+    es: 'Qué le duele a tu equipo, de un vistazo',
+    en: 'What hurts your team, at a glance',
+  },
+  'cover.lineC': {
+    es: 'Seis miembros, cuatro movimientos cada uno',
+    en: 'Six members, four moves each',
+  },
+  'cover.sticker': { es: '¡Tablas exactas!', en: 'Exact charts!' },
+  'selector.kicker': { es: 'Ediciones disponibles', en: 'Available editions' },
+  'how.kicker': { es: 'Cómo se usa', en: 'How to use it' },
+  'features.kicker': { es: 'En este número', en: 'In this issue' },
+  'footer.colophon': { es: 'Colofón', en: 'Colophon' },
+  'game.kicker': { es: 'Edición', en: 'Edition' },
+  'game.types': { es: 'tipos en la tabla', en: 'types in the chart' },
+  'tabs.label': { es: 'Análisis del equipo', en: 'Team analysis' },
+  'tabs.defense': { es: 'Defensa', en: 'Defense' },
+  'tabs.coverage': { es: 'Cobertura', en: 'Coverage' },
+  'tabs.profile': { es: 'Perfil', en: 'Profile' },
   'game.dexStamp': { es: 'Pokédex regional', en: 'Regional Pokédex' },
   'lang.toggle': { es: 'English', en: 'Español' },
 } as const;

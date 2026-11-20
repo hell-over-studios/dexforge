@@ -1,67 +1,81 @@
 @import 'tailwindcss';
 
 /*
- * Dexforge design tokens — ADR-008 "pixel art + cozy", owner-approved
- * "Pixel-cozy v2 — Pergamino" revision (2026-11-16):
- * parchment panels over a deep forest ground, ink text on paper, ember
- * primary actions, solid canonical type chips. Chunky 2px borders, hard
- * offset pixel shadows, subtle paper grain. No glow, no glass.
+ * Dexforge design tokens — ADR-012 «Revista» (team decision 2026-11-19).
+ * Supersedes the ADR-008 «Pergamino» look but keeps its token names so every
+ * island keeps working:
+ *   paper   = newsprint (page ground, panels, cards)
+ *   ink     = black press ink (text, rules, hard shadows)
+ *   ember   = process yellow (primary actions, highlights)
+ *   moss    = process cyan ("good": resists, immunities, coverage)
+ *   magenta = process magenta ("it hurts": weaknesses, alerts, emphasis)
+ *   forest  = black bands (masthead, footer, dark spreads)
+ * Type: Anton headlines, condensed Archivo labels, Archivo body.
+ * Hard offset shadows, 2–3px black rules, halftone dots. No glow, no glass.
  */
 @theme {
-  /* Deep forest ground (page background, dark panels) */
-  --color-forest-950: #08130d;
-  --color-forest-900: #0d1f15;
-  --color-forest-800: #143021;
-  --color-forest-700: #1d4430;
-  --color-forest-600: #2a5c3e;
-  --color-forest-500: #397a51;
+  /* Black bands (masthead, footer, dark spreads) */
+  --color-forest-950: #0e0e0e;
+  --color-forest-900: #181818;
+  --color-forest-800: #262626;
+  --color-forest-700: #363636;
+  --color-forest-600: #4a4a4a;
+  --color-forest-500: #5e5e5e;
 
-  /* Parchment panels (paper surfaces, light text on forest) */
-  --color-paper-50: #fbf5e6;
-  --color-paper-100: #f4e8cf;
-  --color-paper-200: #ead8b4;
-  --color-paper-300: #dcc49a;
-  --color-paper-400: #c3a473;
-  --color-paper-500: #a7855a;
+  /* Newsprint (ground, panels, cards) */
+  --color-paper-50: #ffffff;
+  --color-paper-100: #fffcf2;
+  --color-paper-200: #f6f0de;
+  --color-paper-300: #e6dcc2;
+  --color-paper-400: #c9bb95;
+  --color-paper-500: #9d8f6b;
 
-  /* Ink ramp (text and borders on paper) */
-  --color-ink-950: #1a140d;
-  --color-ink-900: #241c12;
-  --color-ink-800: #33281a;
-  --color-ink-700: #463722;
-  --color-ink-600: #5f4b30;
-  --color-ink-500: #7c6442;
-  --color-ink-400: #9a805a;
+  /* Press ink (text, rules) */
+  --color-ink-950: #0e0e0e;
+  --color-ink-900: #1a1a1a;
+  --color-ink-800: #2b2b2b;
+  --color-ink-700: #3d3d3d;
+  --color-ink-600: #565656;
+  --color-ink-500: #6e6e6e;
+  --color-ink-400: #959595;
 
-  /* Ember accent ramp (primary interactive color) */
-  --color-ember-300: #ffd08a;
-  --color-ember-400: #ffb454;
-  --color-ember-500: #f7931e;
-  --color-ember-600: #d97706;
-  --color-ember-700: #a85408;
+  /* Process yellow (primary actions) — 700 stays readable as text on paper */
+  --color-ember-300: #fff3a6;
+  --color-ember-400: #ffe45c;
+  --color-ember-500: #ffd400;
+  --color-ember-600: #e0a800;
+  --color-ember-700: #7a5900;
 
-  /* Cozy moss green (secondary accent, "good" states) */
-  --color-moss-300: #b7d99a;
-  --color-moss-400: #8ec977;
-  --color-moss-500: #62a85a;
-  --color-moss-600: #4a8747;
-  --color-moss-700: #356637;
+  /* Process cyan ("good": resists, immunities, coverage) */
+  --color-moss-300: #b9e8fb;
+  --color-moss-400: #5fcaf3;
+  --color-moss-500: #00a0e9;
+  --color-moss-600: #0080bd;
+  --color-moss-700: #005a86;
 
-  /* Typography — Latin-Extended pixel display + rounded warm body */
-  --font-display: 'Pixelify Sans', 'Nunito', system-ui, sans-serif;
-  --font-body: 'Nunito', system-ui, sans-serif;
+  /* Process magenta ("it hurts": weaknesses, alerts, emphasis) */
+  --color-magenta-300: #ffc2de;
+  --color-magenta-400: #ff5aa8;
+  --color-magenta-500: #e6007e;
+  --color-magenta-600: #c0006a;
+  --color-magenta-700: #8f004e;
 
-  /* Hard offset "pixel" shadows (light source: top-left) */
+  /* Typography */
+  --font-headline: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  --font-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+
+  /* Hard offset shadows (light source: top-left) */
   --shadow-pixel-sm: 2px 2px 0 0 var(--color-ink-950);
   --shadow-pixel: 4px 4px 0 0 var(--color-ink-950);
   --shadow-pixel-lg: 6px 6px 0 0 var(--color-ink-950);
-  --shadow-pixel-ember: 4px 4px 0 0 var(--color-ember-700);
-  --shadow-pixel-forest: 4px 4px 0 0 var(--color-forest-950);
+  --shadow-pixel-ember: 4px 4px 0 0 var(--color-magenta-500);
+  --shadow-pixel-forest: 4px 4px 0 0 var(--color-ink-950);
 
   /* Focus ring (a11y: visible on every interactive element) */
-  --color-ring: var(--color-ember-400);
+  --color-ring: var(--color-magenta-500);
 
-  /* Motion: snappy, step-y, reduced-motion aware */
+  /* Motion: snappy, reduced-motion aware */
   --animate-pop-in: pop-in 0.3s steps(3) both;
   --animate-fade-rise: fade-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.3s ease-out both;
@@ -125,33 +139,53 @@
   }
 }
 
-/* Sprite util: keep low-res game sprites pixel-crisp at integer scales (ADR-008) */
+/* Sprite util: keep low-res game sprites crisp at integer scales */
 @utility pixelated {
   image-rendering: pixelated;
 }
 
-/* Subtle paper checker — very low alpha, for the inside of parchment panels */
+/* Newsprint dot screen — very low alpha, for panels */
 @utility paper-grain {
-  background-image: repeating-conic-gradient(
-    color-mix(in oklab, var(--color-ink-900) 5%, transparent) 0% 25%,
-    transparent 0% 50%
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-ink-900) 7%, transparent) 0.7px,
+    transparent 0.9px
   );
-  background-size: 4px 4px;
+  background-size: 5px 5px;
 }
 
-/* Forest grain for dark bands */
+/* Dot screen for black bands */
 @utility forest-grain {
-  background-image: repeating-conic-gradient(
-    color-mix(in oklab, var(--color-paper-100) 3%, transparent) 0% 25%,
-    transparent 0% 50%
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-paper-50) 7%, transparent) 0.8px,
+    transparent 1px
   );
-  background-size: 4px 4px;
+  background-size: 5px 5px;
+}
+
+/* Printed halftone over a solid color block */
+@utility halftone {
+  background-image: radial-gradient(rgb(0 0 0 / 0.16) 1.2px, transparent 1.4px);
+  background-size: 7px 7px;
+}
+
+/* Magazine cut-out: a hard black shadow that follows the artwork's outline */
+@utility cutout {
+  filter: drop-shadow(3px 3px 0 var(--color-ink-950));
+}
+
+/* Condensed uppercase kicker / label */
+@utility kicker {
+  font-family: var(--font-display);
+  font-stretch: 75%;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 @layer components {
   .paper-panel {
     border: 2px solid var(--color-ink-950);
-    background-color: var(--color-paper-100);
+    background-color: var(--color-paper-50);
     color: var(--color-ink-900);
     box-shadow: var(--shadow-pixel-lg);
   }
@@ -169,17 +203,20 @@
     justify-content: center;
     gap: 0.5rem;
     border: 2px solid var(--color-ink-950);
-    padding: 0.7rem 1.1rem;
+    padding: 0.75rem 1.15rem;
     font-family: var(--font-display);
-    font-size: 0.95rem;
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: 1rem;
     line-height: 1;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     box-shadow: var(--shadow-pixel);
     transition:
       transform 120ms steps(2, end),
       box-shadow 120ms steps(2, end),
-      background-color 120ms ease-out;
+      background-color 120ms ease-out,
+      color 120ms ease-out;
   }
 
   .pixel-btn:hover {
@@ -202,29 +239,22 @@
   }
 
   .pixel-btn-paper {
-    background-color: var(--color-paper-100);
+    background-color: var(--color-paper-50);
     color: var(--color-ink-900);
   }
 
   .pixel-btn-paper:hover {
-    background-color: var(--color-paper-50);
+    background-color: var(--color-ember-300);
   }
 
   .pixel-btn-quiet {
-    border-color: var(--color-paper-300);
-    background-color: transparent;
-    color: var(--color-paper-100);
-    box-shadow: var(--shadow-pixel-forest);
+    background-color: var(--color-paper-50);
+    color: var(--color-ink-950);
   }
 
   .pixel-btn-quiet:hover {
-    border-color: var(--color-paper-100);
-    background-color: var(--color-forest-900);
-    box-shadow: 5px 5px 0 0 var(--color-forest-950);
-  }
-
-  .pixel-btn-quiet:active {
-    box-shadow: 2px 2px 0 0 var(--color-forest-950);
+    background-color: var(--color-magenta-500);
+    color: var(--color-paper-50);
   }
 
   .type-chip {
@@ -232,12 +262,35 @@
     align-items: center;
     gap: 0.25rem;
     border: 2px solid var(--color-ink-950);
-    padding: 0.12rem 0.4rem;
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
     font-family: var(--font-display);
-    font-size: 0.7rem;
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: 0.72rem;
     line-height: 1.25;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
+  }
+}
+
+@layer base {
+  /* Anton ships a single weight: headings never get a faked bold. Kept in the
+     base layer so utilities (kicker, font-display…) can still restyle a heading. */
+  h1,
+  h2,
+  h3,
+  .font-headline {
+    font-family: var(--font-headline);
+    font-weight: 400;
+    font-synthesis: none;
+    letter-spacing: 0.005em;
+  }
+
+  /* condensed heavy labels wherever the display face is used */
+  .font-display {
+    font-stretch: 75%;
+    font-weight: 700;
   }
 }
 
@@ -256,29 +309,16 @@
 }
 
 html {
-  color-scheme: dark;
-  scrollbar-color: var(--color-forest-600) var(--color-forest-950);
+  color-scheme: light;
+  scrollbar-color: var(--color-ink-700) var(--color-paper-200);
 }
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-forest-950);
-  color: var(--color-paper-100);
-  background-image: radial-gradient(
-    900px 520px at 50% -12%,
-    rgba(57, 122, 81, 0.35),
-    transparent 70%
-  );
+  background-color: var(--color-paper-200);
+  color: var(--color-ink-950);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-}
-
-h1,
-h2,
-h3,
-.font-display {
-  font-family: var(--font-display);
-  letter-spacing: 0.01em;
 }
 
 ::selection {
@@ -286,7 +326,7 @@ h3,
   color: var(--color-ink-950);
 }
 
-/* Keyboard focus: chunky pixel ring everywhere */
+/* Keyboard focus: chunky magenta ring everywhere */
 :focus-visible {
   outline: 3px solid var(--color-ring);
   outline-offset: 2px;

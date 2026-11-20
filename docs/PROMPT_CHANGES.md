@@ -58,3 +58,16 @@ Recorded by the lead engineer agent; no other clauses of `docs/PROMPT.md` are af
 - Rollout is sliced per ADR-009: landing + shared shell, then the game-page picker/team/detail, then the analysis panels.
 
 Recorded by the lead engineer agent; no other clauses of `docs/PROMPT.md` are affected.
+
+## 2026-11-19 — Visual direction «Revista» and anvil-Pokédex logo — Design team decision
+
+**Source:** the project's design lead, relaying the team's decision in session chat.
+
+### Change 5 — Site personality (replaces ADR-008 / «Pergamino»; §2 unchanged)
+
+- After reviewing five explored personalities, the team chose the **strategy magazine** («Revista») and asked for it to be implemented with care, together with the already-approved usability changes.
+- Logo: the **anvil-Pokédex fusion** (option 2 of the logo sheet).
+- §2 functional requirements are unchanged: game-scoped data, official artwork only, mobile-first, keyboard + contrast, `prefers-reduced-motion`, no runtime PokeAPI.
+- Recorded as ADR-012 in `docs/DECISIONS.md`.
+
+Recorded by the lead engineer agent; no other clauses of `docs/PROMPT.md` are affected.
