@@ -76,10 +76,16 @@ Rules baked into `scripts/lib/games.ts`:
 - Move names come from `move/{slug}.names` through the same `es` → `es-419` → `en` chain;
   all 346 fetched moves resolve a real Spanish name. Curated overrides live under the
   `moves` key of `/data/curated/i18n-fixes.json` (keyed by move slug).
-- Location-area names are the weak spot: PokeAPI ships no Spanish for most of them, so the
-  pipeline falls back to the English name. Obvious/wrong translations are corrected in
-  `/data/curated/i18n-fixes.json` (keyed by location-area slug) and applied at build time.
-  Further translations are welcome via PRs editing that file.
+- Location-area names are the weak spot: PokeAPI ships no Spanish for most of them. The
+  pipeline localizes the English name in `scripts/lib/place-names.ts`: `Road N` becomes
+  `Ruta N`, floor codes (`1F`, `B1F`) stay, qualifier words (`north`, `back`, `small room`…)
+  are translated, and base places go through the curated dictionary
+  `/data/curated/place-names.json` (`places`: English base name → official Spanish name).
+  A place missing from the dictionary keeps its English name rather than a guessed one. The
+  English side is also tidied: `Road N` → `Route N`, and `enFixes` repairs slug fallbacks
+  (`Shoal-cave-b2f`) and a German PokeAPI entry (`Wandert durch Johto`). Per-slug overrides
+  in `/data/curated/i18n-fixes.json` still win over both. New translations are welcome via
+  PRs adding entries to `place-names.json`.
 - Game-quirk differences (e.g. old-game wording) stay in the curated encounter locations,
   not in the global override file.
 

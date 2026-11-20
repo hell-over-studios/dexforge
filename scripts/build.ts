@@ -24,6 +24,7 @@ import type {
 } from '../src/lib/data-schema';
 import { fetchPokeApi, mapPolite } from './lib/http';
 import { GAMES, TYPE_COLORS } from './lib/games';
+import { normalizePlaceEn, translatePlaceEs, type PlaceDictionary } from './lib/place-names';
 import {
   buildAbilityInfo,
   buildMoveInfo,
@@ -237,6 +238,16 @@ async function main(): Promise<void> {
       if (args.verbose) console.warn(`  ⚠ location-area ${slug} missing`);
     }
   });
+
+  /* localize names PokeAPI leaves in English ("Road 102" → "Ruta 102") through the
+     curated place dictionary; per-slug overrides below still win */
+  const placeNames = loadPlaceNames();
+  for (const [slug, name] of locationNames) {
+    const en = normalizePlaceEn(name.en, placeNames.enFixes);
+    const untranslated = name.es === name.en;
+    const es = untranslated ? (translatePlaceEs(name.en, placeNames.places) ?? en) : name.es;
+    locationNames.set(slug, { en, es });
+  }
 
   /* apply curated i18n overrides (location names PokeAPI leaves untranslated/wrong) */
   const i18nFixes = loadI18nFixes();
@@ -527,6 +538,22 @@ interface I18nFixes {
   locations?: Record<string, { es?: string }>;
   /** English/European Spanish name overrides, keyed by PokeAPI move slug */
   moves?: Record<string, { en?: string; es?: string }>;
+}
+
+interface PlaceNamesFile {
+  places: PlaceDictionary;
+  enFixes: PlaceDictionary;
+}
+
+function loadPlaceNames(): PlaceNamesFile {
+  const file = path.join(CURATED_DIR, 'place-names.json');
+  if (!fs.existsSync(file)) return { places: {}, enFixes: {} };
+  try {
+    const raw = JSON.parse(fs.readFileSync(file, 'utf-8')) as Partial<PlaceNamesFile>;
+    return { places: raw.places ?? {}, enFixes: raw.enFixes ?? {} };
+  } catch (err) {
+    throw new Error(`Invalid place names JSON: ${String(err)}`);
+  }
 }
 
 function loadI18nFixes(): I18nFixes {
