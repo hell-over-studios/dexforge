@@ -4,13 +4,14 @@
  * chart libraries; static drawing, nothing animates) and a v1 heuristic role
  * per member from src/lib/roles.ts. Reads only the static per-game dataset;
  * silent fail if it won't load (cosmetic panel).
- * v2 «Pergamino»: a paper profile sheet — ink radar grid, ember polygon,
- * role chips in the same heatmap language as the defensive table.
+ * ADR-012 «Revista»: ink radar grid, magenta polygon, role chips in the
+ * same press colors as the defensive table.
  */
 import { useEffect, useMemo, useState } from 'react';
 import {
   detectRole,
   RADAR_CAP,
+  ROLE_LABEL,
   radarPolygon,
   STAT_SHORT,
   teamAverageStats,
@@ -21,20 +22,13 @@ import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
 import type { GameData, GamePokemon, Stats } from '../lib/data-schema';
 
-const ROLE_LABEL: Record<Role, { es: string; en: string }> = {
-  sweeper: { es: 'Sweep físico', en: 'Physical sweeper' },
-  'special-sweeper': { es: 'Sweep especial', en: 'Special sweeper' },
-  wall: { es: 'Muro', en: 'Wall' },
-  tank: { es: 'Tanque', en: 'Tank' },
-  support: { es: 'Soporte', en: 'Support' },
-};
-
+/* «Revista»: attackers in magenta, walls in cyan, support on newsprint */
 const ROLE_CHIP: Record<Role, string> = {
-  sweeper: 'border-ink-950 bg-ember-500 text-ink-950',
-  'special-sweeper': 'border-ember-700 bg-ember-300/80 text-ink-900',
+  sweeper: 'border-ink-950 bg-magenta-500 text-paper-50',
+  'special-sweeper': 'border-ink-950 bg-magenta-300 text-ink-950',
   wall: 'border-ink-950 bg-moss-500 text-ink-950',
-  tank: 'border-moss-700 bg-moss-300/60 text-ink-900',
-  support: 'border-ink-900/25 bg-paper-200 text-ink-700',
+  tank: 'border-ink-950 bg-moss-300 text-ink-950',
+  support: 'border-ink-950 bg-ember-300 text-ink-950',
 };
 
 interface MemberRow {
@@ -129,13 +123,13 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
   return (
     <div className="paper-panel p-4 sm:p-5">
       <div className="border-b-2 border-ink-900/15 pb-3">
-        <h2 className="font-display text-2xl leading-none text-ink-950">{t.heading}</h2>
+        <h2 className="font-headline text-3xl leading-none text-ink-950 uppercase">{t.heading}</h2>
         <p className="mt-2 text-xs leading-relaxed text-ink-600">{t.hint}</p>
       </div>
 
       {!members.length ? (
         <div className="mt-4 border-2 border-dashed border-ink-900/30 bg-paper-50 p-6 text-center">
-          <span aria-hidden="true" className="text-2xl text-ember-600">
+          <span aria-hidden="true" className="text-2xl text-magenta-500">
             ⬡
           </span>
           <p className="mt-2 text-sm text-ink-600">{t.empty}</p>
@@ -171,9 +165,9 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
               {/* the team polygon */}
               <polygon
                 points={pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')}
-                fill="var(--color-ember-500)"
+                fill="var(--color-magenta-500)"
                 fillOpacity="0.22"
-                stroke="var(--color-ember-700)"
+                stroke="var(--color-magenta-600)"
                 strokeWidth="2"
               />
               {pts.map((p) => (
@@ -204,10 +198,8 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
 
           {/* roles per member */}
           <div>
-            <h3 className="font-display text-xs tracking-[0.14em] text-ink-600 uppercase">
-              {t.roleHeading}
-            </h3>
-            <ul className="mt-2 space-y-2 md:grid md:grid-cols-2 md:space-y-0 md:gap-x-6 md:gap-y-2">
+            <h3 className="kicker text-xs text-magenta-600">{t.roleHeading}</h3>
+            <ul className="mt-2 space-y-2">
               {members.map((m) => {
                 const role = detectRole(m.stats);
                 return (
@@ -229,8 +221,7 @@ export default function TeamProfile({ gameId }: { gameId: string }) {
                     </span>
                     <span
                       className={
-                        'border-2 px-1.5 py-0.5 font-display text-[11px] tracking-wide uppercase ' +
-                        ROLE_CHIP[role]
+                        'rounded-full border-2 px-2 py-0.5 kicker text-[11px] ' + ROLE_CHIP[role]
                       }
                       aria-label={`${m.name[lang]}: ${ROLE_LABEL[role][lang]}`}
                     >

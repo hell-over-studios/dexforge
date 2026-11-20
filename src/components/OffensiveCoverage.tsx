@@ -8,7 +8,7 @@
  * Mobile: one card per member listing the types it hits for 2× or more.
  * Above both: the milestone note — types no member can hit super effectively.
  * Only damaging moves with base power count (status/fixed damage are excluded).
- * v2 «Pergamino»: moss = answer, ember = walled, ink = immune; quiet ×1 cells.
+ * ADR-012 «Revista»: cyan = answer, magenta = walled, black = immune; quiet ×1 cells.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { analyzeCoverage, type CoverageMemberInput } from '../lib/coverage';
@@ -29,11 +29,11 @@ const MULT_LABEL: Record<string, string> = {
   '4': '×4',
 };
 
-/** offense heatmap: moss = super effective, ember = resisted, ink = immune */
+/** offense heatmap: cyan = super effective, magenta = resisted, black = immune */
 const chipClass = (m: number) => {
-  if (m >= 2) return 'border-moss-700 bg-moss-500 text-ink-950';
-  if (m === 0) return 'border-ink-950 bg-ink-900 text-paper-100';
-  if (m < 1) return 'border-ember-700 bg-ember-300/60 text-ink-900';
+  if (m >= 2) return 'border-ink-950 bg-moss-500 text-ink-950';
+  if (m === 0) return 'border-ink-950 bg-ink-950 text-paper-50';
+  if (m < 1) return 'border-ink-950 bg-magenta-300 text-ink-950';
   return 'border-ink-900/20 bg-paper-50 text-ink-500';
 };
 
@@ -150,13 +150,13 @@ export default function OffensiveCoverage({ gameId }: { gameId: string }) {
   return (
     <div className="paper-panel p-4 sm:p-5">
       <div className="border-b-2 border-ink-900/15 pb-3">
-        <h2 className="font-display text-2xl leading-none text-ink-950">{t.heading}</h2>
+        <h2 className="font-headline text-3xl leading-none text-ink-950 uppercase">{t.heading}</h2>
         <p className="mt-2 text-xs leading-relaxed text-ink-600">{t.hint}</p>
       </div>
 
       {noTeam || noMoves || !profile ? (
         <div className="mt-4 border-2 border-dashed border-ink-900/30 bg-paper-50 p-6 text-center">
-          <span aria-hidden="true" className="text-2xl text-ember-600">
+          <span aria-hidden="true" className="text-2xl text-magenta-500">
             ◈
           </span>
           <p className="mt-2 text-sm text-ink-600">{noTeam ? t.emptyTeam : t.emptyMoves}</p>
@@ -175,15 +175,13 @@ export default function OffensiveCoverage({ gameId }: { gameId: string }) {
             className={
               'mt-4 border-2 p-3 ' +
               (profile.gaps.length
-                ? 'border-ember-700 bg-ember-300/25'
-                : 'border-moss-700 bg-moss-300/25')
+                ? 'border-ink-950 bg-magenta-300/40'
+                : 'border-ink-950 bg-moss-300/50')
             }
           >
             {profile.gaps.length ? (
               <>
-                <p className="font-display text-xs tracking-[0.14em] text-ink-800 uppercase">
-                  {t.gapsTitle}
-                </p>
+                <p className="kicker text-xs text-ink-800">{t.gapsTitle}</p>
                 <p className="mt-1 text-xs text-ink-700">{t.gapsHint}</p>
                 <ul className="mt-2 flex flex-wrap gap-1">
                   {profile.gaps.map((slug) => (
@@ -197,7 +195,7 @@ export default function OffensiveCoverage({ gameId }: { gameId: string }) {
               </>
             ) : (
               <p className="flex items-center gap-2 text-sm text-ink-800">
-                <span aria-hidden="true" className="text-moss-700">
+                <span aria-hidden="true" className="text-moss-600">
                   ✓
                 </span>
                 {t.allCovered(profile.defenders.length)}
@@ -280,9 +278,7 @@ export default function OffensiveCoverage({ gameId }: { gameId: string }) {
 
           {/* mobile: one card per member with the types it answers */}
           <div className="mt-4 md:hidden">
-            <h3 className="font-display text-xs tracking-[0.14em] text-ink-600 uppercase">
-              {t.answers}
-            </h3>
+            <h3 className="kicker text-xs text-magenta-600">{t.answers}</h3>
             <ul className="mt-2 grid gap-3">
               {members.map((mem, mi) => {
                 const member = profile.members[mi];

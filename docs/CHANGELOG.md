@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Visual identity v3 «Revista» (ADR-012, design team decision): the site now reads as a strategy-guide magazine — newsprint ground, black masthead and footer, process yellow/cyan/magenta with fixed meanings (act / good / hurts), Anton headlines with condensed Archivo labels, halftone and hard black shadows, official artwork as cut-outs. New anvil-Pokédex logo (`LogoMark.astro`, favicon). The landing is a magazine cover and games are "editions"; the pixel diorama (`PixelScene`) is removed.
+- Game workbench: an edition opener, then **Tu sexteto** across the top (six cards with type-color halftone, slot number, artwork cut-out, chips, role and move pips; empty slots say what to do), and a two-column desk — the index (search + in-place drawer, its own scroll) and the analysis in **tabs** (Defensa / Cobertura / Perfil, keyboard-accessible, sticky on desktop). `TeamSlots` is now its own island; role labels moved to `src/lib/roles.ts`.
+- Defensive analysis opens with **"Lo que más duele"**: the three attacking types that hit the most members, each with the members it hurts; the heatmap uses magenta for weaknesses, cyan for resists and black for immunities.
+
 ### Fixed
 
 - Pokédex list type chips showed the raw slug (`WATER`, `GROUND`) instead of the localized type name; they now use `types.json` names like the drawer and analysis panels.

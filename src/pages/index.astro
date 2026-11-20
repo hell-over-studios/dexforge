@@ -1,7 +1,12 @@
 ---
+/**
+ * Landing (ADR-012 «Revista»): the home page is a magazine cover — Anton
+ * headline, cover lines, the Hoenn trio as cut-outs on a halftone block,
+ * then the editions (games), the how-to steps and "in this issue".
+ */
 import Base from '../layouts/Base.astro';
 import GameSelector from '../components/GameSelector.astro';
-import PixelScene from '../components/PixelScene.astro';
+import LogoMark from '../components/LogoMark.astro';
 import fs from 'node:fs';
 import type { GamesRegistry, TypeData } from '../lib/data-schema';
 import { typeChipStyle } from '../lib/contrast';
@@ -20,92 +25,58 @@ const typeLookup = Object.fromEntries(
   typeData.types.map((t) => [t.slug, { name: t.name, color: t.color }]),
 );
 
-const heroMons = [
-  {
-    artwork: HERO_TRIO[0].artwork,
-    name: HERO_TRIO[0].name.es,
-    left: '4%',
-    bottom: '9%',
-    width: '33%',
-    z: 4,
-    delay: '0s',
-  },
-  {
-    artwork: HERO_TRIO[1].artwork,
-    name: HERO_TRIO[1].name.es,
-    left: '38%',
-    bottom: '5%',
-    width: '26%',
-    z: 4,
-    delay: '0.7s',
-  },
-  {
-    artwork: HERO_TRIO[2].artwork,
-    name: HERO_TRIO[2].name.es,
-    left: '64%',
-    bottom: '8%',
-    width: '31%',
-    z: 4,
-    delay: '1.4s',
-  },
+const totalMons = registry.games.reduce((sum, g) => sum + g.pokemonCount, 0);
+
+/* cover cut-outs: position on the halftone block, back to front */
+const coverMons = [
+  { mon: HERO_TRIO[2], class: 'left-[40%] bottom-[14%] w-[64%] rotate-3', delay: '0.9s' },
+  { mon: HERO_TRIO[0], class: 'left-[-8%] bottom-[12%] w-[60%] -rotate-2', delay: '0s' },
+  { mon: HERO_TRIO[1], class: 'left-[22%] bottom-[1%] w-[52%]', delay: '0.45s' },
 ];
 
-const heroTypes = ['grass', 'fire', 'water'];
+const coverLines: { big: string; key: DictKey; color: string }[] = [
+  { big: String(totalMons), key: 'cover.lineA', color: 'text-magenta-500' },
+  { big: '×4', key: 'cover.lineB', color: 'text-moss-500' },
+  { big: '6×4', key: 'cover.lineC', color: 'text-ink-950' },
+];
 
 const steps: { n: string; titleKey: DictKey; textKey: DictKey }[] = [
-  { n: '01', titleKey: 'how.step1.title', textKey: 'how.step1.text' },
-  { n: '02', titleKey: 'how.step2.title', textKey: 'how.step2.text' },
-  { n: '03', titleKey: 'how.step3.title', textKey: 'how.step3.text' },
+  { n: '1', titleKey: 'how.step1.title', textKey: 'how.step1.text' },
+  { n: '2', titleKey: 'how.step2.title', textKey: 'how.step2.text' },
+  { n: '3', titleKey: 'how.step3.title', textKey: 'how.step3.text' },
 ];
 
-const features: {
-  glyph: string;
-  titleKey: DictKey;
-  textKey: DictKey;
-  accent: string;
-  badge?: string;
-}[] = [
-  { glyph: '▦', titleKey: 'f.defense.title', textKey: 'f.defense', accent: 'bg-ember-500' },
-  { glyph: '◍', titleKey: 'f.roles.title', textKey: 'f.roles', accent: 'bg-moss-500' },
-  { glyph: '↗', titleKey: 'f.share.title', textKey: 'f.share', accent: 'bg-forest-600' },
-  {
-    glyph: '⌁',
-    titleKey: 'f.offense.title',
-    textKey: 'f.offense',
-    accent: 'bg-paper-400',
-    badge: 'v0.4',
-  },
+const features: { titleKey: DictKey; textKey: DictKey; band: string; badge?: string }[] = [
+  { titleKey: 'f.defense.title', textKey: 'f.defense', band: 'bg-magenta-500' },
+  { titleKey: 'f.roles.title', textKey: 'f.roles', band: 'bg-moss-500' },
+  { titleKey: 'f.share.title', textKey: 'f.share', band: 'bg-ember-500' },
+  { titleKey: 'f.offense.title', textKey: 'f.offense', band: 'bg-ink-950' },
 ];
 ---
 
 <Base>
-  <!-- HERO -->
-  <section class="relative overflow-hidden">
-    <span
-      aria-hidden="true"
-      class="pointer-events-none absolute top-24 -left-8 size-24 rotate-12 bg-forest-800/40"></span>
-    <span
-      aria-hidden="true"
-      class="pointer-events-none absolute top-40 right-4 size-3 bg-ember-500/60"></span>
-
+  <!-- COVER -->
+  <section class="relative overflow-hidden border-b-[3px] border-ink-950 bg-paper-100">
     <div
-      class="mx-auto grid max-w-6xl gap-12 px-5 pt-12 pb-16 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:pt-20 lg:pb-24"
+      class="mx-auto grid max-w-6xl gap-10 px-5 pt-10 pb-14 sm:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pt-14 lg:pb-20"
     >
       <div class="relative z-10 animate-fade-rise">
-        <h1
-          class="font-display text-[clamp(2.9rem,6vw,4.6rem)] leading-[0.94] font-bold tracking-tight text-paper-50"
+        <p
+          class="inline-block -rotate-1 bg-magenta-500 px-2.5 py-1 kicker text-xs text-paper-50"
+          data-i18n="cover.kicker"
         >
+          Especial · Tu sexteto, analizado
+        </p>
+
+        <h1 class="mt-5 text-[clamp(3.2rem,7.6vw,5.6rem)] leading-[0.9] text-ink-950 uppercase">
           <span class="block" data-i18n="hero.title1">Tu equipo,</span>
-          <span data-i18n="hero.title2">forjado para</span>{' '}
-          <span class="relative inline-block">
-            <span
-              aria-hidden="true"
-              class="absolute right-0 bottom-1 left-0 h-[0.38em] -rotate-1 bg-ember-500/90"></span>
-            <span class="relative" data-i18n="hero.title3">tu juego.</span>
+          <span class="block" data-i18n="hero.title2">forjado para</span>
+          <span class="mt-1 inline-block -rotate-1 bg-ember-500 px-2 shadow-pixel-lg">
+            <span data-i18n="hero.title3">tu juego.</span>
           </span>
         </h1>
 
-        <p class="mt-6 max-w-xl text-base leading-relaxed text-paper-300 sm:text-lg">
+        <p class="mt-7 max-w-xl text-base leading-relaxed text-ink-700 sm:text-lg">
           <span data-i18n="hero.sub"
             >Elige uno de los juegos disponibles y arma tu equipo de seis con la tabla de tipos
             exacta de esa generación. Debilidades, roles y cobertura, sin hojas de cálculo.</span
@@ -123,119 +94,128 @@ const features: {
           </a>
         </div>
 
-        <ul
-          class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 font-display text-xs tracking-wide text-paper-300"
-        >
-          <li class="flex items-center gap-2">
-            <span aria-hidden="true" class="size-2 bg-moss-400"></span>
-            <span data-i18n="hero.proof.games">3 juegos</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <span aria-hidden="true" class="size-2 bg-ember-400"></span>
-            <span data-i18n="hero.proof.mons">604 Pokémon</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <span aria-hidden="true" class="size-2 bg-paper-300"></span>
-            <span data-i18n="hero.proof.charts">Tablas exactas</span>
-          </li>
+        <ul class="mt-10 grid gap-3 border-t-[3px] border-ink-950 pt-5 sm:grid-cols-3">
+          {
+            coverLines.map((line) => (
+              <li class="flex items-baseline gap-2 sm:block">
+                <span class={`block font-headline text-4xl leading-none ${line.color}`}>
+                  {line.big}
+                </span>
+                <span
+                  class="mt-1 block text-sm leading-snug font-semibold text-ink-800"
+                  data-i18n={line.key}
+                >
+                  {dict[line.key].es}
+                </span>
+              </li>
+            ))
+          }
         </ul>
       </div>
 
-      <div class="relative z-10 animate-fade-in">
+      <figure class="relative z-10 m-0 animate-fade-in">
         <div
-          class="relative mx-auto w-full max-w-[30rem] rotate-[1.25deg] border-[3px] border-ink-950 bg-paper-50 p-3 shadow-[8px_8px_0_0_var(--color-ink-950)] sm:p-4"
+          class="relative mx-auto aspect-[5/6] w-full max-w-[29rem] overflow-hidden border-[3px] border-ink-950 bg-moss-500 halftone shadow-[10px_10px_0_0_var(--color-ink-950)]"
         >
           <span
             aria-hidden="true"
-            class="absolute -top-3 left-10 z-20 h-6 w-20 -rotate-3 border border-ink-900/20 bg-paper-300/80"
-          ></span>
+            class="absolute -top-10 -right-16 size-64 rotate-12 bg-ember-500 halftone"></span>
           <span
             aria-hidden="true"
-            class="absolute -right-3 -bottom-3 z-20 h-6 w-24 rotate-2 border border-ink-900/20 bg-paper-300/80"
+            class="absolute right-0 bottom-0 left-0 h-[22%] border-t-[3px] border-ink-950 bg-magenta-500 halftone"
           ></span>
+          {
+            coverMons.map((c) => (
+              <img
+                src={c.mon.artwork}
+                alt={c.mon.name.es}
+                width="475"
+                height="475"
+                loading="eager"
+                decoding="async"
+                class={`absolute h-auto cutout motion-safe:animate-bob ${c.class}`}
+                style={`animation-delay:${c.delay};`}
+              />
+            ))
+          }
           <span
-            class="absolute -top-5 -right-4 z-20 grid size-14 rotate-6 place-items-center border-2 border-ink-950 bg-ember-500 font-display text-lg leading-none text-ink-950 shadow-pixel-sm"
-            aria-label="Equipo: 3 de 6"
+            class="absolute top-4 left-4 z-10 bg-ink-950 px-2 py-1 font-headline text-sm tracking-widest text-ember-500 uppercase"
           >
-            3/6
+            Hoenn
           </span>
-
-          <PixelScene
-            variant="hero"
-            mons={heroMons}
-            class="h-[21rem] w-full border-2 border-ink-950 sm:h-[25rem]"
-          />
-
-          <div
-            class="mt-3 flex flex-wrap items-center justify-between gap-2 border-2 border-ink-950 bg-paper-100 px-3 py-2"
-          >
-            <span class="font-display text-sm text-ink-900" data-i18n="hero.caption"
-              >Ruta 101 · Hoenn</span
-            >
-            <span class="flex flex-wrap gap-1">
-              {
-                heroTypes.map((t) => {
-                  const meta = typeLookup[t];
-                  return (
-                    <span class="type-chip" style={typeChipStyle(meta?.color ?? '#9299a1')}>
-                      <span data-i18n-pair={JSON.stringify(meta?.name ?? { es: t, en: t })}>
-                        {meta?.name.es ?? t}
-                      </span>
-                    </span>
-                  );
-                })
-              }
-            </span>
-          </div>
         </div>
 
-        <p
-          class="mt-6 text-center font-display text-[11px] tracking-[0.18em] text-paper-400 uppercase"
-          data-i18n="hero.art"
+        <span
+          class="absolute -top-4 -right-1 z-20 grid size-28 rotate-12 place-items-center rounded-full border-[3px] border-ink-950 bg-magenta-500 p-3 text-center font-headline text-lg leading-[0.95] text-paper-50 uppercase shadow-pixel sm:-right-4"
+          data-i18n="cover.sticker"
         >
+          ¡Tablas exactas!
+        </span>
+
+        <figcaption
+          class="mx-auto mt-5 flex max-w-[29rem] flex-wrap items-center justify-between gap-2 border-2 border-ink-950 bg-paper-50 px-3 py-2"
+        >
+          <span class="kicker text-sm text-ink-900" data-i18n="hero.caption">Ruta 101 · Hoenn</span>
+          <span class="flex flex-wrap gap-1">
+            {
+              HERO_TRIO.flatMap((m) => m.types).map((t) => {
+                const meta = typeLookup[t];
+                return (
+                  <span class="type-chip" style={typeChipStyle(meta?.color ?? '#9299a1')}>
+                    <span data-i18n-pair={JSON.stringify(meta?.name ?? { es: t, en: t })}>
+                      {meta?.name.es ?? t}
+                    </span>
+                  </span>
+                );
+              })
+            }
+          </span>
+        </figcaption>
+        <p class="mt-3 text-center kicker text-[11px] text-ink-500" data-i18n="hero.art">
           Ilustraciones oficiales · PokeAPI
         </p>
-      </div>
+      </figure>
     </div>
   </section>
 
-  <!-- GAME SELECTOR -->
-  <section
-    id="juegos"
-    class="scroll-mt-24 border-y-2 border-forest-800 bg-forest-900/70 py-16 sm:py-20"
-    aria-labelledby="games-h"
-  >
+  <!-- EDITIONS (GAME SELECTOR) -->
+  <section id="juegos" class="scroll-mt-24 py-16 sm:py-20" aria-labelledby="games-h">
     <div class="mx-auto max-w-6xl px-5 sm:px-8">
-      <div class="flex flex-wrap items-end justify-between gap-4">
+      <div
+        class="flex flex-wrap items-end justify-between gap-4 border-b-[3px] border-ink-950 pb-4"
+      >
         <div>
+          <p class="kicker text-xs text-magenta-600" data-i18n="selector.kicker">
+            Ediciones disponibles
+          </p>
           <h2
             id="games-h"
-            class="font-display text-4xl leading-none text-paper-50 sm:text-5xl"
+            class="mt-1 text-5xl leading-none text-ink-950 uppercase sm:text-6xl"
             data-i18n="selector.heading"
           >
             Elige tu juego
           </h2>
-          <p class="mt-3 max-w-xl text-sm leading-relaxed text-paper-300 sm:text-base">
+          <p class="mt-3 max-w-xl text-sm leading-relaxed text-ink-700 sm:text-base">
             <span data-i18n="selector.sub"
               >Tres regiones, tres tablas de tipos y cero aproximaciones. Entra y empieza a montar
               el equipo.</span
             >
           </p>
         </div>
-        <p class="font-display text-xs tracking-wide text-paper-400" data-i18n="selector.count">
+        <p class="kicker text-xs text-ink-600" data-i18n="selector.count">
           151 + 251 + 202 Pokémon
         </p>
       </div>
 
-      <div class="mt-8">
+      <div class="mt-10">
         <GameSelector games={registry.games} featured={GAME_FEATURED} typeLookup={typeLookup} />
       </div>
 
-      <p class="mt-6 font-display text-xs tracking-wide text-paper-400">
+      <p class="mt-8 kicker text-xs text-ink-600">
         <span data-i18n="selector.missing">¿Falta tu juego?</span>
         <a
           href="https://github.com/hell-over-studios/dexforge/issues"
-          class="ml-1 text-ember-300 underline underline-offset-4 hover:text-ember-400"
+          class="ml-1 text-magenta-600 underline decoration-2 underline-offset-4 hover:text-magenta-700"
           rel="noopener noreferrer"
           target="_blank"
           data-i18n="selector.missingLink">Pídelo en GitHub</a
@@ -245,79 +225,93 @@ const features: {
     </div>
   </section>
 
-  <!-- HOW IT WORKS + FEATURES -->
+  <!-- HOW IT WORKS (a real sequence) -->
   <section
     id="como-funciona"
-    class="mx-auto max-w-6xl scroll-mt-24 px-5 py-16 sm:px-8 sm:py-24"
+    class="scroll-mt-24 border-y-[3px] border-ink-950 bg-paper-50 py-16 sm:py-20"
     aria-labelledby="how-h"
   >
-    <div class="max-w-2xl">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8">
+      <p class="kicker text-xs text-magenta-600" data-i18n="how.kicker">Cómo se usa</p>
       <h2
         id="how-h"
-        class="font-display text-4xl leading-none text-paper-50 sm:text-5xl"
+        class="mt-1 text-5xl leading-none text-ink-950 uppercase sm:text-6xl"
         data-i18n="how.heading"
       >
         Del juego a la decisión.
       </h2>
-      <p class="mt-3 text-sm leading-relaxed text-paper-300 sm:text-base">
+      <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-700 sm:text-base">
         <span data-i18n="how.sub"
           >Tres pasos. Sin cuentas, sin anuncios y sin cambiar de pestaña.</span
         >
       </p>
-    </div>
 
-    <ol class="mt-10 grid gap-4 md:grid-cols-3">
-      {
-        steps.map((step) => (
-          <li class="paper-panel-soft relative overflow-hidden p-5">
-            <span aria-hidden="true" class="mb-4 block h-2 w-12 bg-ember-500" />
-            <h3 class="font-display text-xl text-ink-950" data-i18n={step.titleKey}>
-              {dict[step.titleKey].es}
-            </h3>
-            <p class="mt-2 text-sm leading-relaxed text-ink-600" data-i18n={step.textKey}>
-              {dict[step.textKey].es}
-            </p>
-          </li>
-        ))
-      }
-    </ol>
-
-    <div class="mt-16 max-w-2xl">
-      <h2
-        class="font-display text-4xl leading-none text-paper-50 sm:text-5xl"
-        data-i18n="features.heading"
-      >
-        Lo que ya está forjado.
-      </h2>
-      <p class="mt-3 text-sm leading-relaxed text-paper-300 sm:text-base">
-        <span data-i18n="features.sub">Funciones reales sobre datos reales. Nada de maquetas.</span>
-      </p>
-    </div>
-
-    <div class="mt-8 grid gap-4 sm:grid-cols-2">
-      {
-        features.map((feature) => (
-          <div class="border-2 border-ink-950 bg-paper-50 p-5 shadow-pixel">
-            <div class="flex items-center gap-3">
+      <ol class="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
+        {
+          steps.map((step) => (
+            <li class="grid grid-cols-[auto_1fr] gap-4 border-t-[3px] border-ink-950 pt-4">
               <span
                 aria-hidden="true"
-                class={`grid size-10 shrink-0 place-items-center border-2 border-ink-950 font-display text-xl text-paper-50 ${feature.accent}`}
+                class="font-headline text-7xl leading-[0.8] text-magenta-500"
               >
-                {feature.glyph}
+                {step.n}
               </span>
-              <h3 class="font-display text-lg text-ink-950" data-i18n={feature.titleKey}>
-                {dict[feature.titleKey].es}
-              </h3>
-              {feature.badge ? (
-                <span class="ml-auto border-2 border-ink-950 bg-ember-500 px-1.5 py-0.5 font-display text-[11px] leading-none text-ink-950 uppercase">
-                  {feature.badge}
-                </span>
-              ) : null}
+              <div>
+                <h3 class="text-2xl leading-none text-ink-950 uppercase" data-i18n={step.titleKey}>
+                  {dict[step.titleKey].es}
+                </h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-700" data-i18n={step.textKey}>
+                  {dict[step.textKey].es}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- IN THIS ISSUE (features) -->
+  <section class="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20" aria-labelledby="features-h">
+    <p class="kicker text-xs text-magenta-600" data-i18n="features.kicker">En este número</p>
+    <h2
+      id="features-h"
+      class="mt-1 text-5xl leading-none text-ink-950 uppercase sm:text-6xl"
+      data-i18n="features.heading"
+    >
+      Lo que ya está forjado.
+    </h2>
+    <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-700 sm:text-base">
+      <span data-i18n="features.sub">Funciones reales sobre datos reales. Nada de maquetas.</span>
+    </p>
+
+    <div class="mt-10 grid gap-5 sm:grid-cols-2">
+      {
+        features.map((feature) => (
+          <article class="paper-panel-soft overflow-hidden">
+            <span
+              aria-hidden="true"
+              class={`block h-3 border-b-2 border-ink-950 ${feature.band}`}
+            />
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-3">
+                <h3
+                  class="text-3xl leading-none text-ink-950 uppercase"
+                  data-i18n={feature.titleKey}
+                >
+                  {dict[feature.titleKey].es}
+                </h3>
+                {feature.badge ? (
+                  <span class="shrink-0 -rotate-3 border-2 border-ink-950 bg-ember-500 px-1.5 py-0.5 kicker text-[11px] text-ink-950">
+                    {feature.badge}
+                  </span>
+                ) : null}
+              </div>
+              <p class="mt-3 text-sm leading-relaxed text-ink-700" data-i18n={feature.textKey}>
+                {dict[feature.textKey].es}
+              </p>
             </div>
-            <p class="mt-3 text-sm leading-relaxed text-ink-600" data-i18n={feature.textKey}>
-              {dict[feature.textKey].es}
-            </p>
-          </div>
+          </article>
         ))
       }
     </div>
@@ -326,39 +320,26 @@ const features: {
   <!-- CLOSING CTA -->
   <section class="mx-auto max-w-6xl px-5 pb-20 sm:px-8">
     <div
-      class="relative overflow-hidden border-[3px] border-ink-950 bg-paper-100 paper-grain p-7 shadow-pixel-lg sm:p-12"
+      class="relative overflow-hidden border-[3px] border-ink-950 bg-ember-500 halftone p-7 shadow-[10px_10px_0_0_var(--color-ink-950)] sm:p-12"
     >
-      <span aria-hidden="true" class="absolute top-0 right-0 left-0 h-1.5 bg-ember-500"></span>
       <div class="relative z-10 max-w-2xl">
         <h2
-          class="font-display text-4xl leading-[0.98] text-balance text-ink-950 sm:text-5xl"
+          class="text-5xl leading-[0.92] text-balance text-ink-950 uppercase sm:text-6xl"
           data-i18n="cta.heading"
         >
           Tu próxima partida empieza con un equipo.
         </h2>
-        <p class="mt-3 text-sm leading-relaxed text-ink-600 sm:text-base" data-i18n="cta.sub">
+        <p class="mt-4 text-base leading-relaxed font-semibold text-ink-800" data-i18n="cta.sub">
           Elige la región y forja el tuyo. Se guarda en tu navegador.
         </p>
-        <a href="#juegos" class="pixel-btn pixel-btn-primary mt-6">
+        <a href="#juegos" class="pixel-btn pixel-btn-quiet mt-7">
           <span data-i18n="cta.button">Empezar a forjar</span>
           <span aria-hidden="true">→</span>
         </a>
       </div>
-
-      <svg
-        viewBox="0 0 8 8"
-        class="pointer-events-none absolute right-6 bottom-6 hidden w-48 rotate-3 opacity-25 lg:block"
-        shape-rendering="crispEdges"
-        aria-hidden="true"
-      >
-        <rect width="8" height="8" fill="#241c12"></rect>
-        <rect x="2" y="1" width="4" height="1" fill="#f7931e"></rect>
-        <rect x="1" y="2" width="6" height="1" fill="#f7931e"></rect>
-        <rect x="1" y="3" width="6" height="2" fill="#fbf5e6"></rect>
-        <rect x="3" y="3" width="2" height="2" fill="#241c12"></rect>
-        <rect x="1" y="5" width="6" height="1" fill="#c3a473"></rect>
-        <rect x="2" y="6" width="4" height="1" fill="#c3a473"></rect>
-      </svg>
+      <LogoMark
+        class="pointer-events-none absolute -right-6 -bottom-6 hidden w-72 rotate-6 opacity-90 lg:block"
+      />
     </div>
   </section>
 </Base>

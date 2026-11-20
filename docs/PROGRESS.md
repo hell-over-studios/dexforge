@@ -20,6 +20,15 @@ data".
 | v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                         |
 | v1.0.0 share/polish              | 0%   |                                                                                                    |
 
+## Done 2026-11-19 — Visual identity v3 «Revista» (ADR-012)
+
+- Team decision after the design exploration: strategy-magazine personality + anvil-Pokédex
+  logo. Tokens re-valued in `src/styles/global.css` (names kept, new `magenta-*` ramp),
+  Anton + Archivo, masthead/footer, magazine-cover landing, edition cards, edition opener,
+  **Tu sexteto** team sheet, index + analysis tabs workbench, "Lo que más duele".
+- Stacked on the Spanish-names branch; one PR (exception to ADR-009's size budget, asked for
+  by the team to review the whole look at once).
+
 ## Done 2026-11-18 (late) — Spanish names fix (pre-v0.5.0)
 
 - Pokédex list type chips localized (were raw slugs: `WATER`, `GROUND`).

@@ -7,6 +7,15 @@ import type { Stats } from './data-schema';
 
 export type Role = 'sweeper' | 'special-sweeper' | 'wall' | 'tank' | 'support';
 
+/** localized role names (shared by the team sheet and the profile panel) */
+export const ROLE_LABEL: Record<Role, { es: string; en: string }> = {
+  sweeper: { es: 'Sweep físico', en: 'Physical sweeper' },
+  'special-sweeper': { es: 'Sweep especial', en: 'Special sweeper' },
+  wall: { es: 'Muro', en: 'Wall' },
+  tank: { es: 'Tanque', en: 'Tank' },
+  support: { es: 'Soporte', en: 'Support' },
+};
+
 /** average of each base stat across the members (rounded to nearest whole) */
 export function teamAverageStats(statsList: Stats[]): Stats {
   const n = statsList.length;

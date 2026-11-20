@@ -60,7 +60,7 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
 
 ## ADR-008 — Visual direction: pixel art + cozy
 
-- **Status:** Accepted (owner directive, 2026-11-06)
+- **Status:** Superseded by ADR-012 «Revista» (2026-11-19). Originally accepted (owner directive, 2026-11-06)
 - **Context:** The prompt only said "avoid generic AI-template looks" and listed required UI behaviors (game-sprite default, toggles, smooth transitions, mobile-first, reduced motion). The owner explicitly chose a **pixel art + cozy** style. It must also harmonize with the sprites themselves, which are low-res pixel art by nature.
 - **Decision:**
   - **Typography:** display font = _Pixelify Sans_ (a genuine pixel font; selected because it covers Latin-Extended, so Spanish á é í ó ú ñ work); body = _Nunito_ (warm rounded humanist sans for readability at small sizes). System fallbacks maintained.
@@ -110,3 +110,17 @@ Format: **ADR-NNN — Title** · Status · Date · Context · Decision · Altern
 - **Decision:** Maintain one GitHub Projects v2 board (org-owned, linked to the repo) as a **view** over issues — issues stay the source of truth. Columns are the built-in `Status` field (`Backlog`, `Ready`, `In progress`, `In review`, `Blocked`, `Done`); custom fields are `Priority` (`P0`–`P3`), `Area` and `Size` (`S`/`M`/`L`). `docs/BOARD.md` documents the columns, rubric, initial classification and `gh` maintenance commands.
 - **Alternatives:** An in-app `/board` page reading the GitHub API (extra runtime code, still cannot assign issues); Trello/Notion (external account, duplicates the issue tracker); labels/milestones only (no workflow state).
 - **Consequences:** Automating the board needs the `project` scope on `gh` (one-time `gh auth refresh -s project`). Board fields must be kept in sync when ROADMAP tasks or issue scope change; the board never holds data that exists only there.
+
+## ADR-012 — Visual direction «Revista» (magazine) + anvil-Pokédex logo
+
+- **Status:** Accepted (design team decision, 2026-11-19). Supersedes ADR-008 and its «Pergamino» revision.
+- **Context:** The design lead explored five personalities for the site (Pokédex hardware, strategy magazine, tactics board, candy stickers, scientific archive) on top of the already-approved usability changes (team sheet on top, a workbench with the index and the analysis side by side, a "what hurts most" summary, localized chips and places). The team picked the **strategy magazine** personality and the **anvil-Pokédex fusion** logo.
+- **Decision:**
+  - **World:** an early-2000s strategy-guide magazine. Newsprint ground (`paper-*`), black press ink (`ink-*`), black masthead/footer bands (`forest-*` now means black), process **yellow** for primary actions (`ember-*`), process **cyan** for "good" (`moss-*`: resists, immunities, coverage) and process **magenta** for "it hurts" (new `magenta-*`: weaknesses, alerts, kickers). Token names are kept so every island migrates by value; only the new meaning got a new ramp.
+  - **Type:** _Anton_ for headlines and big numbers (`font-headline`, h1–h3 in the base layer); _Archivo_ with its width axis for condensed uppercase labels (`kicker`, `font-display`) and body copy. Both cover Latin-Extended.
+  - **Shape and texture:** 2–3px black rules, hard black offset shadows (4–10px), halftone dot screens (`halftone`, `paper-grain`, `forest-grain`) and outline-following cut-out shadows on official artwork (`cutout`). Type chips become rounded pills. No blur, glow or glass.
+  - **Composition:** the landing is a magazine cover (headline, cover lines, the Hoenn trio as cut-outs, a sticker); games are "editions" in their version colors. The game page opens like an edition, then shows **Tu sexteto** (six cards: type-color halftone, slot number, artwork cut-out, name tag, chips, role, move pips) and a two-column desk: the **index** (search + in-place drawer, scrolls on its own) and the **analysis tabs** (Defensa / Cobertura / Perfil, WAI-ARIA tabs, sticky on desktop). Defense opens with **"Lo que más duele"**: the three attacking types that hit the most members, with who suffers them.
+  - **Logo:** the Pokédex forged into an anvil (lens and status lights on the top face, horn on the left, a spark above), pixel art drawn as SVG rects in `src/components/LogoMark.astro` and `public/favicon.svg`.
+  - **Unchanged:** official artwork only for species (owner directive 2026-11-07), no ripped 3D models, mobile-first, keyboard + contrast, `prefers-reduced-motion`, Spanish default + English, no runtime PokeAPI.
+- **Alternatives:** keep «Pergamino»; the other four explored personalities.
+- **Consequences:** The pixel diorama (`PixelScene`) is removed. `PRODUCT.md`, `.impeccable/surfaces/home.md`, `AGENTS.md` and `docs/AI_WORKFLOW.md` point here. UI reviews now check the magazine world: black rules, hard shadows, Anton/Archivo, and press colors with their meaning (yellow = act, cyan = good, magenta = hurts).

@@ -1,6 +1,6 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-18 (late — Spanish type/place names fix on a branch)
+Last updated: 2026-11-19 (visual identity v3 «Revista» on a stacked branch)
 
 ## Exactly where we stopped
 
@@ -31,7 +31,20 @@ Last updated: 2026-11-18 (late — Spanish type/place names fix on a branch)
   section and milestone v0.4.0 closed. **v0.5.0 re-arms the same MINOR gate** — tag only
   after explicit owner approval.
 
-## Latest (2026-11-18, late)
+## Latest (2026-11-19)
+
+- Branch `feat/revista-identity` (stacked on `fix/spanish-type-and-place-names`): visual
+  identity v3 «Revista» (ADR-012). The PR targets the fix branch so its diff stays clean; merge
+  the fix PR first, then retarget/merge this one. **Do not merge without the owner's go-ahead.**
+- Workbench structure changed: `TeamSlots` is its own island at the top of
+  `src/pages/juego/[id].astro`; `Picker` is only the index column; the three analysis islands
+  live in hidden-until-selected tab panels (they hydrate on first show). The coverage e2e
+  opens the "Cobertura" tab first.
+- `e2e`: `ul[role="list"]` must stay unique on the game page (the team sheet); `getByText('6/6')`
+  relies on the counter being the only "n/6" text.
+- Local preview: `.claude/launch.json` (untracked) runs `pnpm dev` on port 4321.
+
+## Previous (2026-11-18, late)
 
 - Branch `fix/spanish-type-and-place-names`: Pokédex list chips show localized type names;
   encounter location names are localized at build time (`scripts/lib/place-names.ts`,
