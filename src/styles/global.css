@@ -308,6 +308,13 @@
   }
 }
 
+/* UX-11: keep scrolled-to elements clear of the fixed phone action bar */
+@media (max-width: 639px) {
+  html {
+    scroll-padding-bottom: 5.5rem;
+  }
+}
+
 html {
   color-scheme: light;
   scrollbar-color: var(--color-ink-700) var(--color-paper-200);

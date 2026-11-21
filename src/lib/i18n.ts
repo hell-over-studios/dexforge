@@ -100,6 +100,10 @@ export const dict = {
   'footer.license': { es: 'Código bajo licencia MIT.', en: 'Code licensed MIT.' },
   'footer.art': { es: 'Ilustraciones: PokeAPI', en: 'Artwork: PokeAPI' },
 
+  'bar.label': { es: 'Acciones rápidas', en: 'Quick actions' },
+  'bar.search': { es: 'Buscar', en: 'Search' },
+  'bar.analysis': { es: 'Análisis', en: 'Analysis' },
+  'bar.share': { es: 'Compartir', en: 'Share' },
   'game.back': { es: 'Volver al inicio', en: 'Back to home' },
   '404.kicker': { es: 'Error 404 · Fe de erratas', en: 'Error 404 · Errata' },
   '404.title': {

@@ -211,13 +211,14 @@ export default function TeamSlots({ gameId }: Props) {
             {t.heading}
           </h2>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="border-2 border-ink-950 bg-ember-500 px-2.5 py-1 font-headline text-2xl leading-none text-ink-950 shadow-pixel-sm">
             {team.length}/6
           </span>
           <button
             type="button"
             onClick={copyLink}
+            data-copy-link
             disabled={team.length === 0}
             aria-label={t.copyLabel}
             className="pixel-btn pixel-btn-quiet cursor-pointer px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
@@ -274,14 +275,18 @@ export default function TeamSlots({ gameId }: Props) {
       <p
         aria-live="polite"
         className={
-          'fixed bottom-4 left-1/2 z-50 -translate-x-1/2 border-2 border-ink-950 bg-ember-500 px-3 py-1.5 kicker text-sm text-ink-950 shadow-pixel transition-opacity duration-200' +
+          'fixed bottom-24 left-1/2 z-50 -translate-x-1/2 border-2 border-ink-950 bg-ember-500 px-3 py-1.5 kicker text-sm text-ink-950 shadow-pixel transition-opacity duration-200 sm:bottom-4' +
           (copied ? ' opacity-100' : ' pointer-events-none opacity-0')
         }
       >
         {copied ? t.copied : ''}
       </p>
 
-      <ul role="list" className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5 lg:grid-cols-6">
+      {/* UX-10: one horizontal, snapping strip on phones; the grid from sm up */}
+      <ul
+        role="list"
+        className="flex snap-x gap-3 overflow-x-auto p-4 sm:grid sm:grid-cols-3 sm:overflow-visible sm:p-5 lg:grid-cols-6"
+      >
         {Array.from({ length: 6 }, (_, index) => {
           const id = team[index];
           const mon = id === undefined ? undefined : byId.get(id);
@@ -289,8 +294,8 @@ export default function TeamSlots({ gameId }: Props) {
 
           if (id === undefined || !mon) {
             return (
-              <li key={index}>
-                <div className="flex h-full min-h-[13.5rem] flex-col items-center justify-center gap-2 border-2 border-dashed border-ink-950/45 bg-paper-100 p-3 text-center">
+              <li key={index} className="w-36 shrink-0 snap-start sm:w-auto">
+                <div className="flex h-full min-h-[9rem] flex-col items-center justify-center gap-2 border-2 border-dashed border-ink-950/45 bg-paper-100 p-3 text-center sm:min-h-[13.5rem]">
                   <span
                     aria-hidden="true"
                     className="font-headline text-5xl leading-none text-paper-400"
@@ -309,7 +314,7 @@ export default function TeamSlots({ gameId }: Props) {
           const picked = moves[String(mon.id)] ?? [];
           const role = detectRole(mon.stats);
           return (
-            <li key={index} className="group relative">
+            <li key={index} className="group relative w-36 shrink-0 snap-start sm:w-auto">
               <button
                 type="button"
                 onClick={() => requestOpenMember(mon.id)}
@@ -317,7 +322,7 @@ export default function TeamSlots({ gameId }: Props) {
                 className="flex h-full w-full cursor-pointer flex-col overflow-hidden border-2 border-ink-950 bg-paper-50 text-left shadow-pixel-sm transition-transform duration-150 ease-out group-hover:-translate-y-1 group-hover:-rotate-1"
               >
                 <span
-                  className="relative block h-28 overflow-hidden border-b-2 border-ink-950"
+                  className="relative block h-24 overflow-hidden border-b-2 border-ink-950 sm:h-28"
                   style={{ backgroundColor: typeColor(first) }}
                 >
                   <span aria-hidden="true" className="absolute inset-0 halftone" />
@@ -335,7 +340,7 @@ export default function TeamSlots({ gameId }: Props) {
                       width={112}
                       height={112}
                       decoding="async"
-                      className="absolute -right-1 -bottom-2 size-28 [object-fit:contain] cutout transition-transform duration-200 group-hover:scale-105"
+                      className="absolute -right-1 -bottom-2 size-24 [object-fit:contain] cutout transition-transform duration-200 group-hover:scale-105 sm:size-28"
                     />
                   ) : null}
                 </span>
@@ -354,7 +359,7 @@ export default function TeamSlots({ gameId }: Props) {
                       </span>
                     ))}
                   </span>
-                  <span className="kicker text-[11px] text-magenta-600">
+                  <span className="hidden kicker text-[11px] text-magenta-600 sm:inline">
                     {ROLE_LABEL[role][lang]}
                   </span>
                   <span
@@ -396,7 +401,7 @@ export default function TeamSlots({ gameId }: Props) {
       <div
         role="status"
         className={
-          'fixed bottom-16 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 border-2 border-ink-950 bg-ink-950 py-1.5 pr-1.5 pl-3 text-sm text-paper-50 shadow-pixel transition-opacity duration-200' +
+          'fixed bottom-36 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 border-2 border-ink-950 bg-ink-950 py-1.5 pr-1.5 pl-3 text-sm text-paper-50 shadow-pixel transition-opacity duration-200 sm:bottom-16' +
           (removed ? ' opacity-100' : ' pointer-events-none opacity-0')
         }
       >
