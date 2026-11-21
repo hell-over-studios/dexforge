@@ -6,7 +6,8 @@
  * The rendered site never calls PokeAPI: everything derives from the static
  * JSON under /public/data/<game>.json (fetched with the deploy base prefix).
  */
-import type { GameData, GamePokemon, LocalizedText, TypeData } from './data-schema';
+import type { GameData, GamePokemon, LocalizedText, TypeChart, TypeData } from './data-schema';
+import type { Role } from './roles';
 import { siteBase } from './paths';
 
 /** One picker row: exactly what the listing UI needs, nothing more. */
@@ -61,6 +62,45 @@ export function searchDex(entries: DexEntry[], query: string): DexEntry[] {
     if (String(e.id).includes(q)) return true;
     if (String(e.dexNumber).includes(q)) return true;
     return false;
+  });
+}
+
+/** Index filters (UX-08 type/role, UX-06 "who resists this attacking type"). */
+export interface DexFilter {
+  /** keep entries that have ANY of these types (empty = no type filter) */
+  types: string[];
+  role: Role | null;
+  /** attacking type the entry must resist or be immune to */
+  resists: string | null;
+}
+
+export const NO_FILTER: DexFilter = { types: [], role: null, resists: null };
+
+export const isFilterActive = (f: DexFilter): boolean =>
+  f.types.length > 0 || f.role !== null || f.resists !== null;
+
+/** damage multiplier of one attacking type on a (possibly dual) typing */
+export function typeMultiplier(chart: TypeChart, attack: string, types: readonly string[]): number {
+  return types.reduce((m, t) => m * (chart[attack]?.[t] ?? 1), 1);
+}
+
+/**
+ * Apply the index filters with this game's own chart and the v1 roles.
+ * `roles` maps national id -> role (computed once from base stats).
+ */
+export function filterDex(
+  entries: DexEntry[],
+  filter: DexFilter,
+  chart: TypeChart,
+  roles: ReadonlyMap<number, Role>,
+): DexEntry[] {
+  if (!isFilterActive(filter)) return entries;
+  return entries.filter((e) => {
+    if (filter.types.length > 0 && !e.types.some((t) => filter.types.includes(t))) return false;
+    if (filter.role !== null && roles.get(e.id) !== filter.role) return false;
+    if (filter.resists !== null && typeMultiplier(chart, filter.resists, e.types) >= 1)
+      return false;
+    return true;
   });
 }
 

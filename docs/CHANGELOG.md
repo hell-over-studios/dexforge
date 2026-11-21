@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Index filters (UX-08, #84; UX-06, #82): type and role chips under the search, plus “Buscar quién resiste a X” on each “Lo que más duele” card, which lists the Pokémon of that game that resist or ignore that attacking type (game-accurate chart). Pure `filterDex` in `src/lib/dex.ts`.
 - Team sheet (UX-01, #77): a click on a member card opens that Pokémon in the index drawer instead of removing it; a separate ✕ removes it and a toast offers “Deshacer” for 6 s.
 - Full team (UX-02, #78): adding a seventh Pokémon no longer drops the oldest member; the drawer asks whom to replace and clears that member’s moves.
 - Index (UX-03, #79): rows of Pokémon already in the team show “En tu equipo · casilla N”.
