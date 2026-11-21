@@ -24,11 +24,24 @@ official artwork fallback → optional showdown/HOME toggles.
 
 ## Game → version-group → generation → pokedex mapping
 
-| id            | Versions     | Generation           | Type chart source | Pokedex (slug)   | Sprite version-group |
-| ------------- | ------------ | -------------------- | ----------------- | ---------------- | -------------------- |
-| `red-blue`    | red, blue    | 1 (`generation-i`)   | generation-i      | `kanto`          | `gen-i/red-blue`     |
-| `gold-silver` | gold, silver | 2 (`generation-ii`)  | generation-ii     | `original-johto` | `gen-ii/gold-silver` |
-| `emerald`     | emerald      | 3 (`generation-iii`) | generation-iii    | `hoenn`          | `gen-iii/emerald`    |
+| id                          | Versions                   | Generation           | Type chart source | Pokedex (slug)                                       | Sprite version-group             |
+| --------------------------- | -------------------------- | -------------------- | ----------------- | ---------------------------------------------------- | -------------------------------- |
+| `red-blue`                  | red, blue                  | 1 (`generation-i`)   | generation-i      | `kanto`                                              | `gen-i/red-blue`                 |
+| `gold-silver`               | gold, silver               | 2 (`generation-ii`)  | generation-ii     | `original-johto`                                     | `gen-ii/gold-silver`             |
+| `emerald`                   | emerald                    | 3 (`generation-iii`) | generation-iii    | `hoenn`                                              | `gen-iii/emerald`                |
+| `yellow`                    | yellow                     | 1                    | generation-i      | `kanto`                                              | `gen-i/yellow`                   |
+| `crystal`                   | crystal                    | 2                    | generation-ii     | `original-johto`                                     | `gen-ii/crystal`                 |
+| `ruby-sapphire`             | ruby, sapphire             | 3                    | generation-iii    | `hoenn`                                              | `gen-iii/ruby-sapphire`          |
+| `firered-leafgreen`         | firered, leafgreen         | 3                    | generation-iii    | `kanto`                                              | `gen-iii/firered-leafgreen`      |
+| `diamond-pearl`             | diamond, pearl             | 4                    | generation-iv     | `original-sinnoh`                                    | `gen-iv/diamond-pearl`           |
+| `platinum`                  | platinum                   | 4                    | generation-iv     | `extended-sinnoh`                                    | `gen-iv/platinum`                |
+| `heartgold-soulsilver`      | heartgold, soulsilver      | 4                    | generation-iv     | `updated-johto`                                      | `gen-iv/heartgold-soulsilver`    |
+| `black-white`               | black, white               | 5                    | generation-v      | `original-unova`                                     | `gen-v/black-white`              |
+| `black-2-white-2`           | black-2, white-2           | 5                    | generation-v      | `updated-unova`                                      | `gen-v/black-white`              |
+| `x-y`                       | x, y                       | 6                    | generation-vi     | `kalos-central` + `kalos-coastal` + `kalos-mountain` | `gen-vi/x-y`                     |
+| `omega-ruby-alpha-sapphire` | omega-ruby, alpha-sapphire | 6                    | generation-vi     | `updated-hoenn`                                      | `gen-vi/omegaruby-alphasapphire` |
+
+Gen 7+ (Sun/Moon onward) is not added yet: Alola dexes need regional-form overrides (Alolan Raichu, Rattata…) and PokeAPI encounter data for those games is thin.
 
 Rules baked into `scripts/lib/games.ts`:
 

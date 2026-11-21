@@ -35,11 +35,9 @@ const types = readJson('types.json') as { types: { slug: string }[] };
 check(types.types.length === 18, `types.json: expected 18 types, got ${types.types.length}`);
 
 /* per game */
-const EXPECTED_TYPE_COUNT: Record<string, number> = {
-  'red-blue': 15, // no Dark, Steel, Fairy
-  'gold-silver': 17, // + Dark & Steel (incl. the "unknown" type excluded), no Fairy
-  emerald: 17, // + still no Fairy
-};
+/** Gen 1: 15 types (no Dark, Steel, Fairy); Gen 2–5: 17 (+ Dark, Steel); Gen 6+: 18 (+ Fairy) */
+const expectedTypeCount = (generation: number): number =>
+  generation <= 1 ? 15 : generation < 6 ? 17 : 18;
 
 function countEffectiveness(chart: TypeChart, from: string, to: string): number {
   return chart[from]?.[to] ?? 1;
@@ -65,8 +63,8 @@ for (const g of registry.games) {
   const id = g.id;
   check(data.pokemon.length === g.pokemonCount, `${id}: count mismatch with registry`);
   check(
-    Object.keys(data.typeChart).length === (EXPECTED_TYPE_COUNT[id] ?? 18),
-    `${id}: type chart size ${Object.keys(data.typeChart).length} != expected ${EXPECTED_TYPE_COUNT[id] ?? 18}`,
+    Object.keys(data.typeChart).length === expectedTypeCount(data.meta.generation),
+    `${id}: type chart size ${Object.keys(data.typeChart).length} != expected ${expectedTypeCount(data.meta.generation)}`,
   );
 
   for (const p of data.pokemon) {
@@ -303,6 +301,33 @@ for (const g of registry.games) {
       check(
         data.pokemon.some((p) => p.abilities.some((a) => !a.inGame)),
         'emerald: later-generation abilities must be flagged as not in game',
+      );
+      break;
+    }
+    case 'yellow': {
+      check(data.typeChart['dark'] === undefined, 'yellow: Dark must not exist in Gen 1');
+      check(
+        learnSlugs(data, 'pikachu').has('thunderbolt'),
+        'yellow: pikachu must learn thunderbolt',
+      );
+      break;
+    }
+    case 'platinum': {
+      check(
+        moveInfo(data, 'crunch')?.damageClass === 'physical',
+        'platinum: crunch must be physical after the Gen IV split',
+      );
+      check(data.typeChart['fairy'] === undefined, 'platinum: Fairy must not exist in Gen 4');
+      break;
+    }
+    case 'x-y': {
+      check(
+        countEffectiveness(data.typeChart, 'fairy', 'dragon') === 2,
+        'x-y: Fairy must hit Dragon super effectively',
+      );
+      check(
+        countEffectiveness(data.typeChart, 'ghost', 'steel') === 1,
+        'x-y: Steel no longer resists Ghost from Gen 6',
       );
       break;
     }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- 11 more games, Gen 1–6 (14 in total): Yellow, Crystal, Ruby/Sapphire, FireRed/LeafGreen, Diamond/Pearl, Platinum, HeartGold/SoulSilver, Black/White, Black 2/White 2, X/Y and Omega Ruby/Alpha Sapphire, each with its own regional Pokédex, game-accurate type chart (18 types with Fairy from Gen 6), learnsets and abilities. The home page groups editions by generation; edition colors and per-generation type counts live in `src/lib/editions.ts`; `data:check` derives the expected chart size from the generation and adds Yellow, Platinum and X/Y spot checks.
+
 ### Changed
 
 - Team sheet (UX-01, #77): a click on a member card opens that Pokémon in the index drawer instead of removing it; a separate ✕ removes it and a toast offers “Deshacer” for 6 s.

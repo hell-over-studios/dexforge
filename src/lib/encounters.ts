@@ -96,6 +96,21 @@ const VERSION_LABELS: Record<string, LocalizedText> = {
   ruby: { es: 'Rubí', en: 'Ruby' },
   sapphire: { es: 'Zafiro', en: 'Sapphire' },
   emerald: { es: 'Esmeralda', en: 'Emerald' },
+  firered: { es: 'Rojo Fuego', en: 'FireRed' },
+  leafgreen: { es: 'Verde Hoja', en: 'LeafGreen' },
+  diamond: { es: 'Diamante', en: 'Diamond' },
+  pearl: { es: 'Perla', en: 'Pearl' },
+  platinum: { es: 'Platino', en: 'Platinum' },
+  heartgold: { es: 'HeartGold', en: 'HeartGold' },
+  soulsilver: { es: 'SoulSilver', en: 'SoulSilver' },
+  black: { es: 'Negro', en: 'Black' },
+  white: { es: 'Blanco', en: 'White' },
+  'black-2': { es: 'Negro 2', en: 'Black 2' },
+  'white-2': { es: 'Blanco 2', en: 'White 2' },
+  x: { es: 'X', en: 'X' },
+  y: { es: 'Y', en: 'Y' },
+  'omega-ruby': { es: 'Rubí Omega', en: 'Omega Ruby' },
+  'alpha-sapphire': { es: 'Zafiro Alfa', en: 'Alpha Sapphire' },
 };
 
 const cap = (slug: string) => slug.charAt(0).toUpperCase() + slug.slice(1);

@@ -16,6 +16,7 @@ import AnalysisTabs from '../../components/AnalysisTabs';
 import fs from 'node:fs';
 import type { GameRegistryEntry, GamesRegistry } from '../../lib/data-schema';
 import { withBase } from '../../lib/paths';
+import { editionBackground, typesInChart } from '../../lib/editions';
 
 /* Build-time static pages, one per game in the registry. */
 export function getStaticPaths() {
@@ -35,13 +36,7 @@ const description =
   'Team builder de Pokémon por juego: estadísticas, tabla de tipos exacta por generación, cobertura, localizaciones de captura y enfrentamientos contra líderes de gimnasio. Proyecto de fans, de código abierto.';
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/* same version colors as the edition cards on the home page */
-const COVER: Record<string, string> = {
-  'red-blue': 'linear-gradient(120deg, #e3262b 0 52%, #2f6bd8 52% 100%)',
-  'gold-silver': 'linear-gradient(120deg, #d9a520 0 52%, #aab4bf 52% 100%)',
-  emerald: 'linear-gradient(120deg, #17a35e 0 100%)',
-};
-const typesInChart = game.generation === 1 ? 15 : 17;
+const typeCount = typesInChart(game.generation);
 ---
 
 <Base title={title} description={description}>
@@ -79,7 +74,7 @@ const typesInChart = game.generation === 1 ? 15 : 17;
             <dt class="kicker text-[10px] text-ink-600" data-i18n="game.types">
               tipos en la tabla
             </dt>
-            <dd class="font-headline text-3xl leading-none text-ink-950">{typesInChart}</dd>
+            <dd class="font-headline text-3xl leading-none text-ink-950">{typeCount}</dd>
           </div>
           <div class="border-2 border-ink-950 bg-paper-50 px-3 py-2 shadow-pixel-sm">
             <dt class="kicker text-[10px] text-ink-600" data-i18n="game.dexStamp">
@@ -94,7 +89,7 @@ const typesInChart = game.generation === 1 ? 15 : 17;
     </div>
     <div
       class="h-3 border-t-[3px] border-ink-950"
-      style={`background:${COVER[game.id] ?? '#0e0e0e'}`}
+      style={`background:${editionBackground(game.id)}`}
       aria-hidden="true"
     >
     </div>

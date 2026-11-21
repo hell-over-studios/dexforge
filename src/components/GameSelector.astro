@@ -1,12 +1,14 @@
 ---
 /**
- * Game editions (ADR-012 «Revista»): each supported game is a mini magazine
+ * Game editions (ADR-012 «Revista»): every supported game is a mini magazine
  * cover — version colors in halftone, the featured official artwork as a
- * cut-out, a generation sticker and a black "enter" bar.
+ * cut-out, a region tag and a black "enter" bar. Editions are grouped by
+ * generation so a growing catalogue stays scannable.
  */
 import type { GameRegistryEntry } from '../lib/data-schema';
 import { typeChipStyle } from '../lib/contrast';
 import type { ShowcaseEntry } from '../lib/showcase';
+import { editionBackground, typesInChart } from '../lib/editions';
 import { withBase } from '../lib/paths';
 
 interface Props {
@@ -19,96 +21,103 @@ const { games, featured, typeLookup } = Astro.props;
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/* version colors: the two halves of a paired release, or one solid edition */
-const COVER: Record<string, string> = {
-  'red-blue': 'linear-gradient(120deg, #e3262b 0 52%, #2f6bd8 52% 100%)',
-  'gold-silver': 'linear-gradient(120deg, #d9a520 0 52%, #aab4bf 52% 100%)',
-  emerald: 'linear-gradient(120deg, #17a35e 0 100%)',
-};
-const typesInChart = (gen: number) => (gen === 1 ? 15 : 17);
+/* generation -> its editions, in registry order */
+const byGeneration = [...new Set(games.map((g) => g.generation))]
+  .sort((a, b) => a - b)
+  .map((gen) => ({ gen, games: games.filter((g) => g.generation === gen) }));
 ---
 
-<ul class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+<div class="grid gap-12">
   {
-    games.map((game) => {
-      const mon = featured[game.id];
-      return (
-        <li>
-          <a
-            href={withBase(`juego/${game.id}`)}
-            class="group flex h-full flex-col border-[3px] border-ink-950 bg-paper-50 shadow-[6px_6px_0_0_var(--color-ink-950)] transition-transform duration-150 ease-out hover:-translate-y-1 hover:-rotate-1 focus-visible:-translate-y-1"
-          >
-            <div
-              class="relative h-52 overflow-hidden border-b-[3px] border-ink-950"
-              style={`background:${COVER[game.id] ?? '#0e0e0e'}`}
+    byGeneration.map(({ gen, games: editions }) => (
+      <section aria-labelledby={`gen-${gen}`}>
+        <div class="flex items-baseline gap-3 border-b-2 border-ink-950 pb-2">
+          <h3 id={`gen-${gen}`} class="text-3xl leading-none text-ink-950 uppercase">
+            <span
+              data-i18n-pair={JSON.stringify({ es: `Generación ${gen}`, en: `Generation ${gen}` })}
             >
-              <span aria-hidden="true" class="absolute inset-0 halftone" />
-              <span class="absolute top-3 left-3 z-10 font-headline text-5xl leading-none text-paper-50 [text-shadow:3px_3px_0_var(--color-ink-950)]">
-                {game.generation}
-              </span>
-              <span class="absolute top-[3.6rem] left-3 z-10 bg-ink-950 px-1.5 py-0.5 kicker text-[10px] text-ember-500">
-                Gen
-              </span>
-              {mon ? (
-                <img
-                  src={mon.artwork}
-                  alt={mon.name.es}
-                  width="256"
-                  height="256"
-                  loading="lazy"
-                  decoding="async"
-                  class="absolute right-2 -bottom-3 h-auto w-[58%] cutout transition-transform duration-200 group-hover:scale-105"
-                />
-              ) : null}
-              <span class="absolute bottom-3 left-3 z-10 -rotate-2 border-2 border-ink-950 bg-paper-50 px-2 py-0.5 kicker text-xs text-ink-950">
-                {capitalize(game.region)}
-              </span>
-            </div>
-
-            <div class="flex flex-1 flex-col p-4">
-              <h3
-                class="text-4xl leading-none text-ink-950 uppercase"
-                data-i18n-pair={JSON.stringify(game.label)}
-              >
-                {game.label.es}
-              </h3>
-              <p class="mt-2 text-sm text-ink-700">
-                <span class="font-headline text-lg text-ink-950">{game.pokemonCount}</span> Pokémon
-                ·{' '}
-                <span class="font-headline text-lg text-ink-950">
-                  {typesInChart(game.generation)}
-                </span>{' '}
-                <span data-i18n="selector.typesLabel">tipos en la tabla</span>
-              </p>
-
-              {mon ? (
-                <div class="mt-3 flex flex-wrap gap-1.5">
-                  {mon.types.map((t) => {
-                    const meta = typeLookup[t];
-                    return (
-                      <span class="type-chip" style={typeChipStyle(meta?.color ?? '#9299a1')}>
-                        <span data-i18n-pair={JSON.stringify(meta?.name ?? { es: t, en: t })}>
-                          {meta?.name.es ?? t}
-                        </span>
-                      </span>
-                    );
-                  })}
-                </div>
-              ) : null}
-            </div>
-
-            <span class="mt-auto flex items-center justify-between gap-2 border-t-[3px] border-ink-950 bg-ink-950 px-4 py-3 kicker text-sm text-ember-500 transition-colors group-hover:bg-magenta-500 group-hover:text-paper-50">
-              <span data-i18n="selector.cta">Entrar al taller</span>
-              <span
-                aria-hidden="true"
-                class="transition-transform duration-150 group-hover:translate-x-1"
-              >
-                →
-              </span>
+              {`Generación ${gen}`}
             </span>
-          </a>
-        </li>
-      );
-    })
+          </h3>
+          <span class="kicker text-xs text-ink-600">
+            {[...new Set(editions.map((e) => capitalize(e.region)))].join(' · ')} ·{' '}
+            {typesInChart(gen)} <span data-i18n="selector.typesLabel">tipos en la tabla</span>
+          </span>
+        </div>
+
+        <ul class="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {editions.map((game) => {
+            const mon = featured[game.id];
+            return (
+              <li>
+                <a
+                  href={withBase(`juego/${game.id}`)}
+                  class="group flex h-full flex-col border-[3px] border-ink-950 bg-paper-50 shadow-[6px_6px_0_0_var(--color-ink-950)] transition-transform duration-150 ease-out hover:-translate-y-1 hover:-rotate-1 focus-visible:-translate-y-1"
+                >
+                  <div
+                    class="relative h-40 overflow-hidden border-b-[3px] border-ink-950"
+                    style={`background:${editionBackground(game.id)}`}
+                  >
+                    <span aria-hidden="true" class="absolute inset-0 halftone" />
+                    {mon ? (
+                      <img
+                        src={mon.artwork}
+                        alt={mon.name.es}
+                        width="256"
+                        height="256"
+                        loading="lazy"
+                        decoding="async"
+                        class="absolute right-1 -bottom-3 h-auto w-[62%] cutout transition-transform duration-200 group-hover:scale-105"
+                      />
+                    ) : null}
+                    <span class="absolute top-3 left-3 z-10 -rotate-2 border-2 border-ink-950 bg-paper-50 px-2 py-0.5 kicker text-xs text-ink-950">
+                      {capitalize(game.region)}
+                    </span>
+                  </div>
+
+                  <div class="flex flex-1 flex-col p-4">
+                    <h4
+                      class="font-headline text-[1.7rem] leading-[0.95] break-words text-ink-950 uppercase"
+                      data-i18n-pair={JSON.stringify(game.label)}
+                    >
+                      {game.label.es}
+                    </h4>
+                    <p class="mt-2 text-sm text-ink-700">
+                      <span class="font-headline text-lg text-ink-950">{game.pokemonCount}</span>{' '}
+                      Pokémon
+                    </p>
+
+                    {mon ? (
+                      <div class="mt-3 flex flex-wrap gap-1.5">
+                        {mon.types.map((t) => {
+                          const meta = typeLookup[t];
+                          return (
+                            <span class="type-chip" style={typeChipStyle(meta?.color ?? '#9299a1')}>
+                              <span data-i18n-pair={JSON.stringify(meta?.name ?? { es: t, en: t })}>
+                                {meta?.name.es ?? t}
+                              </span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <span class="mt-auto flex items-center justify-between gap-2 border-t-[3px] border-ink-950 bg-ink-950 px-4 py-3 kicker text-sm text-ember-500 transition-colors group-hover:bg-magenta-500 group-hover:text-paper-50">
+                    <span data-i18n="selector.cta">Entrar al taller</span>
+                    <span
+                      aria-hidden="true"
+                      class="transition-transform duration-150 group-hover:translate-x-1"
+                    >
+                      →
+                    </span>
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))
   }
-</ul>
+</div>
