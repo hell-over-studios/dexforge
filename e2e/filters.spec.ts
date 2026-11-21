@@ -19,6 +19,10 @@ test('filter the index by type and by what resists the team’s worst hit', asyn
   await input.fill('torchic');
   await page.locator('#picker-list [role="option"]').first().click();
   await page.getByRole('button', { name: 'Añadir al equipo' }).click();
+  // the defense panel hydrates when it scrolls into view (client:visible)
+  await page
+    .getByRole('region', { name: 'Análisis defensivo del equipo' })
+    .scrollIntoViewIfNeeded();
   await page.getByRole('button', { name: 'Buscar quién resiste a Agua →' }).click();
   await expect(page.getByRole('button', { name: 'Quitar filtro: resiste a Agua' })).toBeVisible();
   // Hoenn #1 Treecko (Grass) resists Water; Torchic (Fire) must be gone
