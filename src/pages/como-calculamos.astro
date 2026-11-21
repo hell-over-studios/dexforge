@@ -1,0 +1,209 @@
+---
+/**
+ * "Cómo calculamos" (UX-13, #89): the per-generation rules Dexforge applies.
+ * Type-chart differences are computed at build time from the datasets
+ * (chartDiffs against the newest generation available); the rest is the
+ * documented game-accuracy rules (ADR-003).
+ */
+import Base from '../layouts/Base.astro';
+import fs from 'node:fs';
+import type { GameData, GamesRegistry, TypeData } from '../lib/data-schema';
+import { chartDiffs, formatMultiplier, missingTypes } from '../lib/chart-diff';
+import { typeChipStyle } from '../lib/contrast';
+import { withBase } from '../lib/paths';
+
+const read = <T,>(name: string): T =>
+  JSON.parse(fs.readFileSync(new URL(`../../public/data/${name}`, import.meta.url), 'utf-8')) as T;
+
+const registry = read<GamesRegistry>('games.json');
+const types = read<TypeData>('types.json');
+const typeName = (slug: string) =>
+  types.types.find((t) => t.slug === slug)?.name ?? { es: slug, en: slug };
+const typeColor = (slug: string) => types.types.find((t) => t.slug === slug)?.color ?? '#9299a1';
+
+const generations = [...new Set(registry.games.map((g) => g.generation))].sort((a, b) => a - b);
+const newest = generations[generations.length - 1];
+const chartOf = (gen: number) =>
+  read<GameData>(`${registry.games.find((g) => g.generation === gen)!.id}.json`).typeChart;
+const reference = chartOf(newest);
+
+const sections = generations.map((gen) => {
+  const chart = chartOf(gen);
+  return {
+    gen,
+    editions: registry.games.filter((g) => g.generation === gen).map((g) => g.label),
+    typeCount: Object.keys(chart).length,
+    missing: missingTypes(chart, reference),
+    diffs: gen === newest ? [] : chartDiffs(chart, reference),
+  };
+});
+---
+
+<Base title="Dexforge — Cómo calculamos">
+  <section class="border-b-[3px] border-ink-950 bg-paper-100">
+    <div class="mx-auto max-w-5xl px-5 py-12 sm:px-8">
+      <p class="kicker text-xs text-magenta-600" data-i18n="calc.kicker">Fe de datos</p>
+      <h1 class="mt-1 text-[clamp(2.8rem,7vw,5rem)] leading-[0.9] text-ink-950 uppercase">
+        <span data-i18n="calc.title">Cómo calculamos</span>
+      </h1>
+      <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-700 sm:text-lg">
+        <span data-i18n="calc.lede"
+          >Cada edición usa su propia Pokédex regional y su propia tabla de tipos. Nada se aproxima
+          con la tabla moderna: si un tipo no existía o golpeaba distinto en tu juego, Dexforge lo
+          calcula como en tu juego.</span
+        >
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto grid max-w-5xl gap-10 px-5 py-12 sm:px-8">
+    <section aria-labelledby="rules-h" class="paper-panel p-5 sm:p-6">
+      <h2 id="rules-h" class="text-3xl leading-none text-ink-950 uppercase">
+        <span data-i18n="calc.rules">Reglas fijas</span>
+      </h2>
+      <ul class="mt-4 grid gap-3 text-sm leading-relaxed text-ink-800">
+        <li data-i18n="calc.rule.data">
+          Los datos vienen de PokeAPI, se procesan una vez y se publican como archivos estáticos. El
+          sitio nunca consulta PokeAPI mientras lo usas.
+        </li>
+        <li data-i18n="calc.rule.split">
+          Hasta la Gen 3, que un movimiento sea físico o especial depende de su tipo. Desde la Gen 4
+          cada movimiento tiene su propia categoría.
+        </li>
+        <li data-i18n="calc.rule.abilities">
+          Las habilidades existen desde la Gen 3. Las que llegaron en generaciones posteriores se
+          marcan como «no en este juego».
+        </li>
+        <li data-i18n="calc.rule.moves">
+          Potencia, precisión y tipo de cada movimiento son los de esa edición: por ejemplo,
+          Mordisco es de tipo Normal en la Gen 1.
+        </li>
+        <li data-i18n="calc.rule.coverage">
+          La cobertura solo cuenta movimientos de daño con potencia. Los de estado y los de daño
+          fijo no usan la tabla de tipos.
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="gens-h">
+      <h2 id="gens-h" class="text-4xl leading-none text-ink-950 uppercase">
+        <span data-i18n="calc.byGen">Tabla de tipos por generación</span>
+      </h2>
+      <p class="mt-2 max-w-2xl text-sm text-ink-700">
+        <span
+          data-i18n-pair={JSON.stringify({
+            es: `Cada diferencia se calcula comparando la tabla de esa generación con la de la Gen ${newest}.`,
+            en: `Each difference is computed by comparing that generation's chart with Gen ${newest}.`,
+          })}
+          >{
+            `Cada diferencia se calcula comparando la tabla de esa generación con la de la Gen ${newest}.`
+          }</span
+        >
+      </p>
+
+      <div class="mt-6 grid gap-6">
+        {
+          sections.map((s) => (
+            <article class="paper-panel-soft p-5">
+              <div class="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-ink-950 pb-2">
+                <h3 class="text-3xl leading-none text-ink-950 uppercase">
+                  <span data-i18n-pair={JSON.stringify({ es: `Gen ${s.gen}`, en: `Gen ${s.gen}` })}>
+                    Gen {s.gen}
+                  </span>
+                </h3>
+                <span class="kicker text-xs text-ink-600">
+                  {s.typeCount} <span data-i18n="selector.typesLabel">tipos en la tabla</span> ·{' '}
+                  {s.editions.map((e) => e.es).join(' · ')}
+                </span>
+              </div>
+
+              {s.missing.length > 0 ? (
+                <p class="mt-3 text-sm text-ink-800">
+                  <span class="mr-2 kicker text-xs text-magenta-600" data-i18n="calc.missing">
+                    Aún no existen
+                  </span>
+                  {s.missing.map((t) => (
+                    <span class="type-chip mr-1" style={typeChipStyle(typeColor(t))}>
+                      <span data-i18n-pair={JSON.stringify(typeName(t))}>{typeName(t).es}</span>
+                    </span>
+                  ))}
+                </p>
+              ) : null}
+
+              {s.diffs.length > 0 ? (
+                <div class="mt-3 overflow-x-auto">
+                  <table class="w-full min-w-[22rem] border-collapse text-left text-sm">
+                    <thead>
+                      <tr class="kicker text-[11px] text-ink-600">
+                        <th class="py-1 pr-3 font-normal" data-i18n="calc.attacker">
+                          Ataca
+                        </th>
+                        <th class="py-1 pr-3 font-normal" data-i18n="calc.defender">
+                          Defiende
+                        </th>
+                        <th class="py-1 pr-3 font-normal" data-i18n="calc.then">
+                          En esta gen
+                        </th>
+                        <th
+                          class="py-1 font-normal"
+                          data-i18n-pair={JSON.stringify({
+                            es: `En Gen ${newest}`,
+                            en: `In Gen ${newest}`,
+                          })}
+                        >
+                          {`En Gen ${newest}`}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {s.diffs.map((d) => (
+                        <tr class="border-t border-ink-950/15">
+                          <td class="py-1.5 pr-3">
+                            <span class="type-chip" style={typeChipStyle(typeColor(d.attack))}>
+                              <span data-i18n-pair={JSON.stringify(typeName(d.attack))}>
+                                {typeName(d.attack).es}
+                              </span>
+                            </span>
+                          </td>
+                          <td class="py-1.5 pr-3">
+                            <span class="type-chip" style={typeChipStyle(typeColor(d.defend))}>
+                              <span data-i18n-pair={JSON.stringify(typeName(d.defend))}>
+                                {typeName(d.defend).es}
+                              </span>
+                            </span>
+                          </td>
+                          <td class="py-1.5 pr-3 font-headline text-lg text-magenta-600">
+                            {formatMultiplier(d.then)}
+                          </td>
+                          <td class="py-1.5 font-headline text-lg text-ink-500">
+                            {formatMultiplier(d.now)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : s.gen !== newest ? (
+                <p class="mt-3 text-sm text-ink-700" data-i18n="calc.noDiffs">
+                  Sin otras diferencias en los tipos que ya existían.
+                </p>
+              ) : (
+                <p class="mt-3 text-sm text-ink-700" data-i18n="calc.reference">
+                  Es la tabla de referencia de esta página.
+                </p>
+              )}
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <p class="text-sm text-ink-700">
+      <a
+        href={withBase('#juegos')}
+        class="kicker text-magenta-600 underline decoration-2 underline-offset-4 hover:text-magenta-700"
+        data-i18n="hero.cta">Elige tu juego</a
+      >
+    </p>
+  </div>
+</Base>
