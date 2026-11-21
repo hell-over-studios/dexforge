@@ -1,0 +1,77 @@
+---
+/**
+ * 404 (UX-15, #91) in the «Revista» style: a "page torn out" spread with a way
+ * back to the editions. GitHub Pages serves dist/404.html for unknown paths.
+ */
+import Base from '../layouts/Base.astro';
+import LogoMark from '../components/LogoMark.astro';
+import fs from 'node:fs';
+import type { GamesRegistry } from '../lib/data-schema';
+import { editionBackground } from '../lib/editions';
+import { withBase } from '../lib/paths';
+
+const registry = JSON.parse(
+  fs.readFileSync(new URL('../../public/data/games.json', import.meta.url), 'utf-8'),
+) as GamesRegistry;
+---
+
+<Base title="Dexforge — Página no encontrada">
+  <section
+    class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-20"
+  >
+    <div>
+      <p class="inline-block -rotate-1 bg-magenta-500 px-2.5 py-1 kicker text-xs text-paper-50">
+        <span data-i18n="404.kicker">Error 404 · Fe de erratas</span>
+      </p>
+      <h1 class="mt-5 text-[clamp(3rem,8vw,6rem)] leading-[0.9] text-ink-950 uppercase">
+        <span data-i18n="404.title">Esta página se arrancó de la revista.</span>
+      </h1>
+      <p class="mt-6 max-w-xl text-base leading-relaxed text-ink-700 sm:text-lg">
+        <span data-i18n="404.text"
+          >El enlace está roto o la página ya no existe. Si venías de un equipo compartido, pide que
+          te lo copien otra vez.</span
+        >
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={withBase('')} class="pixel-btn pixel-btn-primary">
+          <span data-i18n="game.back">Volver al inicio</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a href={withBase('#juegos')} class="pixel-btn pixel-btn-quiet">
+          <span data-i18n="hero.cta">Elige tu juego</span>
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="relative overflow-hidden border-[3px] border-ink-950 bg-ember-500 halftone p-6 shadow-[10px_10px_0_0_var(--color-ink-950)]"
+    >
+      <span
+        aria-hidden="true"
+        class="absolute -top-6 -right-2 font-headline text-[10rem] leading-none text-paper-50 [text-shadow:4px_4px_0_var(--color-ink-950)]"
+      >
+        404
+      </span>
+      <LogoMark class="relative w-40 -rotate-6" />
+      <p class="relative mt-6 kicker text-xs text-ink-950" data-i18n="404.editions">
+        Ediciones disponibles
+      </p>
+      <ul class="relative mt-2 flex flex-wrap gap-2">
+        {
+          registry.games.map((g) => (
+            <li>
+              <a
+                href={withBase(`juego/${g.id}`)}
+                class="block border-2 border-ink-950 px-2 py-1 kicker text-[11px] text-paper-50 [text-shadow:1px_1px_0_var(--color-ink-950)] hover:-translate-y-0.5"
+                style={`background:${editionBackground(g.id)}`}
+                data-i18n-pair={JSON.stringify(g.label)}
+              >
+                {g.label.es}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
