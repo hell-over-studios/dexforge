@@ -38,6 +38,16 @@ test('pick game, add 6 via drawer, share by URL, restore everywhere', async ({ b
   await expect(page.getByText('6/6')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Ver la ficha de Mudkip (3/6)' })).toBeVisible();
 
+  // UX-02: with a full team the player chooses whom to replace
+  await input.fill('pelipper');
+  await page.locator('#picker-list [role="option"]').first().click();
+  await page.getByRole('button', { name: 'Equipo lleno — elige a quién reemplazar' }).click();
+  await page.getByRole('button', { name: 'Reemplazar a Wailord por Pelipper' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Quitar a Pelipper del equipo (6/6)' }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: /Quitar a Treecko del equipo/ })).toBeVisible();
+
   // 3. copy link -> clipboard holds the ?t= share stub
   await page.getByRole('button', { name: 'Copiar enlace para compartir el equipo' }).click();
   await expect(page.getByText('¡Enlace copiado!')).toBeVisible();

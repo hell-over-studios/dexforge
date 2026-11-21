@@ -8,13 +8,13 @@
  * T4.4: abilities expand in place (description, hidden/not-in-game markers and
  * the team members that share them).
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AbilityInfo, GamePokemon, LocalizedText, MoveInfo } from '../lib/data-schema';
 import { typeChipStyle } from '../lib/contrast';
 import { abilityEffect, abilityPeers } from '../lib/abilities';
 import MovePicker from './MovePicker';
 import { useLang } from '../lib/use-lang';
-import { NO_TEAM, useTeamStore } from '../lib/team';
+import { NO_TEAM, TEAM_SIZE, useTeamStore } from '../lib/team';
 
 interface Props {
   mon: GamePokemon;
@@ -29,8 +29,6 @@ interface Props {
   moveDex: Record<string, MoveInfo>;
   /** the game's current team, used to highlight shared abilities */
   team: GamePokemon[];
-  /** name of the team's oldest member (for the full-team replace message) */
-  oldestName?: string;
   onClose: () => void;
 }
 
@@ -73,7 +71,6 @@ export default function PokemonDetail({
   abilities,
   moveDex,
   team,
-  oldestName,
   onClose,
 }: Props) {
   const lang = useLang();
@@ -82,23 +79,42 @@ export default function PokemonDetail({
   const [openAbility, setOpenAbility] = useState<string | null>(null);
   const teamIds = useTeamStore((s) => s.teams[gameId] ?? NO_TEAM);
   const toggle = useTeamStore((s) => s.toggle);
+  const replace = useTeamStore((s) => s.replace);
   const inTeam = teamIds.includes(mon.id);
+  const full = !inTeam && teamIds.length >= TEAM_SIZE;
   const artwork = mon.sprites.official;
+  /** UX-02: with a full team the player picks whom this Pokémon replaces */
+  const [choosing, setChoosing] = useState(false);
+  const firstChoice = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (choosing) firstChoice.current?.focus();
+  }, [choosing]);
 
   const onTeamButton = () => {
+    if (full) {
+      setChoosing((open) => !open);
+      return;
+    }
     const result = toggle(gameId, mon.id);
     setNote(
-      result === 'replaced-oldest'
+      result === 'added'
         ? lang === 'en'
-          ? `Team full — swapped out ${oldestName ?? 'the oldest'}`
-          : `Equipo lleno — salió ${oldestName ?? 'el más antiguo'}`
-        : result === 'added'
-          ? lang === 'en'
-            ? 'Added to the team.'
-            : 'Añadido al equipo.'
-          : lang === 'en'
-            ? 'Removed from the team.'
-            : 'Quitado del equipo.',
+          ? 'Added to the team.'
+          : 'Añadido al equipo.'
+        : lang === 'en'
+          ? 'Removed from the team.'
+          : 'Quitado del equipo.',
+    );
+  };
+
+  const onReplace = (index: number, outName: string) => {
+    replace(gameId, index, mon.id);
+    setChoosing(false);
+    setNote(
+      lang === 'en'
+        ? `${mon.name.en} replaced ${outName}.`
+        : `${mon.name.es} reemplazó a ${outName}.`,
     );
   };
 
@@ -284,24 +300,91 @@ export default function PokemonDetail({
         inTeam={inTeam}
       />
 
-      {/* team button (T2.8): add / remove / full -> replace oldest */}
+      {/* team button (T2.8): add / remove; full team -> choose whom to replace (UX-02) */}
       <button
         type="button"
         onClick={onTeamButton}
+        aria-expanded={full ? choosing : undefined}
+        aria-controls={full ? `replace-${mon.id}` : undefined}
         className={'pixel-btn mt-3 w-full ' + (inTeam ? 'pixel-btn-paper' : 'pixel-btn-primary')}
       >
         {inTeam
           ? lang === 'en'
             ? 'Remove from team'
             : 'Quitar del equipo'
-          : teamIds.length >= 6
+          : full
             ? lang === 'en'
-              ? `Team full — replace ${oldestName ?? 'oldest'}`
-              : `Equipo lleno — sustituye a ${oldestName ?? 'el más antiguo'}`
+              ? 'Team full — choose whom to replace'
+              : 'Equipo lleno — elige a quién reemplazar'
             : lang === 'en'
               ? 'Add to team'
               : 'Añadir al equipo'}
       </button>
+
+      {full && choosing ? (
+        <div
+          id={`replace-${mon.id}`}
+          role="group"
+          aria-label={
+            lang === 'en'
+              ? `Whom does ${mon.name.en} replace?`
+              : `¿A quién reemplaza ${mon.name.es}?`
+          }
+          onKeyDown={(ev) => {
+            if (ev.key === 'Escape') {
+              ev.stopPropagation();
+              setChoosing(false);
+            }
+          }}
+          className="mt-3 border-2 border-ink-950 bg-ember-300/50 p-3"
+        >
+          <p className="kicker text-xs text-ink-900">
+            {lang === 'en'
+              ? `Whom does ${mon.name.en} replace?`
+              : `¿A quién reemplaza ${mon.name.es}?`}
+          </p>
+          <ul className="mt-2 grid grid-cols-3 gap-2">
+            {teamIds.map((id, index) => {
+              const member = team.find((p) => p.id === id);
+              const name = member?.name[lang] ?? `#${id}`;
+              return (
+                <li key={id}>
+                  <button
+                    type="button"
+                    ref={index === 0 ? firstChoice : undefined}
+                    onClick={() => onReplace(index, name)}
+                    aria-label={
+                      lang === 'en'
+                        ? `Replace ${name} with ${mon.name.en}`
+                        : `Reemplazar a ${name} por ${mon.name.es}`
+                    }
+                    className="flex w-full cursor-pointer flex-col items-center gap-1 border-2 border-ink-950 bg-paper-50 p-1.5 shadow-pixel-sm transition-colors hover:bg-magenta-500 hover:text-paper-50"
+                  >
+                    {member?.sprites.official ? (
+                      <img
+                        src={member.sprites.official}
+                        alt=""
+                        aria-hidden="true"
+                        width={48}
+                        height={48}
+                        className="size-12 [object-fit:contain]"
+                      />
+                    ) : null}
+                    <span className="w-full truncate text-center kicker text-[11px]">{name}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <button
+            type="button"
+            onClick={() => setChoosing(false)}
+            className="mt-3 cursor-pointer kicker text-xs text-ink-700 underline decoration-2 underline-offset-4 hover:text-ink-950"
+          >
+            {lang === 'en' ? 'Cancel' : 'Cancelar'}
+          </button>
+        </div>
+      ) : null}
       <p aria-live="polite" className="mt-1 min-h-4 text-[11px] text-ink-600">
         {note}
       </p>

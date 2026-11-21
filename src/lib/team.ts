@@ -76,6 +76,22 @@ export function insertAt(
   return { ...teams, [gameId]: [...team.slice(0, at), id, ...team.slice(at)] };
 }
 
+/**
+ * Swap the member at a slot for another species (the player chose whom to
+ * replace, UX-02). No-op for an empty/out-of-range slot or a species already
+ * in the team.
+ */
+export function replaceAt(
+  teams: TeamsByGame,
+  gameId: string,
+  index: number,
+  id: number,
+): TeamsByGame {
+  const team = teams[gameId] ?? [];
+  if (index < 0 || index >= team.length || team.includes(id)) return teams;
+  return { ...teams, [gameId]: team.map((x, i) => (i === index ? id : x)) };
+}
+
 /* ---------- Zustand store (client-only island) ---------- */
 
 /** what a shared link (or an incoming `?t=`) brings per team member */
@@ -92,6 +108,8 @@ interface TeamStore {
   remove: (gameId: string, index: number) => void;
   /** put a removed member back at its slot (undo) */
   insert: (gameId: string, index: number, id: number) => void;
+  /** replace the member at a slot (its picked moves are cleared) */
+  replace: (gameId: string, index: number, id: number) => void;
   /** seed a game's team (and its move slots) from a share URL; caps at TEAM_SIZE */
   seed: (gameId: string, members: SeedMember[]) => void;
   /** toggle one move in a team member's four slots (T4.2) */
@@ -118,6 +136,13 @@ export const useTeamStore = create<TeamStore>()(
       },
       insert: (gameId: string, index: number, id: number) => {
         set({ teams: insertAt(get().teams, gameId, index, id) });
+      },
+      replace: (gameId: string, index: number, id: number) => {
+        const { teams, moves } = get();
+        const out = (teams[gameId] ?? [])[index];
+        const next = replaceAt(teams, gameId, index, id);
+        if (next === teams || out === undefined) return;
+        set({ teams: next, moves: withMemberMoves(moves, gameId, out, []) });
       },
       seed: (gameId: string, members: SeedMember[]) => {
         const clean = members

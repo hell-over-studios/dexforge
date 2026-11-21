@@ -4,7 +4,14 @@
  * untested here (tested via browser e2e in T2.10).
  */
 import { describe, expect, it } from 'vitest';
-import { insertAt, removeAt, TEAM_SIZE, toggleMember, type TeamsByGame } from '../src/lib/team';
+import {
+  insertAt,
+  removeAt,
+  replaceAt,
+  TEAM_SIZE,
+  toggleMember,
+  type TeamsByGame,
+} from '../src/lib/team';
 
 describe('toggleMember', () => {
   it('appends with space', () => {
@@ -91,5 +98,19 @@ describe('insertAt (undo a removal, UX-01)', () => {
     expect(insertAt(full, 'emerald', 0, 7)).toBe(full);
     const dup: TeamsByGame = { emerald: [252] };
     expect(insertAt(dup, 'emerald', 0, 252)).toBe(dup);
+  });
+});
+
+describe('replaceAt (choose whom to replace, UX-02)', () => {
+  it('swaps only the chosen slot', () => {
+    const teams: TeamsByGame = { emerald: [1, 2, 3, 4, 5, 6] };
+    expect(replaceAt(teams, 'emerald', 3, 99).emerald).toEqual([1, 2, 3, 99, 5, 6]);
+  });
+
+  it('ignores out-of-range slots and species already in the team', () => {
+    const teams: TeamsByGame = { emerald: [1, 2] };
+    expect(replaceAt(teams, 'emerald', 2, 99)).toBe(teams);
+    expect(replaceAt(teams, 'emerald', -1, 99)).toBe(teams);
+    expect(replaceAt(teams, 'emerald', 0, 2)).toBe(teams);
   });
 });
