@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Phone workbench (UX-10, #86; UX-11, #87): below 640 px “Tu sexteto” is one horizontal snapping strip instead of three rows of cards, and a fixed bottom bar offers Buscar · Análisis · Compartir (safe-area aware; toasts move above it).
+- “Cómo calculamos” page (UX-13, #89): the fixed game-accuracy rules plus, per generation, the types that do not exist yet and every type-chart cell that differs from the newest generation — computed at build time from the datasets (`src/lib/chart-diff.ts`). Linked from the footer and the analysis tabs.
 - “¿Ves un dato incorrecto? Repórtalo en GitHub” in every Pokémon sheet (UX-14, #90): opens the data-correction issue form prefilled with the game, the species and the page.
 - Showdown import/export (V1-01, #94): a “Showdown” panel in the team sheet exports the team as Showdown text (English names) and imports pasted teams in Showdown/PokePaste format, resolved against the selected game; species outside its dex and moves the species cannot learn there are reported, and the previous team is one “Deshacer” away. `src/lib/showdown.ts`.
 - Magazine-style 404 page (UX-15, #91): “Esta página se arrancó de la revista”, with the way home and links to every edition (ES/EN).

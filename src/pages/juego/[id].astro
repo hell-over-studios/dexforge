@@ -116,6 +116,13 @@ const typeCount = typesInChart(game.generation);
         class="lg:sticky lg:top-20 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:pr-2 lg:pb-2"
       >
         <AnalysisTabs client:load gameId={game.id} />
+        <p class="mt-2 text-right">
+          <a
+            href={withBase('como-calculamos')}
+            class="kicker text-[11px] text-ink-600 underline decoration-2 underline-offset-4 hover:text-magenta-600"
+            data-i18n="footer.howWeCalc">Cómo calculamos</a
+          >
+        </p>
 
         <div id="panel-defensa" role="tabpanel" aria-labelledby="tab-defensa" class="mt-5">
           <section aria-label="Análisis defensivo del equipo">

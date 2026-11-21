@@ -104,6 +104,75 @@ export const dict = {
   'bar.search': { es: 'Buscar', en: 'Search' },
   'bar.analysis': { es: 'Análisis', en: 'Analysis' },
   'bar.share': { es: 'Compartir', en: 'Share' },
+  /* UX-13 «Cómo calculamos» */
+  'calc.kicker': {
+    es: 'Fe de datos',
+    en: 'Data notes',
+  },
+  'calc.title': {
+    es: 'Cómo calculamos',
+    en: 'How we calculate',
+  },
+  'calc.lede': {
+    es: 'Cada edición usa su propia Pokédex regional y su propia tabla de tipos. Nada se aproxima con la tabla moderna: si un tipo no existía o golpeaba distinto en tu juego, Dexforge lo calcula como en tu juego.',
+    en: 'Every edition uses its own regional Pokédex and type chart. Nothing is approximated with the modern chart: if a type did not exist or hit differently in your game, Dexforge computes it the way your game does.',
+  },
+  'calc.rules': {
+    es: 'Reglas fijas',
+    en: 'Fixed rules',
+  },
+  'calc.rule.data': {
+    es: 'Los datos vienen de PokeAPI, se procesan una vez y se publican como archivos estáticos. El sitio nunca consulta PokeAPI mientras lo usas.',
+    en: 'Data comes from PokeAPI, is processed once and published as static files. The site never calls PokeAPI while you use it.',
+  },
+  'calc.rule.split': {
+    es: 'Hasta la Gen 3, que un movimiento sea físico o especial depende de su tipo. Desde la Gen 4 cada movimiento tiene su propia categoría.',
+    en: 'Up to Gen 3, whether a move is physical or special depends on its type. From Gen 4 each move has its own category.',
+  },
+  'calc.rule.abilities': {
+    es: 'Las habilidades existen desde la Gen 3. Las que llegaron en generaciones posteriores se marcan como «no en este juego».',
+    en: 'Abilities exist from Gen 3. Those added in later generations are marked “not in this game”.',
+  },
+  'calc.rule.moves': {
+    es: 'Potencia, precisión y tipo de cada movimiento son los de esa edición: por ejemplo, Mordisco es de tipo Normal en la Gen 1.',
+    en: 'Each move keeps that edition’s power, accuracy and type: for example, Bite is Normal in Gen 1.',
+  },
+  'calc.rule.coverage': {
+    es: 'La cobertura solo cuenta movimientos de daño con potencia. Los de estado y los de daño fijo no usan la tabla de tipos.',
+    en: 'Coverage only counts damaging moves with base power. Status and fixed-damage moves do not use the type chart.',
+  },
+  'calc.byGen': {
+    es: 'Tabla de tipos por generación',
+    en: 'Type chart by generation',
+  },
+  'calc.missing': {
+    es: 'Aún no existen',
+    en: 'Not there yet',
+  },
+  'calc.attacker': {
+    es: 'Ataca',
+    en: 'Attacks',
+  },
+  'calc.defender': {
+    es: 'Defiende',
+    en: 'Defends',
+  },
+  'calc.then': {
+    es: 'En esta gen',
+    en: 'In this gen',
+  },
+  'calc.noDiffs': {
+    es: 'Sin otras diferencias en los tipos que ya existían.',
+    en: 'No other differences among the types that already existed.',
+  },
+  'calc.reference': {
+    es: 'Es la tabla de referencia de esta página.',
+    en: 'This is the reference chart for this page.',
+  },
+  'footer.howWeCalc': {
+    es: 'Cómo calculamos',
+    en: 'How we calculate',
+  },
   'game.back': { es: 'Volver al inicio', en: 'Back to home' },
   '404.kicker': { es: 'Error 404 · Fe de erratas', en: 'Error 404 · Errata' },
   '404.title': {
