@@ -29,6 +29,15 @@ test('pick game, add 6 via drawer, share by URL, restore everywhere', async ({ b
   await expect(page.locator('ul[role="list"] li')).toHaveCount(6);
   await expect(page.getByText('6/6')).toBeVisible();
 
+  // UX-01: a card opens the member in the index; ✕ removes it and "Deshacer" brings it back
+  await page.getByRole('button', { name: /Ver la ficha de Torchic/ }).click();
+  await expect(page.locator('section[aria-label="Torchic"]')).toBeVisible();
+  await page.getByRole('button', { name: /Quitar a Mudkip del equipo/ }).click();
+  await expect(page.getByText('5/6')).toBeVisible();
+  await page.getByRole('button', { name: 'Deshacer' }).click();
+  await expect(page.getByText('6/6')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Ver la ficha de Mudkip (3/6)' })).toBeVisible();
+
   // 3. copy link -> clipboard holds the ?t= share stub
   await page.getByRole('button', { name: 'Copiar enlace para compartir el equipo' }).click();
   await expect(page.getByText('¡Enlace copiado!')).toBeVisible();

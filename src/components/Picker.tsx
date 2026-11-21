@@ -14,6 +14,7 @@ import { loadGame, loadTypeMeta, searchDex, buildDexIndex, type DexEntry } from 
 import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
 import { NO_TEAM, useTeamStore } from '../lib/team';
+import { OPEN_MEMBER_EVENT, type OpenMemberDetail } from '../lib/events';
 import type { GameData, GamePokemon, LocalizedText } from '../lib/data-schema';
 
 interface Props {
@@ -58,6 +59,23 @@ export default function Picker({ gameId }: Props) {
       cancelled = true;
     };
   }, [gameId]);
+
+  /* UX-01: a click on a "Tu sexteto" card opens that member here, under its row */
+  useEffect(() => {
+    if (!entries) return;
+    const onOpen = (ev: Event) => {
+      const id = (ev as CustomEvent<OpenMemberDetail>).detail?.id;
+      const idx = entries.findIndex((e) => e.id === id);
+      if (idx < 0) return;
+      setQuery('');
+      setShowCount(PAGE * (Math.floor(idx / PAGE) + 1));
+      setActiveIdx(idx);
+      /* a fresh object so re-opening the same member scrolls to it again */
+      setSelected({ ...entries[idx] });
+    };
+    window.addEventListener(OPEN_MEMBER_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_MEMBER_EVENT, onOpen);
+  }, [entries]);
 
   /* expand-in-place: after every selection, keep the drawer on screen with the
      smallest possible scroll (nearest) — smooth, unless reduced motion is on */

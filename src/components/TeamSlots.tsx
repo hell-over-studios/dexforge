@@ -4,7 +4,8 @@
  * member's first type color, a big slot number, the official artwork as a
  * cut-out (owner directive 2026-11-07: artwork only), a rotated name tag, type
  * chips, the v1 role and four move pips colored by move type. Empty slots say
- * what to do next. Filled cards are buttons that remove the member.
+ * what to do next. A click on a card opens that member in the index drawer
+ * (UX-01, #77); the ✕ button removes it and a toast offers "Deshacer".
  * Own island: it loads the static per-game dataset itself (no PokeAPI).
  * T2.9: copy-link button (shares `?t=<encoded>`) and seeding the team from an
  * incoming `?t=` param; the toast is animation-free under reduced motion.
@@ -17,6 +18,7 @@ import { decodeTeam, encodeTeam } from '../lib/share';
 import { loadGame, loadTypeMeta, type TypeMeta } from '../lib/dex';
 import { typeChipStyle } from '../lib/contrast';
 import { detectRole, ROLE_LABEL } from '../lib/roles';
+import { requestOpenMember } from '../lib/events';
 import type { GameData, GamePokemon } from '../lib/data-schema';
 
 interface Props {
@@ -24,16 +26,48 @@ interface Props {
 }
 
 const MOVE_SLOTS = 4;
+/** how long the "Deshacer" toast stays after a removal */
+const UNDO_MS = 6000;
+
+interface Removed {
+  id: number;
+  index: number;
+  name: string;
+}
 
 export default function TeamSlots({ gameId }: Props) {
   const team = useTeamStore((s) => s.teams[gameId] ?? NO_TEAM);
   const moves = useTeamStore((s) => s.moves[gameId] ?? NO_MEMBER_MOVES);
   const remove = useTeamStore((s) => s.remove);
+  const insert = useTeamStore((s) => s.insert);
   const lang = useLang();
   const [game, setGame] = useState<GameData | null>(null);
   const [meta, setMeta] = useState<TypeMeta>({ colors: {}, names: {} });
   const [copied, setCopied] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [removed, setRemoved] = useState<Removed | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (undoTimer.current) clearTimeout(undoTimer.current);
+    },
+    [],
+  );
+
+  const removeMember = (index: number, id: number, name: string) => {
+    remove(gameId, index);
+    setRemoved({ id, index, name });
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    undoTimer.current = setTimeout(() => setRemoved(null), UNDO_MS);
+  };
+
+  const undoRemove = () => {
+    if (!removed) return;
+    insert(gameId, removed.index, removed.id);
+    setRemoved(null);
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -109,11 +143,16 @@ export default function TeamSlots({ gameId }: Props) {
     remove: (name: string, n: number) =>
       (lang === 'en' ? `Remove ${name} from the team` : `Quitar a ${name} del equipo`) +
       ` (${n}/6)`,
+    open: (name: string, n: number) =>
+      (lang === 'en' ? `Open ${name}’s sheet` : `Ver la ficha de ${name}`) + ` (${n}/6)`,
+    removedMsg: (name: string) =>
+      lang === 'en' ? `${name} removed from the team` : `${name} quitado del equipo`,
+    undo: lang === 'en' ? 'Undo' : 'Deshacer',
     moves: (n: number) => (lang === 'en' ? `${n}/4 moves` : `${n}/4 movimientos`),
     help:
       lang === 'en'
-        ? 'Click a card to remove that member. Moves are picked in each Pokémon’s sheet.'
-        : 'Haz clic en una ficha para quitarla. Los movimientos se eligen en la ficha de cada Pokémon.',
+        ? 'Click a card to open that Pokémon; ✕ removes it. Moves are picked in each Pokémon’s sheet.'
+        : 'Haz clic en una ficha para abrir ese Pokémon; ✕ lo quita. Los movimientos se eligen en la ficha de cada Pokémon.',
   };
 
   return (
@@ -180,12 +219,12 @@ export default function TeamSlots({ gameId }: Props) {
           const picked = moves[String(mon.id)] ?? [];
           const role = detectRole(mon.stats);
           return (
-            <li key={index}>
+            <li key={index} className="group relative">
               <button
                 type="button"
-                onClick={() => remove(gameId, index)}
-                aria-label={t.remove(name, n)}
-                className="group flex h-full w-full cursor-pointer flex-col overflow-hidden border-2 border-ink-950 bg-paper-50 text-left shadow-pixel-sm transition-transform duration-150 ease-out hover:-translate-y-1 hover:-rotate-1"
+                onClick={() => requestOpenMember(mon.id)}
+                aria-label={t.open(name, n)}
+                className="flex h-full w-full cursor-pointer flex-col overflow-hidden border-2 border-ink-950 bg-paper-50 text-left shadow-pixel-sm transition-transform duration-150 ease-out group-hover:-translate-y-1 group-hover:-rotate-1"
               >
                 <span
                   className="relative block h-28 overflow-hidden border-b-2 border-ink-950"
@@ -209,12 +248,6 @@ export default function TeamSlots({ gameId }: Props) {
                       className="absolute -right-1 -bottom-2 size-28 [object-fit:contain] cutout transition-transform duration-200 group-hover:scale-105"
                     />
                   ) : null}
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-1.5 right-1.5 hidden bg-ink-950 px-1.5 py-0.5 kicker text-[10px] text-paper-50 group-hover:block"
-                  >
-                    {lang === 'en' ? 'Remove' : 'Quitar'} ✕
-                  </span>
                 </span>
                 <span className="flex flex-1 flex-col gap-1.5 p-2">
                   <span className="-mt-5 mb-0.5 -rotate-2 self-start border-2 border-ink-950 bg-paper-50 px-1.5 font-headline text-lg leading-tight text-ink-950 uppercase">
@@ -255,10 +288,41 @@ export default function TeamSlots({ gameId }: Props) {
                   </span>
                 </span>
               </button>
+              <button
+                type="button"
+                onClick={() => removeMember(index, mon.id, name)}
+                aria-label={t.remove(name, n)}
+                title={t.remove(name, n)}
+                className="absolute top-1.5 right-1.5 grid size-7 cursor-pointer place-items-center border-2 border-ink-950 bg-paper-50 font-headline text-sm leading-none text-ink-950 shadow-pixel-sm transition-colors group-hover:-translate-y-1 hover:bg-magenta-500 hover:text-paper-50"
+              >
+                <span aria-hidden="true">✕</span>
+              </button>
             </li>
           );
         })}
       </ul>
+
+      {/* undo toast after a removal; plain status message, no motion under reduced motion */}
+      <div
+        role="status"
+        className={
+          'fixed bottom-16 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 border-2 border-ink-950 bg-ink-950 py-1.5 pr-1.5 pl-3 text-sm text-paper-50 shadow-pixel transition-opacity duration-200' +
+          (removed ? ' opacity-100' : ' pointer-events-none opacity-0')
+        }
+      >
+        {removed ? (
+          <>
+            <span className="kicker">{t.removedMsg(removed.name)}</span>
+            <button
+              type="button"
+              onClick={undoRemove}
+              className="cursor-pointer border-2 border-paper-50 bg-ember-500 px-2 py-1 kicker text-xs text-ink-950 hover:bg-ember-400"
+            >
+              {t.undo}
+            </button>
+          </>
+        ) : null}
+      </div>
       <p className="border-t-2 border-ink-950/15 px-4 py-2 text-xs leading-relaxed text-ink-600 sm:px-5">
         {t.help}
       </p>
