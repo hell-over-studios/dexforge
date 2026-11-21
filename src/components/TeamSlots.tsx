@@ -19,6 +19,7 @@ import { loadGame, loadTypeMeta, type TypeMeta } from '../lib/dex';
 import { typeChipStyle } from '../lib/contrast';
 import { detectRole, ROLE_LABEL } from '../lib/roles';
 import { requestOpenMember } from '../lib/events';
+import { EXAMPLE_TEAMS } from '../lib/showcase';
 import type { GameData, GamePokemon } from '../lib/data-schema';
 
 interface Props {
@@ -29,10 +30,10 @@ const MOVE_SLOTS = 4;
 /** how long the "Deshacer" toast stays after a removal */
 const UNDO_MS = 6000;
 
-interface Removed {
-  id: number;
-  index: number;
-  name: string;
+/** what the "Deshacer" toast can bring back: one member, or the whole team */
+interface Undoable {
+  message: string;
+  restore: () => void;
 }
 
 export default function TeamSlots({ gameId }: Props) {
@@ -40,12 +41,13 @@ export default function TeamSlots({ gameId }: Props) {
   const moves = useTeamStore((s) => s.moves[gameId] ?? NO_MEMBER_MOVES);
   const remove = useTeamStore((s) => s.remove);
   const insert = useTeamStore((s) => s.insert);
+  const seed = useTeamStore((s) => s.seed);
   const lang = useLang();
   const [game, setGame] = useState<GameData | null>(null);
   const [meta, setMeta] = useState<TypeMeta>({ colors: {}, names: {} });
   const [copied, setCopied] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [removed, setRemoved] = useState<Removed | null>(null);
+  const [removed, setRemoved] = useState<Undoable | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(
@@ -55,16 +57,42 @@ export default function TeamSlots({ gameId }: Props) {
     [],
   );
 
-  const removeMember = (index: number, id: number, name: string) => {
-    remove(gameId, index);
-    setRemoved({ id, index, name });
+  const offerUndo = (undo: Undoable) => {
+    setRemoved(undo);
     if (undoTimer.current) clearTimeout(undoTimer.current);
     undoTimer.current = setTimeout(() => setRemoved(null), UNDO_MS);
   };
 
+  const removeMember = (index: number, id: number, name: string) => {
+    remove(gameId, index);
+    offerUndo({
+      message: lang === 'en' ? `${name} removed from the team` : `${name} quitado del equipo`,
+      restore: () => insert(gameId, index, id),
+    });
+  };
+
+  /* UX-12: clear the whole team in one click, with the same undo */
+  const clearTeam = () => {
+    const snapshot = team.map((id) => ({ id, moves: moves[String(id)] ?? [] }));
+    seed(gameId, []);
+    offerUndo({
+      message: lang === 'en' ? 'Team cleared' : 'Equipo vaciado',
+      restore: () => seed(gameId, snapshot),
+    });
+  };
+
+  const example = EXAMPLE_TEAMS[gameId];
+  const loadExample = () => {
+    if (example)
+      seed(
+        gameId,
+        example.map((id) => ({ id })),
+      );
+  };
+
   const undoRemove = () => {
     if (!removed) return;
-    insert(gameId, removed.index, removed.id);
+    removed.restore();
     setRemoved(null);
     if (undoTimer.current) clearTimeout(undoTimer.current);
   };
@@ -145,8 +173,14 @@ export default function TeamSlots({ gameId }: Props) {
       ` (${n}/6)`,
     open: (name: string, n: number) =>
       (lang === 'en' ? `Open ${name}’s sheet` : `Ver la ficha de ${name}`) + ` (${n}/6)`,
-    removedMsg: (name: string) =>
-      lang === 'en' ? `${name} removed from the team` : `${name} quitado del equipo`,
+    clear: lang === 'en' ? 'Clear' : 'Vaciar',
+    clearLabel: lang === 'en' ? 'Clear the whole team' : 'Vaciar todo el equipo',
+    firstKicker: lang === 'en' ? 'First time here?' : '¿Primera vez aquí?',
+    firstText:
+      lang === 'en'
+        ? 'Load an example team for this edition to see the whole analysis, then make it yours.'
+        : 'Carga un equipo de ejemplo de esta edición para ver el análisis completo y luego hazlo tuyo.',
+    firstButton: lang === 'en' ? 'Try an example team' : 'Probar con un equipo de ejemplo',
     undo: lang === 'en' ? 'Undo' : 'Deshacer',
     moves: (n: number) => (lang === 'en' ? `${n}/4 moves` : `${n}/4 movimientos`),
     help:
@@ -177,8 +211,34 @@ export default function TeamSlots({ gameId }: Props) {
           >
             {t.copy} <span aria-hidden="true">↗</span>
           </button>
+          {team.length > 0 ? (
+            <button
+              type="button"
+              onClick={clearTeam}
+              aria-label={t.clearLabel}
+              className="cursor-pointer kicker text-xs text-ink-700 underline decoration-2 underline-offset-4 hover:text-magenta-600"
+            >
+              {t.clear}
+            </button>
+          ) : null}
         </div>
       </div>
+
+      {team.length === 0 && example ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-ink-950 bg-ember-300/60 px-4 py-3 sm:px-5">
+          <p className="max-w-xl text-sm text-ink-900">
+            <span className="mr-2 kicker text-xs text-magenta-600">{t.firstKicker}</span>
+            {t.firstText}
+          </p>
+          <button
+            type="button"
+            onClick={loadExample}
+            className="pixel-btn pixel-btn-primary cursor-pointer px-3 py-2 text-sm"
+          >
+            {t.firstButton} <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      ) : null}
 
       {/* reduced-motion aware: global CSS freezes the transition under prefers-reduced-motion */}
       <p
@@ -312,7 +372,7 @@ export default function TeamSlots({ gameId }: Props) {
       >
         {removed ? (
           <>
-            <span className="kicker">{t.removedMsg(removed.name)}</span>
+            <span className="kicker">{removed.message}</span>
             <button
               type="button"
               onClick={undoRemove}
