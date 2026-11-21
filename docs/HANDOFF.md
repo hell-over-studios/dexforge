@@ -1,6 +1,6 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-19 (visual identity v3 «Revista» on a stacked branch)
+Last updated: 2026-11-20 (UX backlog + UX-01…UX-05 on stacked PRs)
 
 ## Exactly where we stopped
 
@@ -31,7 +31,20 @@ Last updated: 2026-11-19 (visual identity v3 «Revista» on a stacked branch)
   section and milestone v0.4.0 closed. **v0.5.0 re-arms the same MINOR gate** — tag only
   after explicit owner approval.
 
-## Latest (2026-11-19)
+## Latest (2026-11-20)
+
+- UX backlog: issues #77–#97. Done on a stack of PRs (#98 → #99 → #100 → #101 → UX-05),
+  each based on the previous branch; merge them in that order (GitHub retargets as each
+  base branch is deleted). Next in line: UX-06 (#82) "Lo que más duele" → filter the index.
+- New pieces: `src/lib/events.ts` (cross-island open-member event), `insertAt`/`replaceAt`
+  - store `insert`/`replace`, `AnalysisTabs` island + `src/lib/tab-counts.ts`, shared
+    dataset cache in `src/lib/dex.ts` (`clearDataCache` for tests).
+- e2e gotchas: the index marker says “casilla N” (not “N/6”) so `getByText('6/6')` stays
+  unique; tab names include their badge (“Defensa 3 alertas”).
+- Playwright was bumped by `pnpm install`; run `pnpm exec playwright install chromium
+chromium-headless-shell` on a fresh machine.
+
+## Previous (2026-11-19)
 
 - Branch `feat/revista-identity` (stacked on `fix/spanish-type-and-place-names`): visual
   identity v3 «Revista» (ADR-012). The PR targets the fix branch so its diff stays clean; merge

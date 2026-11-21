@@ -20,6 +20,15 @@ data".
 | v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                         |
 | v1.0.0 share/polish              | 0%   |                                                                                                    |
 
+## Done 2026-11-20 — UX backlog created + first five fixes
+
+- 21 issues opened from the UX review: #77–#93 (UX-01…UX-17) and #94–#97 (v1.0 Showdown,
+  saved teams, share image, PWA), with milestones v0.5.0 / v1.0.0. Not on the Projects board
+  yet (`gh` lacks the `project` scope).
+- Stacked PRs, merge in order: #98 (UX-01 open/undo) → #99 (UX-02 choose replacement) →
+  #100 (UX-03 index marker) → #101 (UX-04 tab counts) → UX-05 shared data cache.
+- Suite: 181 unit tests in 18 files, 8 e2e (desktop + Pixel 5).
+
 ## Done 2026-11-19 — Visual identity v3 «Revista» (ADR-012)
 
 - Team decision after the design exploration: strategy-magazine personality + anvil-Pokédex
