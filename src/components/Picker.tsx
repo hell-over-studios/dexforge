@@ -285,6 +285,14 @@ export default function Picker({ gameId }: Props) {
                   <span className="ml-2 text-xs text-ink-600">
                     n.º {entry.id} · dex {entry.dexNumber}
                   </span>
+                  {/* UX-03: who is already in the team (visible text, part of the option name) */}
+                  {teamIds.includes(entry.id) ? (
+                    <span className="ml-2 inline-block -rotate-1 bg-ink-950 px-1.5 py-0.5 align-middle kicker text-[10px] text-ember-500">
+                      {lang === 'en'
+                        ? `In your team · slot ${teamIds.indexOf(entry.id) + 1}`
+                        : `En tu equipo · casilla ${teamIds.indexOf(entry.id) + 1}`}
+                    </span>
+                  ) : null}
                   <span className="mt-1 flex flex-wrap gap-1">
                     {entry.types.map((t) => (
                       <span
