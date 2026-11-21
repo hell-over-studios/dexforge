@@ -20,6 +20,8 @@ import { typeChipStyle } from '../lib/contrast';
 import { detectRole, ROLE_LABEL } from '../lib/roles';
 import { requestOpenMember } from '../lib/events';
 import { EXAMPLE_TEAMS } from '../lib/showcase';
+import ShowdownPanel from './ShowdownPanel';
+import type { ShowdownMember } from '../lib/showdown';
 import type { GameData, GamePokemon } from '../lib/data-schema';
 
 interface Props {
@@ -82,6 +84,17 @@ export default function TeamSlots({ gameId }: Props) {
   };
 
   const example = EXAMPLE_TEAMS[gameId];
+  /* V1-01: Showdown import replaces the team; the previous one stays one "Deshacer" away */
+  const [showdownOpen, setShowdownOpen] = useState(false);
+  const importTeam = (members: ShowdownMember[]) => {
+    const snapshot = team.map((id) => ({ id, moves: moves[String(id)] ?? [] }));
+    seed(gameId, members);
+    offerUndo({
+      message: lang === 'en' ? 'Team imported' : 'Equipo importado',
+      restore: () => seed(gameId, snapshot),
+    });
+  };
+
   const loadExample = () => {
     if (example)
       seed(
@@ -211,6 +224,14 @@ export default function TeamSlots({ gameId }: Props) {
           >
             {t.copy} <span aria-hidden="true">↗</span>
           </button>
+          <button
+            type="button"
+            onClick={() => setShowdownOpen((o) => !o)}
+            aria-expanded={showdownOpen}
+            className="cursor-pointer border-2 border-ink-950 bg-paper-50 px-2.5 py-2 kicker text-xs text-ink-950 shadow-pixel-sm hover:bg-ember-300"
+          >
+            Showdown <span aria-hidden="true">{showdownOpen ? '▴' : '▾'}</span>
+          </button>
           {team.length > 0 ? (
             <button
               type="button"
@@ -223,6 +244,15 @@ export default function TeamSlots({ gameId }: Props) {
           ) : null}
         </div>
       </div>
+
+      {showdownOpen && game ? (
+        <ShowdownPanel
+          game={game}
+          lang={lang}
+          team={team.map((id) => ({ id, moves: moves[String(id)] ?? [] }))}
+          onImport={importTeam}
+        />
+      ) : null}
 
       {team.length === 0 && example ? (
         <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-ink-950 bg-ember-300/60 px-4 py-3 sm:px-5">
