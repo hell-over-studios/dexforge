@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Coverage ideas (UX-07, #83): under the coverage gaps, “Ideas para cubrir los huecos” lists, for the first four gaps, the strongest damaging moves team members can learn in that game that hit the gap 2× or more, with a one-click “Añadir”. Pure `suggestCoverage` in `src/lib/coverage.ts`.
 - “¿Ves un dato incorrecto? Repórtalo en GitHub” in every Pokémon sheet (UX-14, #90): opens the data-correction issue form prefilled with the game, the species and the page.
 - Showdown import/export (V1-01, #94): a “Showdown” panel in the team sheet exports the team as Showdown text (English names) and imports pasted teams in Showdown/PokePaste format, resolved against the selected game; species outside its dex and moves the species cannot learn there are reported, and the previous team is one “Deshacer” away. `src/lib/showdown.ts`.
 - Magazine-style 404 page (UX-15, #91): “Esta página se arrancó de la revista”, with the way home and links to every edition (ES/EN).
