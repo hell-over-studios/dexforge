@@ -45,3 +45,25 @@ export const GAME_FEATURED: Record<string, ShowcaseEntry> = {
   'x-y': entry(716, 'Xerneas', ['fairy']),
   'omega-ruby-alpha-sapphire': entry(383, 'Groudon', ['ground']),
 };
+
+/**
+ * Example team per game (UX-12, #88): six species available in that game's
+ * regional dex (checked by tests/showcase.test.ts against the datasets), so a
+ * first visit can see the whole analysis in one click.
+ */
+export const EXAMPLE_TEAMS: Record<string, number[]> = {
+  'red-blue': [3, 26, 112, 121, 143, 65],
+  yellow: [25, 6, 131, 143, 65, 112],
+  'gold-silver': [157, 181, 130, 208, 196, 214],
+  crystal: [157, 181, 130, 208, 196, 214],
+  'ruby-sapphire': [260, 282, 310, 334, 306, 373],
+  emerald: [260, 282, 310, 334, 306, 257],
+  'firered-leafgreen': [6, 135, 131, 143, 65, 112],
+  'diamond-pearl': [392, 448, 445, 419, 407, 405],
+  platinum: [392, 448, 445, 419, 468, 405],
+  'heartgold-soulsilver': [157, 181, 130, 208, 196, 214],
+  'black-white': [500, 530, 609, 553, 635, 547],
+  'black-2-white-2': [503, 530, 609, 553, 635, 596],
+  'x-y': [658, 448, 700, 715, 681, 697],
+  'omega-ruby-alpha-sapphire': [260, 282, 310, 334, 306, 373],
+};

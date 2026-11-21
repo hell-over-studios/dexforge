@@ -18,6 +18,7 @@ import { loadGame, loadTypeMeta, type TypeMeta } from '../lib/dex';
 import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
 import { useTeamStore } from '../lib/team';
+import { requestResistsFilter } from '../lib/events';
 import type { GameData, GamePokemon } from '../lib/data-schema';
 
 /** multiplier -> display label (composition can only reach 0/0.25/0.5/1/2/4) */
@@ -243,6 +244,20 @@ export default function DefenseCharts({ gameId }: { gameId: string }) {
                         ),
                       )}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => requestResistsFilter(h.attack)}
+                      className={
+                        'mt-2 w-full cursor-pointer border-2 border-ink-950 px-2 py-1 text-left kicker text-[11px] transition-colors ' +
+                        (rank === 0
+                          ? 'bg-paper-50 text-ink-950 hover:bg-ember-300'
+                          : 'bg-ink-950 text-ember-500 hover:bg-magenta-500 hover:text-paper-50')
+                      }
+                    >
+                      {lang === 'en'
+                        ? `Find who resists ${typeName(h.attack)} →`
+                        : `Buscar quién resiste a ${typeName(h.attack)} →`}
+                    </button>
                   </li>
                 ))}
               </ol>

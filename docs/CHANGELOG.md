@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Magazine-style 404 page (UX-15, #91): “Esta página se arrancó de la revista”, with the way home and links to every edition (ES/EN).
+- Example team per edition (UX-12, #88): an empty workbench offers “Probar con un equipo de ejemplo” (six species checked against each game’s dex by `tests/showcase.test.ts`), and “Vaciar” clears the whole team with the same “Deshacer” toast.
 - 11 more games, Gen 1–6 (14 in total): Yellow, Crystal, Ruby/Sapphire, FireRed/LeafGreen, Diamond/Pearl, Platinum, HeartGold/SoulSilver, Black/White, Black 2/White 2, X/Y and Omega Ruby/Alpha Sapphire, each with its own regional Pokédex, game-accurate type chart (18 types with Fairy from Gen 6), learnsets and abilities. The home page groups editions by generation; edition colors and per-generation type counts live in `src/lib/editions.ts`; `data:check` derives the expected chart size from the generation and adds Yellow, Platinum and X/Y spot checks.
 
 ### Changed
 
+- Index filters (UX-08, #84; UX-06, #82): type and role chips under the search, plus “Buscar quién resiste a X” on each “Lo que más duele” card, which lists the Pokémon of that game that resist or ignore that attacking type (game-accurate chart). Pure `filterDex` in `src/lib/dex.ts`.
 - Team sheet (UX-01, #77): a click on a member card opens that Pokémon in the index drawer instead of removing it; a separate ✕ removes it and a toast offers “Deshacer” for 6 s.
 - Full team (UX-02, #78): adding a seventh Pokémon no longer drops the oldest member; the drawer asks whom to replace and clears that member’s moves.
 - Index (UX-03, #79): rows of Pokémon already in the team show “En tu equipo · casilla N”.

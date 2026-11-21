@@ -14,3 +14,17 @@ export interface OpenMemberDetail {
 export function requestOpenMember(id: number): void {
   window.dispatchEvent(new CustomEvent<OpenMemberDetail>(OPEN_MEMBER_EVENT, { detail: { id } }));
 }
+
+export const FILTER_RESISTS_EVENT = 'dexforge:filter-resists';
+
+export interface FilterResistsDetail {
+  /** attacking type slug the index should answer ("who resists it?") */
+  type: string;
+}
+
+/** ask the index to list the Pokémon that resist or ignore this attacking type */
+export function requestResistsFilter(type: string): void {
+  window.dispatchEvent(
+    new CustomEvent<FilterResistsDetail>(FILTER_RESISTS_EVENT, { detail: { type } }),
+  );
+}
