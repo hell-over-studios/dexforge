@@ -10,11 +10,29 @@
  */
 import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import PokemonDetail from './PokemonDetail';
-import { loadGame, loadTypeMeta, searchDex, buildDexIndex, type DexEntry } from '../lib/dex';
+import {
+  buildDexIndex,
+  filterDex,
+  isFilterActive,
+  loadGame,
+  loadTypeMeta,
+  NO_FILTER,
+  searchDex,
+  type DexEntry,
+  type DexFilter,
+} from '../lib/dex';
+import { detectRole, ROLE_LABEL, type Role } from '../lib/roles';
 import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
 import { NO_TEAM, useTeamStore } from '../lib/team';
-import { OPEN_MEMBER_EVENT, type OpenMemberDetail } from '../lib/events';
+import {
+  FILTER_RESISTS_EVENT,
+  OPEN_MEMBER_EVENT,
+  type FilterResistsDetail,
+  type OpenMemberDetail,
+} from '../lib/events';
+
+const ROLES: Role[] = ['sweeper', 'special-sweeper', 'wall', 'tank', 'support'];
 import type { GameData, GamePokemon, LocalizedText } from '../lib/data-schema';
 
 interface Props {
@@ -87,7 +105,45 @@ export default function Picker({ gameId }: Props) {
     detailRef.current?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
   }, [selected]);
 
-  const results = useMemo(() => (entries ? searchDex(entries, query) : []), [entries, query]);
+  /* UX-06/UX-08: type, role and "resists" filters on top of the text search */
+  const [filter, setFilter] = useState<DexFilter>(NO_FILTER);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const roles = useMemo(() => {
+    const map = new Map<number, Role>();
+    for (const p of game?.pokemon ?? []) map.set(p.id, detectRole(p.stats));
+    return map;
+  }, [game]);
+  const results = useMemo(
+    () =>
+      entries && game
+        ? filterDex(searchDex(entries, query), filter, game.typeChart, roles)
+        : entries
+          ? searchDex(entries, query)
+          : [],
+    [entries, game, query, filter, roles],
+  );
+  const filtering = isFilterActive(filter);
+  const activeFilterCount = filter.types.length + (filter.role ? 1 : 0) + (filter.resists ? 1 : 0);
+
+  /* UX-06: "Lo que más duele" asks the index for Pokémon that resist a type */
+  useEffect(() => {
+    const onResists = (ev: Event) => {
+      const type = (ev as CustomEvent<FilterResistsDetail>).detail?.type;
+      if (!type) return;
+      setFilter({ ...NO_FILTER, resists: type });
+      setFiltersOpen(true);
+      setQuery('');
+      setShowCount(PAGE);
+      setActiveIdx(0);
+      setSelected(null);
+      panelRef.current?.scrollIntoView({ block: 'nearest' });
+      inputRef.current?.focus({ preventScroll: true });
+    };
+    window.addEventListener(FILTER_RESISTS_EVENT, onResists);
+    return () => window.removeEventListener(FILTER_RESISTS_EVENT, onResists);
+  }, []);
   const visible = results.slice(0, showCount);
   /* where the drawer sits: under the selected row when it is on screen, above
      the list otherwise (e.g. the selection outlived a narrowed query) */
@@ -174,7 +230,7 @@ export default function Picker({ gameId }: Props) {
   const activeId = visible[activeIdx] ? `picker-opt-${activeIdx}` : undefined;
 
   return (
-    <div className="paper-panel flex flex-col lg:max-h-[calc(100dvh-7rem)]">
+    <div ref={panelRef} className="paper-panel flex flex-col lg:max-h-[calc(100dvh-7rem)]">
       <div className="border-b-[3px] border-ink-950 p-4 sm:px-5">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
@@ -192,6 +248,7 @@ export default function Picker({ gameId }: Props) {
           {lang === 'en' ? 'Search Pokémon' : 'Buscar Pokémon'}
         </label>
         <input
+          ref={inputRef}
           id="picker-input"
           role="combobox"
           type="text"
@@ -214,6 +271,113 @@ export default function Picker({ gameId }: Props) {
             ? 'Arrow keys to move, Enter to add, Escape to clear.'
             : 'Flechas para moverte, Enter para añadir, Escape para limpiar.'}
         </p>
+
+        {/* UX-08 filters (type / role) + UX-06 "resists" chip */}
+        <div className="mt-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              aria-expanded={filtersOpen}
+              aria-controls="picker-filters"
+              onClick={() => setFiltersOpen((o) => !o)}
+              className="cursor-pointer border-2 border-ink-950 bg-paper-50 px-2.5 py-1 kicker text-xs text-ink-950 shadow-pixel-sm hover:bg-ember-300"
+            >
+              {lang === 'en' ? 'Filters' : 'Filtros'}
+              {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}{' '}
+              <span aria-hidden="true">{filtersOpen ? '▴' : '▾'}</span>
+            </button>
+            {filter.resists ? (
+              <button
+                type="button"
+                onClick={() => setFilter({ ...filter, resists: null })}
+                aria-label={
+                  lang === 'en'
+                    ? `Remove filter: resists ${typeNames[filter.resists]?.en ?? filter.resists}`
+                    : `Quitar filtro: resiste a ${typeNames[filter.resists]?.es ?? filter.resists}`
+                }
+                className="cursor-pointer rounded-full border-2 border-ink-950 bg-moss-300 px-2.5 py-0.5 kicker text-xs text-ink-950 hover:bg-moss-400"
+              >
+                {lang === 'en' ? 'Resists' : 'Resiste a'}{' '}
+                {typeNames[filter.resists]?.[lang] ?? filter.resists} ✕
+              </button>
+            ) : null}
+            {filtering ? (
+              <button
+                type="button"
+                onClick={() => setFilter(NO_FILTER)}
+                className="cursor-pointer kicker text-xs text-magenta-600 underline decoration-2 underline-offset-4 hover:text-magenta-700"
+              >
+                {lang === 'en' ? 'Clear filters' : 'Limpiar filtros'}
+              </button>
+            ) : null}
+          </div>
+
+          {filtersOpen && game ? (
+            <div id="picker-filters" className="mt-3 grid gap-3">
+              <fieldset>
+                <legend className="kicker text-[11px] text-ink-700">
+                  {lang === 'en' ? 'Type' : 'Tipo'}
+                </legend>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {Object.keys(game.typeChart).map((t) => {
+                    const on = filter.types.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => {
+                          setFilter({
+                            ...filter,
+                            types: on ? filter.types.filter((x) => x !== t) : [...filter.types, t],
+                          });
+                          resetWindow();
+                        }}
+                        className={
+                          'type-chip cursor-pointer transition-opacity ' +
+                          (on || filter.types.length === 0 ? 'opacity-100' : 'opacity-45') +
+                          (on ? ' ring-2 ring-ink-950 ring-offset-1' : '')
+                        }
+                        style={typeChipStyle(colors[t] ?? '#dcc49a')}
+                      >
+                        {typeNames[t]?.[lang] ?? t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend className="kicker text-[11px] text-ink-700">
+                  {lang === 'en' ? 'Role' : 'Rol'}
+                </legend>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {ROLES.map((r) => {
+                    const on = filter.role === r;
+                    return (
+                      <button
+                        key={r}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => {
+                          setFilter({ ...filter, role: on ? null : r });
+                          resetWindow();
+                        }}
+                        className={
+                          'cursor-pointer rounded-full border-2 border-ink-950 px-2.5 py-0.5 kicker text-[11px] ' +
+                          (on
+                            ? 'bg-ink-950 text-ember-500'
+                            : 'bg-paper-50 text-ink-950 hover:bg-ember-300')
+                        }
+                      >
+                        {ROLE_LABEL[r][lang]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {/* the index scrolls on its own on desktop so the team and analysis stay in view */}
@@ -332,12 +496,16 @@ export default function Picker({ gameId }: Props) {
           ))}
         </ul>
 
-        {query !== '' && results.length === 0 ? (
+        {(query !== '' || filtering) && results.length === 0 ? (
           <div className="mt-3 border-2 border-dashed border-ink-900/40 bg-paper-50 p-4">
             <p className="font-display text-sm text-ink-600">
-              {lang === 'en'
-                ? `No Pokémon matches "${query}"`
-                : `Ningún Pokémon coincide con "${query}"`}
+              {query === ''
+                ? lang === 'en'
+                  ? 'No Pokémon in this game matches these filters.'
+                  : 'Ningún Pokémon de este juego cumple estos filtros.'
+                : lang === 'en'
+                  ? `No Pokémon matches "${query}"`
+                  : `Ningún Pokémon coincide con "${query}"`}
             </p>
           </div>
         ) : null}
