@@ -101,6 +101,16 @@ export const dict = {
   'footer.art': { es: 'Ilustraciones: PokeAPI', en: 'Artwork: PokeAPI' },
 
   'game.back': { es: 'Volver al inicio', en: 'Back to home' },
+  '404.kicker': { es: 'Error 404 · Fe de erratas', en: 'Error 404 · Errata' },
+  '404.title': {
+    es: 'Esta página se arrancó de la revista.',
+    en: 'This page was torn out of the magazine.',
+  },
+  '404.text': {
+    es: 'El enlace está roto o la página ya no existe. Si venías de un equipo compartido, pide que te lo copien otra vez.',
+    en: 'The link is broken or the page is gone. If you came from a shared team, ask for the link again.',
+  },
+  '404.editions': { es: 'Ediciones disponibles', en: 'Available editions' },
   /* ADR-012 «Revista»: masthead, cover lines, game spread and analysis tabs */
   'mast.tagline': { es: 'Guía de equipos por juego', en: 'Team guide by game' },
   'strip.charts': {
