@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T03:23:44.671Z",
+  "generatedAt": "2026-11-21T02:22:27.212Z",
   "games": [
     {
       "id": "red-blue",
@@ -16,6 +16,25 @@
         "blue"
       ],
       "spriteVersionGroup": "red-blue",
+      "pokedexes": [
+        "kanto"
+      ],
+      "pokemonCount": 151
+    },
+    {
+      "id": "yellow",
+      "label": {
+        "en": "Yellow",
+        "es": "Amarillo"
+      },
+      "region": "kanto",
+      "generation": 1,
+      "generationSlug": "generation-i",
+      "versionGroup": "yellow",
+      "versions": [
+        "yellow"
+      ],
+      "spriteVersionGroup": "yellow",
       "pokedexes": [
         "kanto"
       ],
@@ -42,6 +61,45 @@
       "pokemonCount": 251
     },
     {
+      "id": "crystal",
+      "label": {
+        "en": "Crystal",
+        "es": "Cristal"
+      },
+      "region": "johto",
+      "generation": 2,
+      "generationSlug": "generation-ii",
+      "versionGroup": "crystal",
+      "versions": [
+        "crystal"
+      ],
+      "spriteVersionGroup": "crystal",
+      "pokedexes": [
+        "original-johto"
+      ],
+      "pokemonCount": 251
+    },
+    {
+      "id": "ruby-sapphire",
+      "label": {
+        "en": "Ruby / Sapphire",
+        "es": "Rubí / Zafiro"
+      },
+      "region": "hoenn",
+      "generation": 3,
+      "generationSlug": "generation-iii",
+      "versionGroup": "ruby-sapphire",
+      "versions": [
+        "ruby",
+        "sapphire"
+      ],
+      "spriteVersionGroup": "ruby-sapphire",
+      "pokedexes": [
+        "hoenn"
+      ],
+      "pokemonCount": 202
+    },
+    {
       "id": "emerald",
       "label": {
         "en": "Emerald",
@@ -59,6 +117,167 @@
         "hoenn"
       ],
       "pokemonCount": 202
+    },
+    {
+      "id": "firered-leafgreen",
+      "label": {
+        "en": "FireRed / LeafGreen",
+        "es": "Rojo Fuego / Verde Hoja"
+      },
+      "region": "kanto",
+      "generation": 3,
+      "generationSlug": "generation-iii",
+      "versionGroup": "firered-leafgreen",
+      "versions": [
+        "firered",
+        "leafgreen"
+      ],
+      "spriteVersionGroup": "firered-leafgreen",
+      "pokedexes": [
+        "kanto"
+      ],
+      "pokemonCount": 151
+    },
+    {
+      "id": "diamond-pearl",
+      "label": {
+        "en": "Diamond / Pearl",
+        "es": "Diamante / Perla"
+      },
+      "region": "sinnoh",
+      "generation": 4,
+      "generationSlug": "generation-iv",
+      "versionGroup": "diamond-pearl",
+      "versions": [
+        "diamond",
+        "pearl"
+      ],
+      "spriteVersionGroup": "diamond-pearl",
+      "pokedexes": [
+        "original-sinnoh"
+      ],
+      "pokemonCount": 151
+    },
+    {
+      "id": "platinum",
+      "label": {
+        "en": "Platinum",
+        "es": "Platino"
+      },
+      "region": "sinnoh",
+      "generation": 4,
+      "generationSlug": "generation-iv",
+      "versionGroup": "platinum",
+      "versions": [
+        "platinum"
+      ],
+      "spriteVersionGroup": "platinum",
+      "pokedexes": [
+        "extended-sinnoh"
+      ],
+      "pokemonCount": 210
+    },
+    {
+      "id": "heartgold-soulsilver",
+      "label": {
+        "en": "HeartGold / SoulSilver",
+        "es": "HeartGold / SoulSilver"
+      },
+      "region": "johto",
+      "generation": 4,
+      "generationSlug": "generation-iv",
+      "versionGroup": "heartgold-soulsilver",
+      "versions": [
+        "heartgold",
+        "soulsilver"
+      ],
+      "spriteVersionGroup": "heartgold-soulsilver",
+      "pokedexes": [
+        "updated-johto"
+      ],
+      "pokemonCount": 256
+    },
+    {
+      "id": "black-white",
+      "label": {
+        "en": "Black / White",
+        "es": "Negro / Blanco"
+      },
+      "region": "unova",
+      "generation": 5,
+      "generationSlug": "generation-v",
+      "versionGroup": "black-white",
+      "versions": [
+        "black",
+        "white"
+      ],
+      "spriteVersionGroup": "black-white",
+      "pokedexes": [
+        "original-unova"
+      ],
+      "pokemonCount": 156
+    },
+    {
+      "id": "black-2-white-2",
+      "label": {
+        "en": "Black 2 / White 2",
+        "es": "Negro 2 / Blanco 2"
+      },
+      "region": "unova",
+      "generation": 5,
+      "generationSlug": "generation-v",
+      "versionGroup": "black-2-white-2",
+      "versions": [
+        "black-2",
+        "white-2"
+      ],
+      "spriteVersionGroup": "black-2-white-2",
+      "pokedexes": [
+        "updated-unova"
+      ],
+      "pokemonCount": 301
+    },
+    {
+      "id": "x-y",
+      "label": {
+        "en": "X / Y",
+        "es": "X / Y"
+      },
+      "region": "kalos",
+      "generation": 6,
+      "generationSlug": "generation-vi",
+      "versionGroup": "x-y",
+      "versions": [
+        "x",
+        "y"
+      ],
+      "spriteVersionGroup": "x-y",
+      "pokedexes": [
+        "kalos-central",
+        "kalos-coastal",
+        "kalos-mountain"
+      ],
+      "pokemonCount": 457
+    },
+    {
+      "id": "omega-ruby-alpha-sapphire",
+      "label": {
+        "en": "Omega Ruby / Alpha Sapphire",
+        "es": "Rubí Omega / Zafiro Alfa"
+      },
+      "region": "hoenn",
+      "generation": 6,
+      "generationSlug": "generation-vi",
+      "versionGroup": "omega-ruby-alpha-sapphire",
+      "versions": [
+        "omega-ruby",
+        "alpha-sapphire"
+      ],
+      "spriteVersionGroup": "omega-ruby-alpha-sapphire",
+      "pokedexes": [
+        "updated-hoenn"
+      ],
+      "pokemonCount": 211
     }
   ]
 }

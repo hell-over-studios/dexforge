@@ -31,6 +31,17 @@ export const HERO_TRIO: ShowcaseEntry[] = [
 /** One representative per supported game. */
 export const GAME_FEATURED: Record<string, ShowcaseEntry> = {
   'red-blue': entry(25, 'Pikachu', ['electric']),
+  yellow: entry(25, 'Pikachu', ['electric']),
   'gold-silver': entry(155, 'Cyndaquil', ['fire']),
+  crystal: entry(245, 'Suicune', ['water']),
+  'ruby-sapphire': entry(382, 'Kyogre', ['water']),
   emerald: entry(254, 'Sceptile', ['grass']),
+  'firered-leafgreen': entry(6, 'Charizard', ['fire', 'flying']),
+  'diamond-pearl': entry(393, 'Piplup', ['water']),
+  platinum: entry(487, 'Giratina', ['ghost', 'dragon']),
+  'heartgold-soulsilver': entry(249, 'Lugia', ['psychic', 'flying']),
+  'black-white': entry(495, 'Snivy', ['grass']),
+  'black-2-white-2': entry(646, 'Kyurem', ['dragon', 'ice']),
+  'x-y': entry(716, 'Xerneas', ['fairy']),
+  'omega-ruby-alpha-sapphire': entry(383, 'Groudon', ['ground']),
 };

@@ -88,7 +88,8 @@ for what must exist in each version; GitHub issues reference it.
 
 ## v1.1.0+ — Expansion
 
-- [ ] More games (Ruby/Sapphire, Crystal, Yellow, FRLG, HGSS, Platinum, B2W2, X/Y, Sw/Sh…)
+- [x] More games, Gen 1–6: Yellow, Crystal, Ruby/Sapphire, FRLG, Diamond/Pearl, Platinum, HGSS, Black/White, B2W2, X/Y, ORAS (2026-11-20)
+- [ ] Gen 7+ (Sun/Moon onward: regional forms, thin encounter data)
 - [ ] Nuzlocke mode
 - [ ] 3D viewer exploration (user-provided assets, no ripped models)
 - [ ] More themes

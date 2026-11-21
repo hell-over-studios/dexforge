@@ -27,8 +27,8 @@ export const dict = {
 
   'selector.heading': { es: 'Elige tu juego', en: 'Choose your game' },
   'selector.sub': {
-    es: 'Tres regiones, tres tablas de tipos y cero aproximaciones. Entra y empieza a montar el equipo.',
-    en: 'Three regions, three type charts and zero approximations. Step in and start building.',
+    es: 'Cada edición con su Pokédex regional y su tabla de tipos exacta, sin aproximaciones. Entra y empieza a montar el equipo.',
+    en: 'Every edition with its own regional Pokédex and exact type chart, no approximations. Step in and start building.',
   },
   'selector.count': { es: '151 + 251 + 202 Pokémon', en: '151 + 251 + 202 Pokémon' },
   'selector.cta': { es: 'Entrar al taller', en: 'Enter the workshop' },
@@ -43,8 +43,8 @@ export const dict = {
   },
   'how.step1.title': { es: 'Elige tu juego', en: 'Pick your game' },
   'how.step1.text': {
-    es: 'Rojo/Azul, Oro/Plata o Esmeralda. La app fija el reparto y la tabla de tipos de esa edición.',
-    en: 'Red/Blue, Gold/Silver or Emerald. The app locks the roster and type chart of that release.',
+    es: 'La edición que estás jugando, de Rojo/Azul a Rubí Omega. La app fija el reparto y la tabla de tipos de esa edición.',
+    en: 'The edition you are playing, from Red/Blue to Omega Ruby. The app locks the roster and type chart of that release.',
   },
   'how.step2.title': { es: 'Arma tu equipo', en: 'Build your team' },
   'how.step2.text': {

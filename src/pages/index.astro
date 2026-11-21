@@ -25,7 +25,17 @@ const typeLookup = Object.fromEntries(
   typeData.types.map((t) => [t.slug, { name: t.name, color: t.color }]),
 );
 
-const totalMons = registry.games.reduce((sum, g) => sum + g.pokemonCount, 0);
+const editionCount = registry.games.length;
+const maxGen = Math.max(...registry.games.map((g) => g.generation));
+/* cover line A and the selector count follow the registry, never a hard-coded list */
+const editionsLine = {
+  es: `ediciones, de la Gen 1 a la Gen ${maxGen}`,
+  en: `editions, from Gen 1 to Gen ${maxGen}`,
+};
+const selectorCount = {
+  es: `${editionCount} ediciones · Gen 1–${maxGen}`,
+  en: `${editionCount} editions · Gen 1–${maxGen}`,
+};
 
 /* cover cut-outs: position on the halftone block, back to front */
 const coverMons = [
@@ -34,10 +44,10 @@ const coverMons = [
   { mon: HERO_TRIO[1], class: 'left-[22%] bottom-[1%] w-[52%]', delay: '0.45s' },
 ];
 
-const coverLines: { big: string; key: DictKey; color: string }[] = [
-  { big: String(totalMons), key: 'cover.lineA', color: 'text-magenta-500' },
-  { big: '×4', key: 'cover.lineB', color: 'text-moss-500' },
-  { big: '6×4', key: 'cover.lineC', color: 'text-ink-950' },
+const coverLines: { big: string; text: { es: string; en: string }; color: string }[] = [
+  { big: String(editionCount), text: editionsLine, color: 'text-magenta-500' },
+  { big: '×4', text: dict['cover.lineB'], color: 'text-moss-500' },
+  { big: '6×4', text: dict['cover.lineC'], color: 'text-ink-950' },
 ];
 
 const steps: { n: string; titleKey: DictKey; textKey: DictKey }[] = [
@@ -103,9 +113,9 @@ const features: { titleKey: DictKey; textKey: DictKey; band: string; badge?: str
                 </span>
                 <span
                   class="mt-1 block text-sm leading-snug font-semibold text-ink-800"
-                  data-i18n={line.key}
+                  data-i18n-pair={JSON.stringify(line.text)}
                 >
-                  {dict[line.key].es}
+                  {line.text.es}
                 </span>
               </li>
             ))
@@ -202,8 +212,8 @@ const features: { titleKey: DictKey; textKey: DictKey; band: string; badge?: str
             >
           </p>
         </div>
-        <p class="kicker text-xs text-ink-600" data-i18n="selector.count">
-          151 + 251 + 202 Pokémon
+        <p class="kicker text-xs text-ink-600" data-i18n-pair={JSON.stringify(selectorCount)}>
+          {selectorCount.es}
         </p>
       </div>
 

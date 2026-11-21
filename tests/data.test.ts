@@ -17,9 +17,11 @@ beforeAll(() => {
 });
 
 describe.skipIf(!registry)('generated data snapshot', () => {
-  it('games.json lists the 3 launch games', () => {
+  it('games.json keeps the launch games and every registered game', () => {
     const reg = JSON.parse(readFileSync(path.join(DATA, 'games.json'), 'utf-8')) as GamesRegistry;
-    expect(reg.games.map((g) => g.id).sort()).toEqual(['emerald', 'gold-silver', 'red-blue']);
+    const ids = reg.games.map((g) => g.id);
+    expect(ids).toEqual(expect.arrayContaining(['red-blue', 'gold-silver', 'emerald']));
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   for (const id of ['red-blue', 'gold-silver', 'emerald']) {
