@@ -32,6 +32,18 @@ interface Props {
   onClose: () => void;
 }
 
+/** prefilled data-correction issue (GitHub issue forms read field ids from the query) */
+export function reportUrl(gameId: string, slug: string): string {
+  const params = new URLSearchParams({
+    template: 'data_correction.yml',
+    title: `[data] ${gameId}: ${slug}`,
+    game: gameId,
+    entries: `${slug} — https://hell-over-studios.github.io/dexforge/juego/${gameId}
+`,
+  });
+  return `https://github.com/hell-over-studios/dexforge/issues/new?${params.toString()}`;
+}
+
 const ART_ALT = {
   es: (n: string) => `Ilustración oficial de ${n}`,
   en: (n: string) => `Official artwork of ${n}`,
@@ -387,6 +399,23 @@ export default function PokemonDetail({
       ) : null}
       <p aria-live="polite" className="mt-1 min-h-4 text-[11px] text-ink-600">
         {note}
+      </p>
+
+      {/* UX-14: report wrong data straight into the prefilled data-correction form */}
+      <p className="mt-2 border-t-2 border-ink-950/10 pt-2 text-xs text-ink-600">
+        {lang === 'en' ? 'Spotted wrong data?' : '¿Ves un dato incorrecto?'}{' '}
+        <a
+          href={reportUrl(gameId, mon.slug)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-magenta-600 underline decoration-2 underline-offset-4 hover:text-magenta-700"
+        >
+          {lang === 'en' ? 'Report it on GitHub' : 'Repórtalo en GitHub'}
+          <span aria-hidden="true"> ↗</span>
+          <span className="sr-only">
+            {lang === 'en' ? ' (opens in a new tab)' : ' (se abre en otra pestaña)'}
+          </span>
+        </a>
       </p>
     </section>
   );
