@@ -129,3 +129,58 @@ export function analyzeCoverage(
 
   return { defenders, members: profiles, gaps, covered, empty };
 }
+
+/** A learnable move that would cover a gap (UX-07, #83). */
+export interface CoverageSuggestion {
+  defender: string;
+  memberId: number;
+  moveId: number;
+  /** multiplier against the gap type (2 or 4) */
+  value: number;
+}
+
+export interface SuggestionMember {
+  id: number;
+  /** every move id the species can learn in this game */
+  learnset: readonly number[];
+  /** moves already picked (not suggested again) */
+  picked: readonly number[];
+}
+
+/**
+ * For each gap, the strongest damaging moves team members can learn in this
+ * game that hit it 2× or more — one per member, best multiplier then power.
+ */
+export function suggestCoverage(
+  gaps: readonly string[],
+  members: readonly SuggestionMember[],
+  chart: TypeChart,
+  moveDex: Record<string, MoveInfo>,
+  perGap = 2,
+): CoverageSuggestion[] {
+  const out: CoverageSuggestion[] = [];
+  for (const defender of gaps) {
+    const best: (CoverageSuggestion & { power: number })[] = [];
+    for (const member of members) {
+      let pick: (CoverageSuggestion & { power: number }) | null = null;
+      for (const moveId of new Set(member.learnset)) {
+        if (member.picked.includes(moveId)) continue;
+        const info = moveDex[String(moveId)];
+        if (!info || info.damageClass === 'status' || info.power == null) continue;
+        const value = chart[info.type]?.[defender] ?? 1;
+        if (value < 2) continue;
+        if (!pick || value > pick.value || (value === pick.value && info.power > pick.power)) {
+          pick = { defender, memberId: member.id, moveId, value, power: info.power };
+        }
+      }
+      if (pick) best.push(pick);
+    }
+    best
+      .sort((a, b) => b.value - a.value || b.power - a.power)
+      .slice(0, perGap)
+      .forEach((s) =>
+        out.push({ defender: s.defender, memberId: s.memberId, moveId: s.moveId, value: s.value }),
+      );
+  }
+  return out;
+}
