@@ -111,6 +111,10 @@ const VERSION_LABELS: Record<string, LocalizedText> = {
   y: { es: 'Y', en: 'Y' },
   'omega-ruby': { es: 'Rubí Omega', en: 'Omega Ruby' },
   'alpha-sapphire': { es: 'Zafiro Alfa', en: 'Alpha Sapphire' },
+  sun: { es: 'Sol', en: 'Sun' },
+  moon: { es: 'Luna', en: 'Moon' },
+  'ultra-sun': { es: 'Ultrasol', en: 'Ultra Sun' },
+  'ultra-moon': { es: 'Ultraluna', en: 'Ultra Moon' },
 };
 
 const cap = (slug: string) => slug.charAt(0).toUpperCase() + slug.slice(1);

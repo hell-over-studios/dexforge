@@ -320,6 +320,17 @@ for (const g of registry.games) {
       check(data.typeChart['fairy'] === undefined, 'platinum: Fairy must not exist in Gen 4');
       break;
     }
+    case 'sun-moon':
+    case 'ultra-sun-ultra-moon': {
+      const raichu = data.pokemon.find((p) => p.slug === 'raichu');
+      check(
+        raichu?.formSlug === 'raichu-alola' && raichu.types.join('/') === 'electric/psychic',
+        `${id}: Raichu must be the Alolan form (Electric/Psychic)`,
+      );
+      check(raichu?.name.es === 'Raichu de Alola', `${id}: Alolan names must carry "de Alola"`);
+      check(data.typeChart['fairy'] !== undefined, `${id}: Fairy must exist in Gen 7`);
+      break;
+    }
     case 'x-y': {
       check(
         countEffectiveness(data.typeChart, 'fairy', 'dragon') === 2,

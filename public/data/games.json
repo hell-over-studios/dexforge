@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T02:22:27.212Z",
+  "generatedAt": "2026-11-23T02:47:17.017Z",
   "games": [
     {
       "id": "red-blue",
@@ -278,6 +278,46 @@
         "updated-hoenn"
       ],
       "pokemonCount": 211
+    },
+    {
+      "id": "sun-moon",
+      "label": {
+        "en": "Sun / Moon",
+        "es": "Sol / Luna"
+      },
+      "region": "alola",
+      "generation": 7,
+      "generationSlug": "generation-vii",
+      "versionGroup": "sun-moon",
+      "versions": [
+        "sun",
+        "moon"
+      ],
+      "spriteVersionGroup": "sun-moon",
+      "pokedexes": [
+        "original-alola"
+      ],
+      "pokemonCount": 302
+    },
+    {
+      "id": "ultra-sun-ultra-moon",
+      "label": {
+        "en": "Ultra Sun / Ultra Moon",
+        "es": "Ultrasol / Ultraluna"
+      },
+      "region": "alola",
+      "generation": 7,
+      "generationSlug": "generation-vii",
+      "versionGroup": "ultra-sun-ultra-moon",
+      "versions": [
+        "ultra-sun",
+        "ultra-moon"
+      ],
+      "spriteVersionGroup": "ultra-sun-ultra-moon",
+      "pokedexes": [
+        "updated-alola"
+      ],
+      "pokemonCount": 403
     }
   ]
 }

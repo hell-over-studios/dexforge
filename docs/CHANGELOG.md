@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Sun/Moon and Ultra Sun/Ultra Moon (Gen 7, 16 editions in total) with their Alola dexes. Games can declare a `regionalForm`; in Alola the native variants are used (Raichu de Alola is Electric/Psychic, Vulpix is Ice…), named “X de Alola” / “Alolan X”, and exported to Showdown as `X-Alola`. `data:check` asserts the Alolan Raichu and Fairy in Gen 7.
 - Phone workbench (UX-10, #86; UX-11, #87): below 640 px “Tu sexteto” is one horizontal snapping strip instead of three rows of cards, and a fixed bottom bar offers Buscar · Análisis · Compartir (safe-area aware; toasts move above it).
 - “Cómo calculamos” page (UX-13, #89): the fixed game-accuracy rules plus, per generation, the types that do not exist yet and every type-chart cell that differs from the newest generation — computed at build time from the datasets (`src/lib/chart-diff.ts`). Linked from the footer and the analysis tabs.
 - “¿Ves un dato incorrecto? Repórtalo en GitHub” in every Pokémon sheet (UX-14, #90): opens the data-correction issue form prefilled with the game, the species and the page.

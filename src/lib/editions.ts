@@ -21,6 +21,8 @@ const COVER: Record<string, readonly [string, string?]> = {
   'black-2-white-2': ['#1f2a44', '#e3ecf6'],
   'x-y': ['#2a5bd7', '#d6262f'],
   'omega-ruby-alpha-sapphire': ['#c4122f', '#1d5fd1'],
+  'sun-moon': ['#f39c12', '#6c5ce7'],
+  'ultra-sun-ultra-moon': ['#ff6a13', '#3b2db5'],
 };
 
 /** CSS background for an edition: diagonal split for paired versions */
