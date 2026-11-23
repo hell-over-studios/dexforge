@@ -89,7 +89,8 @@ for what must exist in each version; GitHub issues reference it.
 ## v1.1.0+ — Expansion
 
 - [x] More games, Gen 1–6: Yellow, Crystal, Ruby/Sapphire, FRLG, Diamond/Pearl, Platinum, HGSS, Black/White, B2W2, X/Y, ORAS (2026-11-20)
-- [ ] Gen 7+ (Sun/Moon onward: regional forms, thin encounter data)
+- [x] Gen 7: Sun/Moon, Ultra Sun/Ultra Moon with Alolan forms (2026-11-22)
+- [ ] Gen 7 Let’s Go, Gen 8+ (Sword/Shield, BDSP, Legends: Arceus), Gen 9
 - [ ] Nuzlocke mode
 - [ ] 3D viewer exploration (user-provided assets, no ripped models)
 - [ ] More themes

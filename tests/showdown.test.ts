@@ -73,3 +73,20 @@ describe.skipIf(!hasData)('Showdown import/export (Emerald)', () => {
     expect(importShowdown(text, game)).toEqual({ members: team, issues: [] });
   });
 });
+
+const alolaFile = path.join(path.dirname(file), 'sun-moon.json');
+
+describe.skipIf(!existsSync(alolaFile))('Showdown regional forms (Sun/Moon)', () => {
+  const game = JSON.parse(readFileSync(alolaFile, 'utf-8')) as GameData;
+  const raichu = game.pokemon.find((p) => p.slug === 'raichu')!;
+
+  it('exports Alolan forms with the Showdown species name', () => {
+    expect(exportShowdown([{ id: raichu.id, moves: [] }], game)).toBe('Raichu-Alola');
+  });
+
+  it('imports "Raichu-Alola" and "Alolan Raichu" to the same member', () => {
+    for (const text of ['Raichu-Alola @ Aloraichium Z', 'Alolan Raichu']) {
+      expect(importShowdown(text, game).members).toEqual([{ id: raichu.id, moves: [] }]);
+    }
+  });
+});

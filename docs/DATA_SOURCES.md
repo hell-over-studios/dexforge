@@ -40,8 +40,10 @@ official artwork fallback → optional showdown/HOME toggles.
 | `black-2-white-2`           | black-2, white-2           | 5                    | generation-v      | `updated-unova`                                      | `gen-v/black-white`              |
 | `x-y`                       | x, y                       | 6                    | generation-vi     | `kalos-central` + `kalos-coastal` + `kalos-mountain` | `gen-vi/x-y`                     |
 | `omega-ruby-alpha-sapphire` | omega-ruby, alpha-sapphire | 6                    | generation-vi     | `updated-hoenn`                                      | `gen-vi/omegaruby-alphasapphire` |
+| `sun-moon`                  | sun, moon                  | 7                    | generation-vii    | `original-alola`                                     | `gen-vii/ultra-sun-ultra-moon`   |
+| `ultra-sun-ultra-moon`      | ultra-sun, ultra-moon      | 7                    | generation-vii    | `updated-alola`                                      | `gen-vii/ultra-sun-ultra-moon`   |
 
-Gen 7+ (Sun/Moon onward) is not added yet: Alola dexes need regional-form overrides (Alolan Raichu, Rattata…) and PokeAPI encounter data for those games is thin.
+Gen 7 games set `regionalForm: 'alola'`: when a dex species has a `<species>-alola` variety, that form is used (types, stats, abilities, learnset, artwork) and named “Raichu de Alola” / “Alolan Raichu”. Gen 8+ (Sword/Shield onward) is not added yet.
 
 Rules baked into `scripts/lib/games.ts`:
 

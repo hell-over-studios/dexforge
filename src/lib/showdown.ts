@@ -38,6 +38,16 @@ export const showdownKey = (s: string): string =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '');
 
+/** Showdown species name: regional forms are `Base-Region` (`Raichu-Alola`). */
+function showdownSpecies(mon: GamePokemon): string {
+  const region = mon.formSlug.startsWith(`${mon.slug}-`)
+    ? mon.formSlug.slice(mon.slug.length + 1)
+    : '';
+  if (region !== 'alola') return mon.name.en;
+  const base = mon.name.en.replace(/^Alolan /, '');
+  return `${base}-Alola`;
+}
+
 /** Team -> Showdown text (one block per member, blank line between blocks). */
 export function exportShowdown(members: ShowdownMember[], game: GameData): string {
   const byId = new Map(game.pokemon.map((p) => [p.id, p]));
@@ -45,7 +55,7 @@ export function exportShowdown(members: ShowdownMember[], game: GameData): strin
     .map((m) => {
       const mon = byId.get(m.id);
       if (!mon) return null;
-      const lines = [mon.name.en];
+      const lines = [showdownSpecies(mon)];
       for (const moveId of m.moves.slice(0, MAX_MOVES)) {
         const move = game.moves[String(moveId)];
         if (move) lines.push(`- ${move.name.en}`);
@@ -69,7 +79,9 @@ function speciesFromHeader(line: string): string {
 export function importShowdown(text: string, game: GameData): ShowdownImport {
   const speciesByKey = new Map<string, GamePokemon>();
   for (const p of game.pokemon) {
-    for (const name of [p.name.en, p.name.es, p.slug]) speciesByKey.set(showdownKey(name), p);
+    for (const name of [p.name.en, p.name.es, p.slug, p.formSlug]) {
+      speciesByKey.set(showdownKey(name), p);
+    }
   }
   const moveByKey = new Map<string, number>();
   for (const [id, info] of Object.entries(game.moves)) {

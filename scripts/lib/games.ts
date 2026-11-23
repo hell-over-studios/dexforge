@@ -19,6 +19,12 @@ interface GameDef extends GameRegistryEntry {
    * Never used for level-up/egg/tutor rows.
    */
   machineFallbackGroups?: string[];
+  /**
+   * Regional variant suffix the game uses natively (Gen 7: `alola`). When a dex
+   * species has a `<species>-<suffix>` variety, that form wins: Alolan Raichu,
+   * Vulpix, Marowak… are what the player meets in Alola.
+   */
+  regionalForm?: string;
 }
 
 export const GAMES: GameDef[] = [
@@ -218,6 +224,36 @@ export const GAMES: GameDef[] = [
     pokedexes: ['updated-hoenn'],
     pokemonCount: 0, // derived
     curatedFile: 'omega-ruby-alpha-sapphire',
+  },
+  {
+    id: 'sun-moon',
+    label: { en: 'Sun / Moon', es: 'Sol / Luna' },
+    region: 'alola',
+    generation: 7,
+    generationSlug: 'generation-vii',
+    versionGroup: 'sun-moon',
+    versions: ['sun', 'moon'],
+    spriteVersionGroup: 'sun-moon',
+    spriteGroups: ['ultra-sun-ultra-moon'],
+    pokedexes: ['original-alola'],
+    regionalForm: 'alola',
+    pokemonCount: 0, // derived
+    curatedFile: 'sun-moon',
+  },
+  {
+    id: 'ultra-sun-ultra-moon',
+    label: { en: 'Ultra Sun / Ultra Moon', es: 'Ultrasol / Ultraluna' },
+    region: 'alola',
+    generation: 7,
+    generationSlug: 'generation-vii',
+    versionGroup: 'ultra-sun-ultra-moon',
+    versions: ['ultra-sun', 'ultra-moon'],
+    spriteVersionGroup: 'ultra-sun-ultra-moon',
+    spriteGroups: ['ultra-sun-ultra-moon'],
+    pokedexes: ['updated-alola'],
+    regionalForm: 'alola',
+    pokemonCount: 0, // derived
+    curatedFile: 'ultra-sun-ultra-moon',
   },
 ];
 

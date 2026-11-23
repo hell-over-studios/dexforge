@@ -44,6 +44,8 @@ export const GAME_FEATURED: Record<string, ShowcaseEntry> = {
   'black-2-white-2': entry(646, 'Kyurem', ['dragon', 'ice']),
   'x-y': entry(716, 'Xerneas', ['fairy']),
   'omega-ruby-alpha-sapphire': entry(383, 'Groudon', ['ground']),
+  'sun-moon': entry(722, 'Rowlet', ['grass', 'flying']),
+  'ultra-sun-ultra-moon': entry(800, 'Necrozma', ['psychic']),
 };
 
 /**
@@ -66,4 +68,6 @@ export const EXAMPLE_TEAMS: Record<string, number[]> = {
   'black-2-white-2': [503, 530, 609, 553, 635, 596],
   'x-y': [658, 448, 700, 715, 681, 697],
   'omega-ruby-alpha-sapphire': [260, 282, 310, 334, 306, 373],
+  'sun-moon': [724, 26, 745, 748, 784, 738],
+  'ultra-sun-ultra-moon': [727, 26, 745, 748, 784, 738],
 };
