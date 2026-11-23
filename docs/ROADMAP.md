@@ -90,7 +90,8 @@ for what must exist in each version; GitHub issues reference it.
 
 - [x] More games, Gen 1–6: Yellow, Crystal, Ruby/Sapphire, FRLG, Diamond/Pearl, Platinum, HGSS, Black/White, B2W2, X/Y, ORAS (2026-11-20)
 - [x] Gen 7: Sun/Moon, Ultra Sun/Ultra Moon with Alolan forms (2026-11-22)
-- [ ] Gen 7 Let’s Go, Gen 8+ (Sword/Shield, BDSP, Legends: Arceus), Gen 9
+- [x] Gen 8–9 regions: Sword/Shield (Galar + DLC), Legends: Arceus (Hisui), Scarlet/Violet (Paldea + DLC) (2026-11-23)
+- [ ] Remakes of covered regions: Let’s Go, BDSP, Legends: Z-A
 - [ ] Nuzlocke mode
 - [ ] 3D viewer exploration (user-provided assets, no ripped models)
 - [ ] More themes

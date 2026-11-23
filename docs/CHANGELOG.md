@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Every remaining region (19 editions in total): Sword/Shield (Galar + Isle of Armor + Crown Tundra), Legends: Arceus (Hisui) and Scarlet/Violet (Paldea + Kitakami + Blueberry). Regional forms now cover Galar, Hisui and Paldea too (Galarian Meowth, Hisuian Growlithe, Paldean Wooper and Tauros breeds…), with official names and Showdown species (`Meowth-Galar`, `Tauros-Paldea-Combat`). `data:check` asserts one regional form per game.
 - Sun/Moon and Ultra Sun/Ultra Moon (Gen 7, 16 editions in total) with their Alola dexes. Games can declare a `regionalForm`; in Alola the native variants are used (Raichu de Alola is Electric/Psychic, Vulpix is Ice…), named “X de Alola” / “Alolan X”, and exported to Showdown as `X-Alola`. `data:check` asserts the Alolan Raichu and Fairy in Gen 7.
 - Coverage ideas (UX-07, #83): under the coverage gaps, “Ideas para cubrir los huecos” lists, for the first four gaps, the strongest damaging moves team members can learn in that game that hit the gap 2× or more, with a one-click “Añadir”. Pure `suggestCoverage` in `src/lib/coverage.ts`.
 - Phone workbench (UX-10, #86; UX-11, #87): below 640 px “Tu sexteto” is one horizontal snapping strip instead of three rows of cards, and a fixed bottom bar offers Buscar · Análisis · Compartir (safe-area aware; toasts move above it).

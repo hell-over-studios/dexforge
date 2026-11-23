@@ -187,14 +187,24 @@ async function main(): Promise<void> {
     }
   }
 
-  /* regional variants (Gen 7 Alola): the native form wins over the default one */
+  /* regional variants (Alola, Galar, Hisui, Paldea): the native form wins over the default one */
   for (const game of games.filter((g) => g.regionalForm)) {
     const suffix = game.regionalForm!;
     const wanted = [...dexMembership.get(game.id)!.keys()]
-      .map((slug) => ({ slug, variety: `${slug}-${suffix}` }))
-      .filter(({ slug, variety }) =>
-        speciesByKey.get(slug)?.varieties.some((v) => v.pokemon.name === variety),
-      );
+      .map((slug) => {
+        const names = speciesByKey.get(slug)?.varieties.map((v) => v.pokemon.name) ?? [];
+        const variety =
+          names.find((n) => n === `${slug}-${suffix}`) ??
+          /* only true regional sub-forms (Galarian Darmanitan `-standard`, Paldean Tauros
+             `-…-breed`); cosmetic ones such as `pikachu-alola-cap` must not win */
+          names.find((n) => {
+            if (!n.startsWith(`${slug}-${suffix}-`)) return false;
+            const tail = n.slice(`${slug}-${suffix}-`.length);
+            return tail === 'standard' || tail.endsWith('breed');
+          });
+        return { slug, variety: variety ?? '' };
+      })
+      .filter(({ variety }) => variety !== '');
     const regionalForms = await mapPolite(
       wanted,
       ({ variety }) => fetchPokeApi<PokeForm>(`pokemon/${variety}`),
@@ -553,11 +563,16 @@ async function main(): Promise<void> {
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
 /** official regional names: "Raichu de Alola" / "Alolan Raichu" */
-const REGION_ADJ: Record<string, LocalizedText> = { alola: { es: 'de Alola', en: 'Alolan' } };
+const REGION_ADJ: Record<string, LocalizedText> = {
+  alola: { es: 'de Alola', en: 'Alolan' },
+  galar: { es: 'de Galar', en: 'Galarian' },
+  hisui: { es: 'de Hisui', en: 'Hisuian' },
+  paldea: { es: 'de Paldea', en: 'Paldean' },
+};
 
 function regionalName(name: LocalizedText, formName: string, suffix?: string): LocalizedText {
   const adj = suffix ? REGION_ADJ[suffix] : undefined;
-  if (!adj || !formName.endsWith(`-${suffix}`)) return name;
+  if (!adj || !(formName.endsWith(`-${suffix}`) || formName.includes(`-${suffix}-`))) return name;
   return { es: `${name.es} ${adj.es}`, en: `${adj.en} ${name.en}` };
 }
 

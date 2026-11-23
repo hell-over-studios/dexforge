@@ -329,6 +329,38 @@ for (const g of registry.games) {
       );
       check(raichu?.name.es === 'Raichu de Alola', `${id}: Alolan names must carry "de Alola"`);
       check(data.typeChart['fairy'] !== undefined, `${id}: Fairy must exist in Gen 7`);
+      check(
+        data.pokemon.find((p) => p.slug === 'pikachu')?.formSlug === 'pikachu',
+        `${id}: cosmetic variants (pikachu-alola-cap) must not replace the default form`,
+      );
+      break;
+    }
+    case 'sword-shield': {
+      const meowth = data.pokemon.find((p) => p.slug === 'meowth');
+      check(
+        meowth?.formSlug === 'meowth-galar' && meowth.types.join('/') === 'steel',
+        'sword-shield: Meowth must be the Galarian form (Steel)',
+      );
+      break;
+    }
+    case 'legends-arceus': {
+      const growlithe = data.pokemon.find((p) => p.slug === 'growlithe');
+      check(
+        growlithe?.formSlug === 'growlithe-hisui' && growlithe.types.join('/') === 'fire/rock',
+        'legends-arceus: Growlithe must be the Hisuian form (Fire/Rock)',
+      );
+      break;
+    }
+    case 'scarlet-violet': {
+      const wooper = data.pokemon.find((p) => p.slug === 'wooper');
+      check(
+        wooper?.formSlug === 'wooper-paldea' && wooper.types.join('/') === 'poison/ground',
+        'scarlet-violet: Wooper must be the Paldean form (Poison/Ground)',
+      );
+      check(
+        wooper?.name.es === 'Wooper de Paldea',
+        'scarlet-violet: Paldean names must carry "de Paldea"',
+      );
       break;
     }
     case 'x-y': {

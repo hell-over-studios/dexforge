@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-23T02:47:17.017Z",
+  "generatedAt": "2026-11-23T23:50:09.727Z",
   "games": [
     {
       "id": "red-blue",
@@ -318,6 +318,69 @@
         "updated-alola"
       ],
       "pokemonCount": 403
+    },
+    {
+      "id": "sword-shield",
+      "label": {
+        "en": "Sword / Shield",
+        "es": "Espada / Escudo"
+      },
+      "region": "galar",
+      "generation": 8,
+      "generationSlug": "generation-viii",
+      "versionGroup": "sword-shield",
+      "versions": [
+        "sword",
+        "shield"
+      ],
+      "spriteVersionGroup": "sword-shield",
+      "pokedexes": [
+        "galar",
+        "isle-of-armor",
+        "crown-tundra"
+      ],
+      "pokemonCount": 584
+    },
+    {
+      "id": "legends-arceus",
+      "label": {
+        "en": "Legends: Arceus",
+        "es": "Leyendas: Arceus"
+      },
+      "region": "hisui",
+      "generation": 8,
+      "generationSlug": "generation-viii",
+      "versionGroup": "legends-arceus",
+      "versions": [
+        "legends-arceus"
+      ],
+      "spriteVersionGroup": "legends-arceus",
+      "pokedexes": [
+        "hisui"
+      ],
+      "pokemonCount": 242
+    },
+    {
+      "id": "scarlet-violet",
+      "label": {
+        "en": "Scarlet / Violet",
+        "es": "Escarlata / Púrpura"
+      },
+      "region": "paldea",
+      "generation": 9,
+      "generationSlug": "generation-ix",
+      "versionGroup": "scarlet-violet",
+      "versions": [
+        "scarlet",
+        "violet"
+      ],
+      "spriteVersionGroup": "scarlet-violet",
+      "pokedexes": [
+        "paldea",
+        "kitakami",
+        "blueberry"
+      ],
+      "pokemonCount": 664
     }
   ]
 }

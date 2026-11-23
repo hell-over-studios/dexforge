@@ -20,9 +20,10 @@ interface GameDef extends GameRegistryEntry {
    */
   machineFallbackGroups?: string[];
   /**
-   * Regional variant suffix the game uses natively (Gen 7: `alola`). When a dex
-   * species has a `<species>-<suffix>` variety, that form wins: Alolan Raichu,
-   * Vulpix, Marowak… are what the player meets in Alola.
+   * Regional variant suffix the game uses natively (`alola`, `galar`, `hisui`,
+   * `paldea`). When a dex species has a `<species>-<suffix>` variety (or
+   * `<species>-<suffix>-…`, e.g. Paldean Tauros breeds), that form wins: it is
+   * what the player meets in that region.
    */
   regionalForm?: string;
 }
@@ -254,6 +255,51 @@ export const GAMES: GameDef[] = [
     regionalForm: 'alola',
     pokemonCount: 0, // derived
     curatedFile: 'ultra-sun-ultra-moon',
+  },
+  {
+    id: 'sword-shield',
+    label: { en: 'Sword / Shield', es: 'Espada / Escudo' },
+    region: 'galar',
+    generation: 8,
+    generationSlug: 'generation-viii',
+    versionGroup: 'sword-shield',
+    versions: ['sword', 'shield'],
+    spriteVersionGroup: 'sword-shield',
+    spriteGroups: [],
+    pokedexes: ['galar', 'isle-of-armor', 'crown-tundra'],
+    regionalForm: 'galar',
+    pokemonCount: 0, // derived
+    curatedFile: 'sword-shield',
+  },
+  {
+    id: 'legends-arceus',
+    label: { en: 'Legends: Arceus', es: 'Leyendas: Arceus' },
+    region: 'hisui',
+    generation: 8,
+    generationSlug: 'generation-viii',
+    versionGroup: 'legends-arceus',
+    versions: ['legends-arceus'],
+    spriteVersionGroup: 'legends-arceus',
+    spriteGroups: [],
+    pokedexes: ['hisui'],
+    regionalForm: 'hisui',
+    pokemonCount: 0, // derived
+    curatedFile: 'legends-arceus',
+  },
+  {
+    id: 'scarlet-violet',
+    label: { en: 'Scarlet / Violet', es: 'Escarlata / Púrpura' },
+    region: 'paldea',
+    generation: 9,
+    generationSlug: 'generation-ix',
+    versionGroup: 'scarlet-violet',
+    versions: ['scarlet', 'violet'],
+    spriteVersionGroup: 'scarlet-violet',
+    spriteGroups: [],
+    pokedexes: ['paldea', 'kitakami', 'blueberry'],
+    regionalForm: 'paldea',
+    pokemonCount: 0, // derived
+    curatedFile: 'scarlet-violet',
   },
 ];
 

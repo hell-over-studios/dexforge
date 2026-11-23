@@ -90,3 +90,36 @@ describe.skipIf(!existsSync(alolaFile))('Showdown regional forms (Sun/Moon)', ()
     }
   });
 });
+
+const galarFile = path.join(path.dirname(file), 'sword-shield.json');
+const paldeaFile = path.join(path.dirname(file), 'scarlet-violet.json');
+
+describe.skipIf(!existsSync(galarFile) || !existsSync(paldeaFile))(
+  'Showdown regional forms (Galar, Paldea)',
+  () => {
+    const galar = JSON.parse(readFileSync(galarFile, 'utf-8')) as GameData;
+    const paldea = JSON.parse(readFileSync(paldeaFile, 'utf-8')) as GameData;
+    const idOf = (game: GameData, slug: string) => game.pokemon.find((p) => p.slug === slug)!.id;
+
+    it('uses Showdown species names for regional forms and breeds', () => {
+      expect(exportShowdown([{ id: idOf(galar, 'meowth'), moves: [] }], galar)).toBe(
+        'Meowth-Galar',
+      );
+      expect(exportShowdown([{ id: idOf(paldea, 'tauros'), moves: [] }], paldea)).toBe(
+        'Tauros-Paldea-Combat',
+      );
+    });
+
+    it('imports them back', () => {
+      expect(importShowdown('Meowth-Galar', galar).members).toEqual([
+        { id: idOf(galar, 'meowth'), moves: [] },
+      ]);
+      expect(importShowdown('Tauros-Paldea-Combat', paldea).members).toEqual([
+        { id: idOf(paldea, 'tauros'), moves: [] },
+      ]);
+      expect(importShowdown('Wooper-Paldea', paldea).members).toEqual([
+        { id: idOf(paldea, 'wooper'), moves: [] },
+      ]);
+    });
+  },
+);

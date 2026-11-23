@@ -42,8 +42,11 @@ official artwork fallback → optional showdown/HOME toggles.
 | `omega-ruby-alpha-sapphire` | omega-ruby, alpha-sapphire | 6                    | generation-vi     | `updated-hoenn`                                      | `gen-vi/omegaruby-alphasapphire` |
 | `sun-moon`                  | sun, moon                  | 7                    | generation-vii    | `original-alola`                                     | `gen-vii/ultra-sun-ultra-moon`   |
 | `ultra-sun-ultra-moon`      | ultra-sun, ultra-moon      | 7                    | generation-vii    | `updated-alola`                                      | `gen-vii/ultra-sun-ultra-moon`   |
+| `sword-shield`              | sword, shield              | 8                    | generation-viii   | `galar` + `isle-of-armor` + `crown-tundra`           | — (official artwork)             |
+| `legends-arceus`            | legends-arceus             | 8                    | generation-viii   | `hisui`                                              | — (official artwork)             |
+| `scarlet-violet`            | scarlet, violet            | 9                    | generation-ix     | `paldea` + `kitakami` + `blueberry`                  | — (official artwork)             |
 
-Gen 7 games set `regionalForm: 'alola'`: when a dex species has a `<species>-alola` variety, that form is used (types, stats, abilities, learnset, artwork) and named “Raichu de Alola” / “Alolan Raichu”. Gen 8+ (Sword/Shield onward) is not added yet.
+Games can set `regionalForm` (`alola`, `galar`, `hisui`, `paldea`): when a dex species has a `<species>-<region>` variety (or `<species>-<region>-…`, e.g. Paldean Tauros breeds), that form is used (types, stats, abilities, learnset, artwork) and named “X de Alola/Galar/Hisui/Paldea” / “Alolan/Galarian/Hisuian/Paldean X”. Sword/Shield and Scarlet/Violet include their DLC dexes. Not added: Let’s Go (Kanto), Brilliant Diamond/Shining Pearl (Sinnoh) and Legends: Z-A (Kalos), which revisit regions already covered.
 
 Rules baked into `scripts/lib/games.ts`:
 
