@@ -11,7 +11,7 @@
  * ADR-012 «Revista»: cyan = answer, magenta = walled, black = immune; quiet ×1 cells.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { analyzeCoverage, type CoverageMemberInput } from '../lib/coverage';
+import { analyzeCoverage, suggestCoverage, type CoverageMemberInput } from '../lib/coverage';
 import { loadGame, loadTypeMeta, type TypeMeta } from '../lib/dex';
 import { typeChipStyle } from '../lib/contrast';
 import { useLang } from '../lib/use-lang';
@@ -66,6 +66,7 @@ export default function OffensiveCoverage({ gameId }: { gameId: string }) {
   const lang = useLang();
   const teamState = useTeamStore((s) => s.teams);
   const moveState = useTeamStore((s) => s.moves);
+  const toggleMove = useTeamStore((s) => s.toggleMove);
 
   const members: MemberRow[] = useMemo(() => {
     if (!game) return [];
@@ -91,6 +92,16 @@ export default function OffensiveCoverage({ gameId }: { gameId: string }) {
         : null,
     [game, members],
   );
+
+  /* UX-07: learnable moves that would close the first gaps */
+  const suggestions = useMemo(() => {
+    if (!game || !profile || profile.empty || profile.gaps.length === 0) return [];
+    const learnsets = members.map((m) => {
+      const mon = game.pokemon.find((p) => p.id === m.id);
+      return { id: m.id, learnset: mon ? mon.moves.map(([id]) => id) : [], picked: m.moves };
+    });
+    return suggestCoverage(profile.gaps.slice(0, 4), learnsets, game.typeChart, game.moves);
+  }, [game, profile, members]);
 
   if (loadError) return null;
 
@@ -202,6 +213,61 @@ export default function OffensiveCoverage({ gameId }: { gameId: string }) {
               </p>
             )}
           </div>
+
+          {suggestions.length > 0 && game ? (
+            <div className="mt-3 border-2 border-ink-950 bg-paper-50 p-3">
+              <p className="kicker text-xs text-magenta-600">
+                {lang === 'en' ? 'Ideas to close the gaps' : 'Ideas para cubrir los huecos'}
+              </p>
+              <ul className="mt-2 grid gap-1.5">
+                {suggestions.map((sg) => {
+                  const member = members.find((m) => m.id === sg.memberId);
+                  const move = game.moves[String(sg.moveId)];
+                  if (!member || !move) return null;
+                  const full = member.moves.length >= 4;
+                  return (
+                    <li
+                      key={`${sg.defender}-${sg.memberId}-${sg.moveId}`}
+                      className="flex flex-wrap items-center gap-2 text-sm text-ink-800"
+                    >
+                      <span className="type-chip" style={typeChipStyle(typeColor(sg.defender))}>
+                        {typeName(sg.defender)}
+                      </span>
+                      <span>
+                        {lang === 'en'
+                          ? `${member.name.en} can learn ${move.name.en}`
+                          : `${member.name.es} puede aprender ${move.name.es}`}{' '}
+                        <span className="font-headline text-ink-950">×{sg.value}</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => toggleMove(gameId, sg.memberId, sg.moveId)}
+                        className="ml-auto cursor-pointer border-2 border-ink-950 bg-ember-500 px-2 py-0.5 kicker text-[11px] text-ink-950 hover:bg-ember-400"
+                      >
+                        {full
+                          ? lang === 'en'
+                            ? 'Swap in'
+                            : 'Cambiar'
+                          : lang === 'en'
+                            ? 'Add'
+                            : 'Añadir'}
+                        <span className="sr-only">
+                          {lang === 'en'
+                            ? ` ${move.name.en} to ${member.name.en}`
+                            : ` ${move.name.es} a ${member.name.es}`}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-2 text-[11px] text-ink-600">
+                {lang === 'en'
+                  ? 'With four moves picked, the oldest one is swapped out.'
+                  : 'Con cuatro movimientos elegidos, se reemplaza el más antiguo.'}
+              </p>
+            </div>
+          ) : null}
 
           {/* desktop: defender × member matrix */}
           <table className="mt-4 hidden border-separate border-spacing-x-1 border-spacing-y-1.5 text-left md:table">

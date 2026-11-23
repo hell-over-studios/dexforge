@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   analyzeCoverage,
+  suggestCoverage,
   coverageMoves,
   defenderTypes,
   type CoverageMemberInput,
@@ -192,5 +193,41 @@ describe.skipIf(!hasData)('game-accurate coverage (emitted JSON)', () => {
     expect(profile.gaps).toContain('steel');
     expect(profile.gaps).not.toContain('water');
     expect(profile.members[0].moves[0].type).toBe('grass');
+  });
+});
+
+describe('suggestCoverage (UX-07)', () => {
+  const sChart = { ground: { steel: 2, fire: 2 }, fire: { steel: 2 }, normal: {} };
+  const sMoves: Record<string, MoveInfo> = Object.fromEntries([
+    move(10, 'earthquake', 'ground', 'physical', 100),
+    move(11, 'mud-slap', 'ground', 'special', 20),
+    move(12, 'ember', 'fire', 'special', 40),
+    move(13, 'growl', 'normal', 'status', null),
+  ]);
+
+  it('suggests the strongest learnable move per member for each gap', () => {
+    const out = suggestCoverage(
+      ['steel'],
+      [
+        { id: 1, learnset: [11, 10, 13], picked: [] },
+        { id: 2, learnset: [12], picked: [] },
+      ],
+      sChart,
+      sMoves,
+    );
+    expect(out).toEqual([
+      { defender: 'steel', memberId: 1, moveId: 10, value: 2 },
+      { defender: 'steel', memberId: 2, moveId: 12, value: 2 },
+    ]);
+  });
+
+  it('skips picked and status moves, and gaps nobody can cover', () => {
+    const out = suggestCoverage(
+      ['steel', 'water'],
+      [{ id: 1, learnset: [10, 13], picked: [10] }],
+      sChart,
+      sMoves,
+    );
+    expect(out).toEqual([]);
   });
 });
