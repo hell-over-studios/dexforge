@@ -20,6 +20,17 @@ data".
 | v0.6.0 gym leaders               | 0%   | data-model issue #5 opened                                                                         |
 | v1.0.0 share/polish              | 0%   |                                                                                                    |
 
+## Done 2026-11-21 — 14 editions + second UX batch
+
+- Merged: #98–#102 (UX-01…UX-05), #103 (11 more games, Gen 1–6: 14 editions), #104
+  (UX-06/UX-08 index filters), #105 (UX-12 example team), #106 (UX-15 404), #107 (V1-01
+  Showdown import/export), #108 (UX-14 report data), #109 (UX-13 “Cómo calculamos”).
+- Open at the end of the session: #110 (UX-10/UX-11 phone strip + action bar), #111 (UX-07
+  coverage ideas) — green locally, waiting for CI.
+- Still to do: UX-09 compare (#85), UX-16 audit (#92), UX-17 user test (#93, needs people),
+  V1-02 saved teams (#95), V1-03 share image (#96), V1-04 PWA (#97), Gen 7+.
+- Suite: ~208 unit tests, 14 e2e (desktop + Pixel 5).
+
 ## Done 2026-11-20 — UX backlog created + first five fixes
 
 - 21 issues opened from the UX review: #77–#93 (UX-01…UX-17) and #94–#97 (v1.0 Showdown,

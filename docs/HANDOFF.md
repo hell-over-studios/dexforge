@@ -1,6 +1,6 @@
 # Handoff — where the last session stopped
 
-Last updated: 2026-11-20 (UX backlog + UX-01…UX-05 on stacked PRs)
+Last updated: 2026-11-21 (14 editions + second UX batch merged)
 
 ## Exactly where we stopped
 
@@ -31,7 +31,25 @@ Last updated: 2026-11-20 (UX backlog + UX-01…UX-05 on stacked PRs)
   section and milestone v0.4.0 closed. **v0.5.0 re-arms the same MINOR gate** — tag only
   after explicit owner approval.
 
-## Latest (2026-11-20)
+## Latest (2026-11-21)
+
+- 14 editions (Gen 1–6) in `scripts/lib/games.ts`; edition colors, featured species and
+  example teams live in `src/lib/editions.ts` / `src/lib/showcase.ts` and are checked
+  against every dataset by `tests/showcase.test.ts`. Gen 7+ needs regional-form overrides.
+- New modules: `src/lib/showdown.ts` (Showdown import/export), `src/lib/chart-diff.ts`
+  (generation differences for `/como-calculamos`), `filterDex`/`typeMultiplier` in
+  `src/lib/dex.ts`, `suggestCoverage` in `src/lib/coverage.ts` (PR #111).
+- Cross-island events in `src/lib/events.ts`: open member, filter “who resists X”.
+- e2e: buttons rendered in static HTML (example team, Showdown toggle) need a retried click
+  (`expect(...).toPass()`) until the island hydrates; `client:visible` panels must be
+  scrolled into view before their buttons exist.
+- Local e2e: Playwright reuses any server on :4321 — stop `pnpm dev` before
+  `pnpm test:e2e` or it tests the slow dev server.
+- Merging with `gh pr merge`: one PR per command (batched merges were refused by the
+  permission layer); every PR adds a CHANGELOG line at the same spot, so merge `main` back
+  into the next branch and keep both lines.
+
+## Previous (2026-11-20)
 
 - UX backlog: issues #77–#97. Done on a stack of PRs (#98 → #99 → #100 → #101 → UX-05),
   each based on the previous branch; merge them in that order (GitHub retargets as each
