@@ -46,6 +46,9 @@ export const GAME_FEATURED: Record<string, ShowcaseEntry> = {
   'omega-ruby-alpha-sapphire': entry(383, 'Groudon', ['ground']),
   'sun-moon': entry(722, 'Rowlet', ['grass', 'flying']),
   'ultra-sun-ultra-moon': entry(800, 'Necrozma', ['psychic']),
+  'sword-shield': entry(888, 'Zacian', ['fairy']),
+  'legends-arceus': entry(493, 'Arceus', ['normal']),
+  'scarlet-violet': entry(1007, 'Koraidon', ['fighting', 'dragon']),
 };
 
 /**
@@ -70,4 +73,7 @@ export const EXAMPLE_TEAMS: Record<string, number[]> = {
   'omega-ruby-alpha-sapphire': [260, 282, 310, 334, 306, 373],
   'sun-moon': [724, 26, 745, 748, 784, 738],
   'ultra-sun-ultra-moon': [727, 26, 745, 748, 784, 738],
+  'sword-shield': [812, 887, 884, 869, 879, 849],
+  'legends-arceus': [724, 59, 900, 901, 445, 448],
+  'scarlet-violet': [908, 1000, 979, 970, 937, 983],
 };

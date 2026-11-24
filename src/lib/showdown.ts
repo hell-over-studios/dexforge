@@ -38,15 +38,28 @@ export const showdownKey = (s: string): string =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '');
 
-/** Showdown species name: regional forms are `Base-Region` (`Raichu-Alola`). */
+const REGIONS: Record<string, string> = {
+  alola: 'Alola',
+  galar: 'Galar',
+  hisui: 'Hisui',
+  paldea: 'Paldea',
+};
+
+/**
+ * Showdown species name: regional forms are `Base-Region` (`Raichu-Alola`,
+ * `Meowth-Galar`), Paldean Tauros keeps its breed (`Tauros-Paldea-Combat`).
+ */
 function showdownSpecies(mon: GamePokemon): string {
-  const region = mon.formSlug.startsWith(`${mon.slug}-`)
-    ? mon.formSlug.slice(mon.slug.length + 1)
-    : '';
-  if (region !== 'alola') return mon.name.en;
-  const base = mon.name.en.replace(/^Alolan /, '');
-  return `${base}-Alola`;
+  if (!mon.formSlug.startsWith(`${mon.slug}-`)) return mon.name.en;
+  const parts = mon.formSlug.slice(mon.slug.length + 1).split('-');
+  const region = REGIONS[parts[0]];
+  if (!region) return mon.name.en;
+  const base = mon.name.en.replace(/^(Alolan|Galarian|Hisuian|Paldean) /, '');
+  const breed = parts[0] === 'paldea' && parts.includes('breed') ? `-${cap(parts[1])}` : '';
+  return `${base}-${region}${breed}`;
 }
+
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Team -> Showdown text (one block per member, blank line between blocks). */
 export function exportShowdown(members: ShowdownMember[], game: GameData): string {
@@ -79,7 +92,13 @@ function speciesFromHeader(line: string): string {
 export function importShowdown(text: string, game: GameData): ShowdownImport {
   const speciesByKey = new Map<string, GamePokemon>();
   for (const p of game.pokemon) {
-    for (const name of [p.name.en, p.name.es, p.slug, p.formSlug]) {
+    for (const name of [
+      p.name.en,
+      p.name.es,
+      p.slug,
+      p.formSlug,
+      p.formSlug.replace(/-breed$/, ''),
+    ]) {
       speciesByKey.set(showdownKey(name), p);
     }
   }

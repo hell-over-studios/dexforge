@@ -23,6 +23,9 @@ const COVER: Record<string, readonly [string, string?]> = {
   'omega-ruby-alpha-sapphire': ['#c4122f', '#1d5fd1'],
   'sun-moon': ['#f39c12', '#6c5ce7'],
   'ultra-sun-ultra-moon': ['#ff6a13', '#3b2db5'],
+  'sword-shield': ['#1f8fd6', '#d6246e'],
+  'legends-arceus': ['#c9a227'],
+  'scarlet-violet': ['#e0352b', '#7d3cc8'],
 };
 
 /** CSS background for an edition: diagonal split for paired versions */

@@ -43,8 +43,8 @@ export const dict = {
   },
   'how.step1.title': { es: 'Elige tu juego', en: 'Pick your game' },
   'how.step1.text': {
-    es: 'La edición que estás jugando, de Rojo/Azul a Ultrasol/Ultraluna. La app fija el reparto y la tabla de tipos de esa edición.',
-    en: 'The edition you are playing, from Red/Blue to Ultra Sun/Ultra Moon. The app locks the roster and type chart of that release.',
+    es: 'La edición que estás jugando, de Rojo/Azul a Escarlata/Púrpura. La app fija el reparto y la tabla de tipos de esa edición.',
+    en: 'The edition you are playing, from Red/Blue to Scarlet/Violet. The app locks the roster and type chart of that release.',
   },
   'how.step2.title': { es: 'Arma tu equipo', en: 'Build your team' },
   'how.step2.text': {
